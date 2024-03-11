@@ -287,8 +287,8 @@ UA_EventLoopPOSIX_run(UA_EventLoopPOSIX *el, UA_UInt32 timeout) {
     /* Listen on the active file-descriptors (sockets) from the
      * ConnectionManagers */
     // TODO: replace this with call to clients.available()
-    //UA_StatusCode rv = UA_EventLoopPOSIX_pollFDs(el, listenTimeout);
-    UA_StatusCode rv = 0;
+    UA_StatusCode rv = UA_EventLoopPOSIX_pollFDs(el, listenTimeout);
+    //UA_StatusCode rv = 0;
 
     /* Check if the last EventSource was successfully stopped */
     if(el->eventLoop.state == UA_EVENTLOOPSTATE_STOPPING)

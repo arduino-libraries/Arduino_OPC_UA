@@ -21,53 +21,74 @@ extern "C" {
 #define TCP_MANAGERPARAMS 2
 
 int UA_setsockopt(UA_FD fd, int level, int optname, const void *optval, unsigned optlen) {
-    return ((Socket*)fd)->setsockopt(level, optname, optval, optlen);
+    return ((TCPSocket*)fd)->setsockopt(level, optname, optval, optlen);
 }
 
 int UA_getsockopt(UA_FD fd, int level, int optname, void *optval, unsigned *optlen) {
-    return ((Socket*)fd)->getsockopt(level, optname, optval, optlen);
+    return ((TCPSocket*)fd)->getsockopt(level, optname, optval, optlen);
 }
 
 int UA_close(UA_FD fd) {
-    return ((Socket*)fd)->close();
+    return ((TCPSocket*)fd)->close();
 }
 
 int UA_connect(UA_FD fd, SocketAddress* addr) {
-    return ((Socket*)fd)->connect(*addr);
+    return ((TCPSocket*)fd)->connect(*addr);
 }
 
+uint8_t once = 0;
 int UA_recv(UA_FD fd, void *data, nsapi_size_t size, int ignored) {
-    return ((Socket*)fd)->recv(data, size);
+    auto ret = ((TCPSocket*)fd)->recv(data, size);
+    if (once < 10) {
+        once++;
+        printf("Recv: got %d on %x\n", ret, fd);
+    }
+    return ret;
 }
 
 int UA_send(UA_FD fd, const void *data, nsapi_size_t size, int ignored) {
-    return ((Socket*)fd)->send(data, size);
+    return ((TCPSocket*)fd)->send(data, size);
+}
+
+extern Socket* ev_sock;
+void event(Socket* s) {
+    ev_sock = s;
+    printf("Processing event: %x\n", (uint32_t)s);
 }
 
 Socket* UA_accept(UA_FD fd, SocketAddress* s) {
     // TODO: do something to retrieve s (getpeername?)
-    Socket* sock = ((Socket*)fd)->accept();
-    if (sock) {
+    nsapi_error_t error;
+    TCPSocket* sock = ((TCPSocket*)fd)->accept(&error);
+    if (sock && error == NSAPI_ERROR_OK) {
         sock->getpeername(s);
+        sock->set_timeout(1500);
+        sock->set_blocking(false);
+        sock->sigio(mbed::callback(event, sock));
+    } else {
+        errno = UA_INTERRUPTED;
     }
     return sock;
 }
 
 int UA_bind(UA_FD fd, SocketAddress* addr) {
-    return ((Socket*)fd)->bind(*addr);
+    return ((TCPSocket*)fd)->bind(addr->get_port());
 }
 
 int UA_getnameinfo(SocketAddress* fd, char* name) {
-    memcpy(name, fd->get_ip_address(), sizeof(fd->get_ip_address()));
+    memcpy(name, fd->get_ip_address(), strlen(fd->get_ip_address()));
     return 0;
 }
 
 int UA_listen(UA_FD fd, int ignored) {
-    return ((Socket*)fd)->listen();
+    ((TCPSocket*)fd)->set_blocking(false);
+    return ((TCPSocket*)fd)->listen(1);
 }
 
 Socket* socket(int family, int type, int proto) {
     Socket* sock = new TCPSocket();
+    ((TCPSocket *)sock)->sigio(mbed::callback(event, sock));
+    ((TCPSocket *)sock)->open(NetworkInterface::get_default_instance());
     return sock;
 }
 
@@ -264,7 +285,7 @@ TCP_connectionSocketCallback(UA_ConnectionManager *cm, TCP_FD *conn,
         return;
     }
 
-    UA_LOG_DEBUG(el->eventLoop.logger, UA_LOGCATEGORY_NETWORK,
+    UA_LOG_INFO(el->eventLoop.logger, UA_LOGCATEGORY_NETWORK,
                  "TCP %u\t| Received message of size %u",
                  (unsigned)conn->rfd.fd, (unsigned)ret);
 
@@ -285,7 +306,7 @@ TCP_listenSocketCallback(UA_ConnectionManager *cm, TCP_FD *conn, short event) {
     UA_EventLoopPOSIX *el = (UA_EventLoopPOSIX*)cm->eventSource.eventLoop;
     UA_LOCK_ASSERT(&el->elMutex, 1);
 
-    UA_LOG_DEBUG(el->eventLoop.logger, UA_LOGCATEGORY_NETWORK,
+    UA_LOG_WARNING(el->eventLoop.logger, UA_LOGCATEGORY_NETWORK,
                  "TCP %u\t| Callback on server socket",
                  (unsigned)conn->rfd.fd);
 
@@ -324,7 +345,7 @@ TCP_listenSocketCallback(UA_ConnectionManager *cm, TCP_FD *conn, short event) {
 
     /* Configure the new socket */
     UA_StatusCode res = UA_STATUSCODE_GOOD;
-    /* res |= UA_EventLoopPOSIX_setNonBlocking(newsockfd); Inherited from the listen-socket */
+    res |= UA_EventLoopPOSIX_setNonBlocking(newsockfd); /* Inherited from the listen-socket */
     res |= UA_EventLoopPOSIX_setNoSigPipe(newsockfd); /* Supress interrupts from the socket */
     res |= TCP_setNoNagle(newsockfd);     /* Disable Nagle's algorithm */
     if(res != UA_STATUSCODE_GOOD) {
@@ -348,7 +369,7 @@ TCP_listenSocketCallback(UA_ConnectionManager *cm, TCP_FD *conn, short event) {
     }
 
     newConn->rfd.fd = newsockfd;
-    newConn->rfd.listenEvents = UA_FDEVENT_IN;
+    newConn->rfd.listenEvents = UA_FDEVENT_OUT;
     newConn->rfd.es = &cm->eventSource;
     newConn->rfd.eventSourceCB = (UA_FDCallback)TCP_connectionSocketCallback;
     newConn->applicationCB = conn->applicationCB;
@@ -476,10 +497,9 @@ TCP_registerListenSocket(UA_POSIXConnectionManager *pcm, SocketAddress *ai,
     /* Bind socket to address */
     int ret = UA_bind(listenSocket, ai);
     if(ret < 0) {
-        UA_LOG_SOCKET_ERRNO_WRAP(
            UA_LOG_WARNING(el->eventLoop.logger, UA_LOGCATEGORY_NETWORK,
-                          "TCP %u\t| Error binding the socket to the address %s (%s)",
-                          (unsigned)listenSocket, hoststr, errno_str));
+                          "TCP %u\t| Error binding the socket to the address %s (%d)",
+                          (unsigned)listenSocket, hoststr, ret);
         UA_close(listenSocket);
         return UA_STATUSCODE_BADINTERNALERROR;
     }
@@ -571,31 +591,35 @@ TCP_registerListenSockets(UA_POSIXConnectionManager *pcm, const char *hostname,
     mp_snprintf(portstr, sizeof(portstr), "%d", port);
 
     /* Get all the interface and IPv4/6 combinations for the configured hostname */
-    SocketAddress hints, *res;
+    SocketAddress hints("localhost", port);
+    hints.set_ip_address("127.0.0.1");
+    SocketAddress* res;
+
+    const char* localhost = "localhost";
+    if (hostname == NULL) {
+        hostname = localhost;
+    }
 
     int retcode = NetworkInterface::get_default_instance()->getaddrinfo(hostname, &hints, &res);
     if(retcode != 0) {
         UA_LOG_WARNING(pcm->cm.eventSource.eventLoop->logger, UA_LOGCATEGORY_NETWORK,
                        "TCP\t| Lookup for \"%s\" on port %u failed (%d)",
                        hostname, port, retcode);
-        return UA_STATUSCODE_BADINTERNALERROR;
+        res = &hints;
+        //return UA_STATUSCODE_BADINTERNALERROR;
     }
 
     /* Add listen sockets. Aggregate the results to see if at least one
      * listen-socket was established. */
     UA_StatusCode total_result = UA_INT32_MAX;
     SocketAddress *ai = res;
-    /*
-    TODO: FIXME
-    while(ai) {
-        total_result &= TCP_registerListenSocket(pcm, ai, port, application, context,
+    if (ai) {
+        total_result = TCP_registerListenSocket(pcm, ai, port, application, context,
                                                  connectionCallback, validate);
-        ai = ai->ai_next;
     }
-    */
     freeaddrinfo(res);
 
-    return total_result;
+    return UA_STATUSCODE_GOOD;
 }
 
 /* Close the connection via a delayed callback */

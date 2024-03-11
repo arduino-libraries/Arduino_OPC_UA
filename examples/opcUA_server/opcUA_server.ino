@@ -1,12 +1,11 @@
 #include "PortentaEthernet.h"
 #include "Arduino_open62541.h"
 extern "C" {
-#include <open62541/server.h>
-#include <open62541/server_config_file_based.h>
+#include <open62541.h>
 
   int clock_gettime(clockid_t clk_id, struct timespec *tp) {
     tp->tv_sec = millis() / 1000;
-    tp->tv_nsec = (millis() % 1000) * 1000;
+    tp->tv_nsec = (millis() % 1000) * 1000000;
     return 0;
   }
 
@@ -14,6 +13,7 @@ extern "C" {
     memcpy(str, "arduino", 7);
     return 0;
   }
+
 
   UA_InterruptManager *UA_InterruptManager_new_POSIX(const UA_String eventSourceName) {
     return nullptr;
@@ -24,6 +24,9 @@ extern "C" {
   }
 }
 
+IPAddress ip(10, 42, 0, 10);
+IPAddress myDns(10, 42, 0, 1);
+
 REDIRECT_STDOUT_TO(Serial)
 
 void setup() {
@@ -32,7 +35,8 @@ void setup() {
   while (!Serial)
     ;
 
-  Ethernet.begin();
+  Ethernet.begin(ip, myDns);
+  //Ethernet.begin();
   Serial.print("Our IP is ");
   Serial.println(Ethernet.localIP());
 

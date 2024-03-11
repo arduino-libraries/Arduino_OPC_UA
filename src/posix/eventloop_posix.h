@@ -33,9 +33,9 @@ _UA_BEGIN_DECLS
 #define UA_IPV6 1
 #define UA_ERRNO errno
 #define UA_INTERRUPTED EINTR
-#define UA_AGAIN EAGAIN /* the same as wouldblock on nearly every system */
-#define UA_INPROGRESS EINPROGRESS
-#define UA_WOULDBLOCK EWOULDBLOCK
+#define UA_AGAIN NSAPI_ERROR_ALREADY /* the same as wouldblock on nearly every system */
+#define UA_INPROGRESS NSAPI_ERROR_IN_PROGRESS
+#define UA_WOULDBLOCK NSAPI_ERROR_WOULD_BLOCK
 #define UA_POLLIN POLLIN
 #define UA_POLLOUT POLLOUT
 #define UA_SHUT_RDWR SHUT_RDWR
