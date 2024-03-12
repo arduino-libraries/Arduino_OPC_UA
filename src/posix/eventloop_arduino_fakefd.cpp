@@ -5,7 +5,6 @@
  *    Copyright 2021 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  */
 
-#include "open62541.h"
 #include "eventloop_posix.h"
 
 #if !defined(UA_HAVE_EPOLL)

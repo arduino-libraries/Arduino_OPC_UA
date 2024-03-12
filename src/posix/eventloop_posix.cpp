@@ -6,8 +6,8 @@
  *    Copyright 2021 (c) Fraunhofer IOSB (Author: Jan Hermes)
  */
 
-#include "open62541.h"
 #include "eventloop_posix.h"
+#include "open62541/plugin/eventloop.h"
 
 #include <time.h>
 extern "C" int clock_gettime(clockid_t clk_id, struct timespec *tp);

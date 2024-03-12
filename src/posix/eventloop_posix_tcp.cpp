@@ -12,7 +12,6 @@
 
 extern "C" {
 #include "unistd.h"
-#include "open62541.h"
 #include "eventloop_posix.h"
 }
 
