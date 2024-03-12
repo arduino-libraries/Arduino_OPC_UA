@@ -12,7 +12,7 @@
 
 extern "C" {
 #include "unistd.h"
-#include "open62541/types.h"
+#include "open62541.h"
 #include "eventloop_posix.h"
 }
 
@@ -41,7 +41,10 @@ int UA_recv(UA_FD fd, void *data, nsapi_size_t size, int ignored) {
     auto ret = ((TCPSocket*)fd)->recv(data, size);
     if (once < 10) {
         once++;
-        printf("Recv: got %d on %x\n", ret, fd);
+        //printf("Recv: got %d on %x, data: %x, size: %d\n", ret, fd, (uint32_t)data, size);
+    }
+    if (ret == 0) {
+        UA_ERRNO = UA_WOULDBLOCK;
     }
     return ret;
 }
@@ -50,10 +53,10 @@ int UA_send(UA_FD fd, const void *data, nsapi_size_t size, int ignored) {
     return ((TCPSocket*)fd)->send(data, size);
 }
 
-extern Socket* ev_sock;
+extern rtos::EventFlags _events;
 void event(Socket* s) {
-    ev_sock = s;
-    printf("Processing event: %x\n", (uint32_t)s);
+    _events.set((uint32_t)s);
+    //printf("Processing event: %x\n", (uint32_t)s);
 }
 
 Socket* UA_accept(UA_FD fd, SocketAddress* s) {
@@ -61,10 +64,10 @@ Socket* UA_accept(UA_FD fd, SocketAddress* s) {
     nsapi_error_t error;
     TCPSocket* sock = ((TCPSocket*)fd)->accept(&error);
     if (sock && error == NSAPI_ERROR_OK) {
+        sock->sigio(mbed::callback(event, sock));
         sock->getpeername(s);
         sock->set_timeout(1500);
         sock->set_blocking(false);
-        sock->sigio(mbed::callback(event, sock));
     } else {
         errno = UA_INTERRUPTED;
     }
@@ -531,7 +534,7 @@ TCP_registerListenSocket(UA_POSIXConnectionManager *pcm, SocketAddress *ai,
     }
 
     newConn->rfd.fd = listenSocket;
-    newConn->rfd.listenEvents = UA_FDEVENT_IN;
+    newConn->rfd.listenEvents = UA_FDEVENT_IN; //UA_FDEVENT_OUT
     newConn->rfd.es = &pcm->cm.eventSource;
     newConn->rfd.eventSourceCB = (UA_FDCallback)TCP_listenSocketCallback;
     newConn->applicationCB = connectionCallback;

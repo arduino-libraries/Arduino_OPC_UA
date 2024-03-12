@@ -6,8 +6,8 @@
  *    Copyright 2021 (c) Fraunhofer IOSB (Author: Jan Hermes)
  */
 
+#include "open62541.h"
 #include "eventloop_posix.h"
-#include "open62541/plugin/eventloop.h"
 
 #include <time.h>
 extern "C" int clock_gettime(clockid_t clk_id, struct timespec *tp);
@@ -97,8 +97,8 @@ UA_EventLoopPOSIX_removeDelayedCallback(UA_EventLoop *public_el,
 /* Process and then free registered delayed callbacks */
 static void
 processDelayed(UA_EventLoopPOSIX *el) {
-    UA_LOG_TRACE(el->eventLoop.logger, UA_LOGCATEGORY_EVENTLOOP,
-                 "Process delayed callbacks");
+    //UA_LOG_TRACE(el->eventLoop.logger, UA_LOGCATEGORY_EVENTLOOP,
+    //             "Process delayed callbacks");
 
     UA_LOCK_ASSERT(&el->elMutex, 1);
 
@@ -250,8 +250,8 @@ UA_EventLoopPOSIX_run(UA_EventLoopPOSIX *el, UA_UInt32 timeout) {
         return UA_STATUSCODE_BADINTERNALERROR;
     }
 
-    UA_LOG_TRACE(el->eventLoop.logger, UA_LOGCATEGORY_EVENTLOOP,
-                 "Iterate the EventLoop");
+    //UA_LOG_TRACE(el->eventLoop.logger, UA_LOGCATEGORY_EVENTLOOP,
+    //             "Iterate the EventLoop");
 
     /* Process cyclic callbacks */
     UA_DateTime dateBefore =
@@ -519,7 +519,7 @@ UA_EventLoopPOSIX_freeNetworkBuffer(UA_ConnectionManager *cm,
 UA_StatusCode
 UA_EventLoopPOSIX_allocateStaticBuffers(UA_POSIXConnectionManager *pcm) {
     UA_StatusCode res = UA_STATUSCODE_GOOD;
-    UA_UInt32 rxBufSize = 2u << 16; /* The default is 64kb */
+    UA_UInt32 rxBufSize = 2u << 8; /* The default is 256B */
     const UA_UInt32 *configRxBufSize = (const UA_UInt32 *)
         UA_KeyValueMap_getScalar(&pcm->cm.eventSource.params,
                                  UA_QUALIFIEDNAME(0, "recv-bufsize"),

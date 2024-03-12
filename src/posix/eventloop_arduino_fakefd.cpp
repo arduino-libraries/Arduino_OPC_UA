@@ -5,6 +5,7 @@
  *    Copyright 2021 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  */
 
+#include "open62541.h"
 #include "eventloop_posix.h"
 
 #if !defined(UA_HAVE_EPOLL)
@@ -75,22 +76,30 @@ UA_EventLoopPOSIX_deregisterFD(UA_EventLoopPOSIX *el, UA_RegisteredFD *rfd) {
 #include "mbed.h"
 #undef sleep
 
-Socket* ev_sock = nullptr;
+rtos::EventFlags _events;
 
 UA_StatusCode
 UA_EventLoopPOSIX_pollFDs(UA_EventLoopPOSIX *el, UA_DateTime listenTimeout) {
     UA_assert(listenTimeout >= 0);
     UA_LOCK_ASSERT(&el->elMutex, 1);
-        
+
+
+    auto flag = _events.wait_any(0x7fffffff, 10);
+    if (flag & 0x80000000) {
+        yield();
+        return UA_STATUSCODE_GOOD;
+    }
+    UA_FD ev_sock = flag;
+
     /* Loop over all registered FD to see if an event arrived. Yes, this is why
      * select is slow for many open sockets. */
     for(size_t i = 0; i < el->fdsSize; i++) {
         UA_RegisteredFD *rfd = el->fds[i];
 
         if (el->fds[i]->fd != (UA_FD)ev_sock) {
-            continue;
+            // TODO: find out why we don't receive the first accepted socket event
+            //continue;
         }
-        ev_sock = nullptr;
 
         /* The rfd is already registered for removal. Don't process incoming
          * events any longer. */
@@ -107,7 +116,6 @@ UA_EventLoopPOSIX_pollFDs(UA_EventLoopPOSIX *el, UA_DateTime listenTimeout) {
         /* Call the EventSource callback */
         rfd->eventSourceCB(rfd->es, rfd, event);
     }
-    yield();
     return UA_STATUSCODE_GOOD;
 }
 
