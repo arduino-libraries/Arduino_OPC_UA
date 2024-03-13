@@ -29,14 +29,28 @@ IPAddress myDns(10, 42, 0, 1);
 
 REDIRECT_STDOUT_TO(Serial)
 
+UA_Int32 myInteger = 42;
+
+void updater(UA_Server *server) {
+  while (1) {
+    delay(1000);
+    UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, "the.answer");
+    myInteger++;
+    UA_Variant myVar;
+    UA_Variant_init(&myVar);
+    UA_Variant_setScalar(&myVar, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
+    UA_Server_writeValue(server, myIntegerNodeId, myVar);
+  }
+}
+
 void setup() {
 
   Serial.begin(115200);
   while (!Serial)
     ;
 
-  Ethernet.begin(ip, myDns);
-  //Ethernet.begin();
+  //Ethernet.begin(ip, myDns);
+  Ethernet.begin();
   Serial.print("Our IP is ");
   Serial.println(Ethernet.localIP());
 
@@ -49,8 +63,13 @@ void setup() {
   /* 1) Define the variable attributes */
   UA_VariableAttributes attr = UA_VariableAttributes_default;
   attr.displayName = UA_LOCALIZEDTEXT("en-US", "the answer");
-  UA_Int32 myInteger = 42;
+  attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE | UA_ACCESSLEVELMASK_HISTORYREAD;
+  /* We also set this node to historizing, so the server internals also know from it. */
+  attr.historizing = true;
   UA_Variant_setScalar(&attr.value, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
+
+  rtos::Thread t;
+  t.start(mbed::callback(updater, server));
 
   /* 2) Define where the node shall be added with which browsename */
   UA_NodeId newNodeId = UA_NODEID_STRING(1, "the.answer");
