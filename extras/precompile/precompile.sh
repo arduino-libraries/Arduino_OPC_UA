@@ -25,9 +25,13 @@ cmake -DCMAKE_C_COMPILER=arm-none-eabi-gcc \
       -DUA_MULTITHREADING=0 \
       -DUA_ARCHITECTURE=none \
       -DUA_NAMESPACE_ZERO=REDUCED \
+      -DUA_ENABLE_AMALGAMATION=ON \
       -DCMAKE_BUILD_TYPE=RelWithDebInfo \
       ..
 make -j8
 
 echo "Copy precompiled library to Arduino library"
 cp bin/libopen62541.a "$LIB_DIR"
+
+echo "Copy amalgated header to Arduino library"
+cp open62541.h "$SRC_DIR"

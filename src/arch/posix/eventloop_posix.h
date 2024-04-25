@@ -11,13 +11,9 @@
 #ifndef UA_EVENTLOOP_POSIX_H_
 #define UA_EVENTLOOP_POSIX_H_
 
-#include <open62541/config.h>
-#include <open62541/plugin/eventloop.h>
+#include "../open62541.h"
 
-#include "../eventloop_timer.h"
-#include "../eventloop_common.h"
-#include "../mp_printf.h"
-#include "../open62541_queue.h"
+#include "../deps/ziptree.h"
 
 _UA_BEGIN_DECLS
 

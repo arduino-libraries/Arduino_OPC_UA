@@ -7,7 +7,6 @@
  */
 
 #include "eventloop_posix.h"
-#include "open62541/plugin/eventloop.h"
 
 #include <time.h>
 extern "C" int clock_gettime(clockid_t clk_id, struct timespec *tp);
