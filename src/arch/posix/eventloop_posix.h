@@ -11,9 +11,11 @@
 #ifndef UA_EVENTLOOP_POSIX_H_
 #define UA_EVENTLOOP_POSIX_H_
 
-#include "../open62541.h"
+#include "../../open62541.h"
 
-#include "../deps/ziptree.h"
+#include "../../deps/ziptree.h"
+
+#include "../common/ua_timer.h"
 
 _UA_BEGIN_DECLS
 
