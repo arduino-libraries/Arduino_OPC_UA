@@ -13,6 +13,7 @@
 extern "C" {
 #include "unistd.h"
 #include "eventloop_posix.h"
+#include "../../deps/mp_printf.h"
 }
 
 /* Configuration parameters */

@@ -15,6 +15,7 @@
 
 #include "../../deps/ziptree.h"
 
+#include "../eventloop_common.h"
 #include "../common/ua_timer.h"
 
 _UA_BEGIN_DECLS
