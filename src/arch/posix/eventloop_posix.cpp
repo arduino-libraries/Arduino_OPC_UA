@@ -41,10 +41,14 @@ UA_EventLoopPOSIX_addCyclicCallback(UA_EventLoop *public_el,
                                     UA_TimerPolicy timerPolicy,
                                     UA_UInt64 *callbackId) {
     UA_EventLoopPOSIX *el = (UA_EventLoopPOSIX*)public_el;
-    return UA_Timer_addRepeatedCallback(&el->timer, cb, application,
-                                        data, interval_ms,
-                                        public_el->dateTime_nowMonotonic(public_el),
-                                        baseTime, timerPolicy, callbackId);
+    return UA_Timer_addRepeatedCallback(&el->timer,
+                                        cb,
+                                        application,
+                                        data,
+                                        interval_ms,
+                                        baseTime,
+                                        timerPolicy,
+                                        callbackId);
 }
 
 static UA_StatusCode
@@ -54,9 +58,11 @@ UA_EventLoopPOSIX_modifyCyclicCallback(UA_EventLoop *public_el,
                                        UA_DateTime *baseTime,
                                        UA_TimerPolicy timerPolicy) {
     UA_EventLoopPOSIX *el = (UA_EventLoopPOSIX*)public_el;
-    return UA_Timer_changeRepeatedCallback(&el->timer, callbackId, interval_ms,
-                                           public_el->dateTime_nowMonotonic(public_el),
-                                           baseTime, timerPolicy);
+    return UA_Timer_changeRepeatedCallback(&el->timer,
+                                           callbackId,
+                                           interval_ms,
+                                           baseTime,
+                                           timerPolicy);
 }
 
 static void
@@ -138,11 +144,11 @@ UA_EventLoopPOSIX_start(UA_EventLoopPOSIX *el) {
 
     /* Setting the clock source */
     const UA_Int32 *cs = (const UA_Int32*)
-        UA_KeyValueMap_getScalar(&el->eventLoop.params,
+        UA_KeyValueMap_getScalar(el->eventLoop.params,
                                  UA_QUALIFIEDNAME(0, "clock-source"),
                                  &UA_TYPES[UA_TYPES_INT32]);
     const UA_Int32 *csm = (const UA_Int32*)
-        UA_KeyValueMap_getScalar(&el->eventLoop.params,
+        UA_KeyValueMap_getScalar(el->eventLoop.params,
                                  UA_QUALIFIEDNAME(0, "clock-source-monotonic"),
                                  &UA_TYPES[UA_TYPES_INT32]);
 
@@ -436,7 +442,7 @@ UA_EventLoopPOSIX_free(UA_EventLoopPOSIX *el) {
     /* Process remaining delayed callbacks */
     processDelayed(el);
 
-    UA_KeyValueMap_clear(&el->eventLoop.params);
+    UA_KeyValueMap_clear(el->eventLoop.params);
 
     /* Clean up */
     UA_UNLOCK(&el->elMutex);
