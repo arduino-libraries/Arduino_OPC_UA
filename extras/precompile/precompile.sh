@@ -15,7 +15,7 @@ git clone --recursive https://github.com/open62541/open62541 && cd open62541
 git checkout v1.4.0
 
 echo "Obtaining CMake toolchain definition for ARM"
-wget https://raw.githubusercontent.com/swift-nav/libsbp/master/c/cmake/Toolchain-gcc-arm-embedded.cmake
+cp "$SCRIPT_DIR/Toolchain-gcc-arm-embedded.cmake" .
 
 echo "Build static library libopen62541.a"
 mkdir build && cd build
