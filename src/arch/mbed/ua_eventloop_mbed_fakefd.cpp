@@ -5,7 +5,7 @@
  *    Copyright 2021 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  */
 
-#include "eventloop_posix.h"
+#include "ua_eventloop_mbed.h"
 
 #if !defined(UA_HAVE_EPOLL)
 

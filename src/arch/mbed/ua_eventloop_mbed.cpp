@@ -6,7 +6,7 @@
  *    Copyright 2021 (c) Fraunhofer IOSB (Author: Jan Hermes)
  */
 
-#include "eventloop_posix.h"
+#include "ua_eventloop_mbed.h"
 
 #include <time.h>
 extern "C" int clock_gettime(clockid_t clk_id, struct timespec *tp);

@@ -12,7 +12,7 @@
 
 extern "C" {
 #include "unistd.h"
-#include "eventloop_posix.h"
+#include "ua_eventloop_mbed.h"
 #include "../../deps/mp_printf.h"
 }
 
