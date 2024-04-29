@@ -3,12 +3,6 @@
 extern "C" {
 #include <open62541.h>
 
-  int clock_gettime(clockid_t clk_id, struct timespec *tp) {
-    tp->tv_sec = millis() / 1000;
-    tp->tv_nsec = (millis() % 1000) * 1000000;
-    return 0;
-  }
-
   int gethostname(char *str, size_t len) {
     memcpy(str, "arduino", 7);
     return 0;
