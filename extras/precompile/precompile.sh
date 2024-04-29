@@ -26,7 +26,7 @@ cmake -DCMAKE_C_COMPILER=arm-none-eabi-gcc \
       -DUA_ARCHITECTURE=none \
       -DUA_NAMESPACE_ZERO=REDUCED \
       -DUA_ENABLE_AMALGAMATION=ON \
-      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DCMAKE_BUILD_TYPE=Release \
       ..
 make -j8
 
