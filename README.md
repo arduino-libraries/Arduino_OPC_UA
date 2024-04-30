@@ -1,5 +1,6 @@
 :floppy_disk: `Arduino_open62541`
 =================================
+[![Compile Examples](https://github.com/bcmi-labs/Arduino_open62541/workflows/Compile%20Examples/badge.svg)](https://github.com/bcmi-labs/Arduino_open62541/actions?workflow=Compile+Examples)
 [![Arduino Lint](https://github.com/bcmi-labs/Arduino_open62541/actions/workflows/arduino-lint.yml/badge.svg)](https://github.com/bcmi-labs/Arduino_open62541/actions/workflows/arduino-lint.yml)
 [![Sync Labels status](https://github.com/bcmi-labs/Arduino_open62541/actions/workflows/sync-labels.yml/badge.svg)](https://github.com/bcmi-labs/Arduino_open62541/actions/workflows/sync-labels.yml)
 
