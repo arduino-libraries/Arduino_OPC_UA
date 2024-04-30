@@ -1,13 +1,12 @@
 #include "PortentaEthernet.h"
 #include "Arduino_open62541.h"
-extern "C" {
-#include <open62541.h>
 
+extern "C"
+{
   int gethostname(char *str, size_t len) {
     memcpy(str, "arduino", 7);
     return 0;
   }
-
 
   UA_InterruptManager *UA_InterruptManager_new_POSIX(const UA_String eventSourceName) {
     return nullptr;
@@ -18,8 +17,8 @@ extern "C" {
   }
 }
 
-IPAddress ip(10, 42, 0, 10);
-IPAddress myDns(10, 42, 0, 1);
+IPAddress ip(192, 168, 8, 47);
+IPAddress myDns(192, 168, 8, 1);
 
 REDIRECT_STDOUT_TO(Serial)
 
