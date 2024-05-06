@@ -118,10 +118,10 @@ getSockError(TCP_FD *conn) {
     int error = 0;
 #ifndef _WIN32
     socklen_t errlen = sizeof(int);
-    int err = getsockopt(conn->rfd.fd, SOL_SOCKET, SO_ERROR, &error, &errlen);
+    int err = UA_getsockopt(conn->rfd.fd, SOL_SOCKET, SO_ERROR, &error, &errlen);
 #else
     int errlen = (int)sizeof(int);
-    int err = getsockopt((SOCKET)conn->rfd.fd, SOL_SOCKET, SO_ERROR,
+    int err = UA_getsockopt((SOCKET)conn->rfd.fd, SOL_SOCKET, SO_ERROR,
                          (char*)&error, &errlen);
 #endif
     return (err == 0) ? error : err;
@@ -240,7 +240,7 @@ TCP_listenSocketCallback(UA_ConnectionManager *cm, TCP_FD *conn, short event) {
     /* Try to accept a new connection */
     struct sockaddr_storage remote;
     socklen_t remote_size = sizeof(remote);
-    UA_FD newsockfd = accept(conn->rfd.fd, (struct sockaddr*)&remote, &remote_size);
+    UA_FD newsockfd = UA_accept(conn->rfd.fd, (struct sockaddr*)&remote, &remote_size);
     if(newsockfd == UA_INVALID_FD) {
         /* Temporary error -- retry */
         if(UA_ERRNO == UA_INTERRUPTED)
@@ -437,7 +437,7 @@ TCP_registerListenSocket(UA_POSIXConnectionManager *pcm, struct addrinfo *ai,
     }
 
     /* Bind socket to address */
-    int ret = bind(listenSocket, ai->ai_addr, (socklen_t)ai->ai_addrlen);
+    int ret = UA_bind(listenSocket, ai->ai_addr, (socklen_t)ai->ai_addrlen);
     if(ret < 0) {
         UA_LOG_SOCKET_ERRNO_WRAP(
            UA_LOG_WARNING(el->eventLoop.logger, UA_LOGCATEGORY_NETWORK,
@@ -454,7 +454,7 @@ TCP_registerListenSocket(UA_POSIXConnectionManager *pcm, struct addrinfo *ai,
     }
 
     /* Start listening */
-    if(listen(listenSocket, UA_MAXBACKLOG) < 0) {
+    if(UA_listen(listenSocket, UA_MAXBACKLOG) < 0) {
         UA_LOG_SOCKET_ERRNO_WRAP(
            UA_LOG_WARNING(el->eventLoop.logger, UA_LOGCATEGORY_NETWORK,
                           "TCP %u\t| Error listening on the socket (%s)",
@@ -539,7 +539,7 @@ TCP_registerListenSockets(UA_POSIXConnectionManager *pcm, const char *hostname,
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
 
-    int retcode = getaddrinfo(hostname, portstr, &hints, &res);
+    int retcode = UA_getaddrinfo(hostname, portstr, &hints, &res);
     if(retcode != 0) {
 #ifdef _WIN32
         UA_LOG_SOCKET_ERRNO_WRAP(
@@ -790,7 +790,7 @@ TCP_openActiveConnection(UA_POSIXConnectionManager *pcm, const UA_KeyValueMap *p
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
-    int error = getaddrinfo(hostname, portStr, &hints, &info);
+    int error = UA_getaddrinfo(hostname, portStr, &hints, &info);
     if(error != 0) {
 #ifdef _WIN32
         UA_LOG_SOCKET_ERRNO_WRAP(
