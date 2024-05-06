@@ -17,9 +17,6 @@ extern "C"
   }
 }
 
-IPAddress ip(192, 168, 8, 47);
-IPAddress myDns(192, 168, 8, 1);
-
 REDIRECT_STDOUT_TO(Serial)
 
 UA_Int32 myInteger = 42;
@@ -39,10 +36,8 @@ void updater(UA_Server *server) {
 void setup() {
 
   Serial.begin(115200);
-  while (!Serial)
-    ;
+  while (!Serial) { }
 
-  //Ethernet.begin(ip, myDns);
   Ethernet.begin();
   Serial.print("Our IP is ");
   Serial.println(Ethernet.localIP());
