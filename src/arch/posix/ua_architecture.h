@@ -15,7 +15,7 @@
 _UA_BEGIN_DECLS
 
 #define UA_IPV6 1
-#define UA_SOCKET uintptr_t
+#define UA_SOCKET uintptr_t //(Socket*)
 #define UA_INVALID_SOCKET -1
 #define UA_ERRNO errno
 #define UA_INTERRUPTED EINTR
@@ -24,10 +24,8 @@ _UA_BEGIN_DECLS
 #define UA_WOULDBLOCK EWOULDBLOCK
 #define UA_POLLIN POLLIN
 #define UA_POLLOUT POLLOUT
-#define UA_SHUT_RDWR SHUT_RDWR
+#define UA_SHUT_RDWR 0
 
-#define UA_getnameinfo(sa, salen, host, hostlen, serv, servlen, flags) \
-    getnameinfo(sa, salen, host, hostlen, serv, servlen, flags)
 #define UA_poll poll
 #define UA_send mbed_send
 #define UA_recv mbed_recv
@@ -35,6 +33,11 @@ _UA_BEGIN_DECLS
 #define UA_connect mbed_connect
 #define UA_getsockopt mbed_getsockopt
 #define UA_setsockopt mbed_setsockopt
+#define UA_accept mbed_accept
+#define UA_listen mbed_listen
+#define UA_getnameinfo mbed_getnameinfo
+#define UA_getaddrinfo  mbed_addrinfo
+#define UA_bind mbed_bind
 #define UA_inet_pton inet_pton
 #if UA_IPV6
 # define UA_if_nametoindex if_nametoindex
