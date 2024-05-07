@@ -12,14 +12,8 @@ int mbed_recv(UA_FD fd, void * data, nsapi_size_t size, int ignored)
   TCPSocket * sock = (TCPSocket *)fd;
   nsapi_value_or_error_t const rc = sock->recv(data, size);
 
-  if (rc == NSAPI_ERROR_OK) {
-    printf("mbed_recv: rc = NSAPI_ERROR_OK");
-  }
-  else if (rc > 0) {
-    printf("mbed_recv: got %d on %x, data: %x, size: %d\n", rc, fd, (uint32_t)data, size);
-  }
-  else {
-    printf("mbed_recv error: rc = %d", rc);
+  if (rc == 0) {
+    UA_ERRNO = UA_WOULDBLOCK;
   }
 
   return rc;
