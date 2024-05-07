@@ -24,7 +24,8 @@ cmake -DCMAKE_C_COMPILER=arm-none-eabi-gcc \
       -DCMAKE_TOOLCHAIN_FILE=../Toolchain-gcc-arm-embedded.cmake\
       -DUA_MULTITHREADING=0 \
       -DUA_ARCHITECTURE=none \
-      -DUA_NAMESPACE_ZERO=REDUCED \
+      -DUA_NAMESPACE_ZERO=MINIMAL \
+      -DUA_ENABLE_SUBSCRIPTIONS_EVENTS=OFF \
       -DUA_ENABLE_AMALGAMATION=ON \
       -DCMAKE_BUILD_TYPE=Release \
       ..
