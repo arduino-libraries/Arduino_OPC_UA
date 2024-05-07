@@ -299,7 +299,7 @@ TCP_listenSocketCallback(UA_ConnectionManager *cm, TCP_FD *conn, short event) {
     }
 
     newConn->rfd.fd = newsockfd;
-    newConn->rfd.listenEvents = UA_FDEVENT_IN;
+    newConn->rfd.listenEvents = UA_FDEVENT_OUT;
     newConn->rfd.es = &cm->eventSource;
     newConn->rfd.eventSourceCB = (UA_FDCallback)TCP_connectionSocketCallback;
     newConn->applicationCB = conn->applicationCB;
