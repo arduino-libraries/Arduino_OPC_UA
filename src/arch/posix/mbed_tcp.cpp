@@ -43,7 +43,10 @@ int mbed_setsockopt(UA_FD fd, int level, int optname, const void *optval, unsign
 int mbed_getsockopt(UA_FD fd, int level, int optname, void *optval, unsigned *optlen)
 {
   TCPSocket * sock = (TCPSocket *)fd;
-  nsapi_error_t const rc = sock->getsockopt(level, optname, optval, optlen);
+  nsapi_error_t rc = sock->getsockopt(level, optname, optval, optlen);
+  if (rc == NSAPI_ERROR_UNSUPPORTED) {
+      rc = 0;
+  }
   return rc;
 }
 
