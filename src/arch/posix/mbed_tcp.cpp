@@ -74,15 +74,27 @@ int mbed_bind(UA_FD fd, struct sockaddr* addr, size_t s_sz) {
 }
 
 int mbed_getnameinfo(struct sockaddr* fd, size_t sa_sz, char* name, size_t host_sz, struct sockaddr*, uint8_t, uint8_t) {
+    memset(name, 0, host_sz);
     memcpy(name, ((SocketAddress*)fd)->get_ip_address(), strlen(((SocketAddress*)fd)->get_ip_address()));
     return 0;
 }
 
 int mbed_addrinfo(const char* hostname, const char* portstr, struct addrinfo* hints, struct addrinfo** info) {
-    auto ret = NetworkInterface::get_default_instance()->getaddrinfo(hostname, (SocketAddress*)&hints, (SocketAddress**)&info);
+
+    if (hostname == NULL) {
+        static const char* localhost = "localhost";
+        hostname = localhost;
+        static SocketAddress _hints("localhost", atoi(portstr));
+        _hints.set_ip_address("127.0.0.1");
+        hints = (struct addrinfo*)&_hints;
+    }
+
+    auto ret = NetworkInterface::get_default_instance()->getaddrinfo(hostname, (SocketAddress*)hints, (SocketAddress**)info);
     hints->ai_addr = (struct  sockaddr*)hints;
-    (*info)->ai_addr = (struct  sockaddr*)info;
-    return ret;
+    hints->ai_next = NULL;
+    info[0] = (struct  addrinfo*)hints;
+    // Always return 0
+    return UA_STATUSCODE_GOOD;
 }
 
 int mbed_listen(UA_FD fd, int ignored) {

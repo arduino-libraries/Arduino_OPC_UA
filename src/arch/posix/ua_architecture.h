@@ -16,7 +16,7 @@ _UA_BEGIN_DECLS
 
 #define UA_IPV6 1
 #define UA_SOCKET uintptr_t //(Socket*)
-#define UA_INVALID_SOCKET -1
+#define UA_INVALID_SOCKET NULL
 #define UA_ERRNO errno
 #define UA_INTERRUPTED EINTR
 #define UA_AGAIN EAGAIN /* the same as wouldblock on nearly every system */
