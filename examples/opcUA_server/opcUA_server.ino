@@ -4,7 +4,9 @@
 extern "C"
 {
   int gethostname(char *str, size_t len) {
-    memcpy(str, "arduino", 7);
+    String ip = Ethernet.localIP().toString();
+    memset(str, 0, len);
+    memcpy(str, ip.c_str(), ip.length());
     return 0;
   }
 
