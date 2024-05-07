@@ -1,5 +1,6 @@
 #include "../eventloop_posix.h"
 #include "mbed.h"
+#include "mbed_tcp.h"
 
 UA_StatusCode
 UA_EventLoopPOSIX_setNonBlocking(UA_FD sockfd) {
@@ -14,7 +15,11 @@ UA_EventLoopPOSIX_setNoSigPipe(UA_FD sockfd) {
 
 UA_StatusCode
 UA_EventLoopPOSIX_setReusable(UA_FD sockfd) {
-    return UA_STATUSCODE_GOOD;
+    int optval = 1;
+    UA_setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT,
+                     (const char *)&optval, sizeof(optval));
+    return UA_setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR,
+                     (const char *)&optval, sizeof(optval));
 }
 
 UA_StatusCode
