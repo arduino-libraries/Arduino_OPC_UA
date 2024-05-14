@@ -59,6 +59,10 @@ extern "C"
 /* Create a server listening on port 4840 (default) */
 UA_Server * opc_ua_server = nullptr;
 
+size_t const OPC_UA_SERVER_THREAD_STACK_SIZE = 65536; /* 64 kB */
+static uint8_t alignas(uint32_t) OPC_UA_SERVER_THREAD_STACK[OPC_UA_SERVER_THREAD_STACK_SIZE];
+rtos::Thread opc_ua_server_thread(osPriorityNormal, OPC_UA_SERVER_THREAD_STACK_SIZE, OPC_UA_SERVER_THREAD_STACK);
+
 UA_Int32 myInteger = 42;
 
 REDIRECT_STDOUT_TO(Serial)
@@ -67,17 +71,17 @@ REDIRECT_STDOUT_TO(Serial)
  * LOCAL FUNCTIONS
  **************************************************************************************/
 
-void updater(UA_Server *server) {
-  while (1) {
-    delay(1000);
-    UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, "the.answer");
-    myInteger++;
-    UA_Variant myVar;
-    UA_Variant_init(&myVar);
-    UA_Variant_setScalar(&myVar, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
-    UA_Server_writeValue(server, myIntegerNodeId, myVar);
-  }
-}
+//void updater(UA_Server *server) {
+//  while (1) {
+//    delay(1000);
+//    UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, "the.answer");
+//    myInteger++;
+//    UA_Variant myVar;
+//    UA_Variant_init(&myVar);
+//    UA_Variant_setScalar(&myVar, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
+//    UA_Server_writeValue(server, myIntegerNodeId, myVar);
+//  }
+//}
 
 /**************************************************************************************
  * SETUP/LOOP
@@ -108,8 +112,8 @@ void setup()
   attr.historizing = true;
   UA_Variant_setScalar(&attr.value, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
 
-  rtos::Thread t;
-  t.start(mbed::callback(updater, opc_ua_server));
+//  rtos::Thread t;
+//  t.start(mbed::callback(updater, opc_ua_server));
 
   /* 2) Define where the node shall be added with which browsename */
   UA_NodeId newNodeId = UA_NODEID_STRING(1, "the.answer");
@@ -128,10 +132,30 @@ void setup()
                             attr,
                             NULL, NULL);
 
-  /* Run the server (until ctrl-c interrupt) */
-  UA_StatusCode status = UA_Server_runUntilInterrupt(opc_ua_server);
+  opc_ua_server_thread.start(
+    +[]()
+    {
+      /* Print some threading related message. */
+      char thd_info_msg[128] = {0};
+      snprintf(thd_info_msg,
+               sizeof(thd_info_msg),
+               "stack: size = %d | free = %d | used = %d | max = %d",
+               opc_ua_server_thread.stack_size(),
+               opc_ua_server_thread.free_stack(),
+               opc_ua_server_thread.used_stack(),
+               opc_ua_server_thread.max_stack());
+      Serial.println(thd_info_msg);
+
+      /* Run the server (until ctrl-c interrupt) */
+      UA_StatusCode const status = UA_Server_runUntilInterrupt(opc_ua_server);
+      Serial.println(status);
+    });
+
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop()
+{
+  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+  delay(500);
 }
