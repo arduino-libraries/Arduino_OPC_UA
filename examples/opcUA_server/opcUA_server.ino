@@ -130,9 +130,6 @@ void setup()
 
   /* Run the server (until ctrl-c interrupt) */
   UA_StatusCode status = UA_Server_runUntilInterrupt(opc_ua_server);
-
-  /* Clean up */
-  UA_Server_delete(opc_ua_server);
 }
 
 void loop() {
