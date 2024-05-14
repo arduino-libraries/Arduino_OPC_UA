@@ -117,9 +117,16 @@ UA_EventLoopPOSIX_pollFDs(UA_EventLoopPOSIX *el, UA_DateTime listenTimeout) {
         /* Event signaled for the fd? */
         short event = rfd->listenEvents;
 
-        UA_LOG_INFO(el->eventLoop.logger, UA_LOGCATEGORY_EVENTLOOP,
-                     "Processing event %u on fd %u", (unsigned)event,
-                     (unsigned)rfd->fd);
+        extern rtos::Thread opc_ua_server_thread;
+
+        UA_LOG_INFO(el->eventLoop.logger,
+                    UA_LOGCATEGORY_EVENTLOOP,
+                    "Processing event %u on fd %u (stack: size = %d, free = %d, used = %d)",
+                    (unsigned)event,
+                    (unsigned)rfd->fd,
+                    opc_ua_server_thread.stack_size(),
+                    opc_ua_server_thread.free_stack(),
+                    opc_ua_server_thread.used_stack());
 
         /* Call the EventSource callback */
         rfd->eventSourceCB(rfd->es, rfd, event);
