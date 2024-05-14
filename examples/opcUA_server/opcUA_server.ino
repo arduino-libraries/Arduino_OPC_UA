@@ -1,5 +1,13 @@
+/**************************************************************************************
+ * INCLUDE
+ **************************************************************************************/
+
 #include "PortentaEthernet.h"
 #include "Arduino_open62541.h"
+
+/**************************************************************************************
+ * GLUE CODE
+ **************************************************************************************/
 
 extern "C"
 {
@@ -44,9 +52,20 @@ extern "C"
   }
 }
 
-REDIRECT_STDOUT_TO(Serial)
+/**************************************************************************************
+ * GLOBAL VARIABLES
+ **************************************************************************************/
+
+/* Create a server listening on port 4840 (default) */
+UA_Server * opc_ua_server = nullptr;
 
 UA_Int32 myInteger = 42;
+
+REDIRECT_STDOUT_TO(Serial)
+
+/**************************************************************************************
+ * LOCAL FUNCTIONS
+ **************************************************************************************/
 
 void updater(UA_Server *server) {
   while (1) {
@@ -60,18 +79,24 @@ void updater(UA_Server *server) {
   }
 }
 
-void setup() {
+/**************************************************************************************
+ * SETUP/LOOP
+ **************************************************************************************/
 
+void setup()
+{
   Serial.begin(115200);
+  //auto const start = millis();
+  //for (; !Serial && (millis() - start) < 1000; ) { }
   while (!Serial) { }
 
+  /* Initialize Ethernet interface and print obtained IP to Serial. */
   Ethernet.begin();
   Serial.print("Our IP is ");
   Serial.println(Ethernet.localIP());
 
   /* Create a server listening on port 4840 (default) */
-  UA_Server *server = UA_Server_new();
-  //UA_Server *server = UA_Server_newFromFile(UA_STRING_ALLOC("config.json"));
+  opc_ua_server = UA_Server_new();
 
   /* Add a variable node to the server */
 
@@ -84,7 +109,7 @@ void setup() {
   UA_Variant_setScalar(&attr.value, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
 
   rtos::Thread t;
-  t.start(mbed::callback(updater, server));
+  t.start(mbed::callback(updater, opc_ua_server));
 
   /* 2) Define where the node shall be added with which browsename */
   UA_NodeId newNodeId = UA_NODEID_STRING(1, "the.answer");
@@ -94,15 +119,20 @@ void setup() {
   UA_QualifiedName browseName = UA_QUALIFIEDNAME(1, "the answer");
 
   /* 3) Add the node */
-  UA_Server_addVariableNode(server, newNodeId, parentNodeId,
-                            parentReferenceNodeId, browseName,
-                            variableType, attr, NULL, NULL);
+  UA_Server_addVariableNode(opc_ua_server,
+                            newNodeId,
+                            parentNodeId,
+                            parentReferenceNodeId,
+                            browseName,
+                            variableType,
+                            attr,
+                            NULL, NULL);
 
   /* Run the server (until ctrl-c interrupt) */
-  UA_StatusCode status = UA_Server_runUntilInterrupt(server);
+  UA_StatusCode status = UA_Server_runUntilInterrupt(opc_ua_server);
 
   /* Clean up */
-  UA_Server_delete(server);
+  UA_Server_delete(opc_ua_server);
 }
 
 void loop() {
