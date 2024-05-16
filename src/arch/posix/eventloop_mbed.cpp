@@ -85,6 +85,7 @@ UA_EventLoopPOSIX_deregisterFD(UA_EventLoopPOSIX *el, UA_RegisteredFD *rfd) {
 }
 
 rtos::EventFlags _events;
+#include "../../o1heap/o1heap.h"
 
 UA_StatusCode
 UA_EventLoopPOSIX_pollFDs(UA_EventLoopPOSIX *el, UA_DateTime listenTimeout) {
@@ -118,15 +119,19 @@ UA_EventLoopPOSIX_pollFDs(UA_EventLoopPOSIX *el, UA_DateTime listenTimeout) {
         short event = rfd->listenEvents;
 
         extern rtos::Thread opc_ua_server_thread;
+        extern O1HeapInstance * o1heap_ins;
 
         UA_LOG_INFO(el->eventLoop.logger,
                     UA_LOGCATEGORY_EVENTLOOP,
-                    "Processing event %u on fd %u (stack: size = %d, free = %d, used = %d)",
+                    "Processing event %u on fd %u (stack: size = %d, free = %d, used = %d) (heap: capacity = %d, allocated = %d, peak_allocated = %d)",
                     (unsigned)event,
                     (unsigned)rfd->fd,
                     opc_ua_server_thread.stack_size(),
                     opc_ua_server_thread.free_stack(),
-                    opc_ua_server_thread.used_stack());
+                    opc_ua_server_thread.used_stack(),
+                    o1heapGetDiagnostics(o1heap_ins).capacity,
+                    o1heapGetDiagnostics(o1heap_ins).allocated,
+                    o1heapGetDiagnostics(o1heap_ins).peak_allocated);
 
         /* Call the EventSource callback */
         rfd->eventSourceCB(rfd->es, rfd, event);

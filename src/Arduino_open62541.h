@@ -10,6 +10,7 @@
 #pragma once
 
 #include "open62541.h"
+#include "o1heap/o1heap.h"
 
 #if !defined(ARDUINO_OPTA)
 # error "This library does only support Arduino Opta"

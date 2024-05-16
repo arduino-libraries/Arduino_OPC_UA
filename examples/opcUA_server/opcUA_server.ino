@@ -56,12 +56,16 @@ extern "C"
  * GLOBAL VARIABLES
  **************************************************************************************/
 
-/* Create a server listening on port 4840 (default) */
 UA_Server * opc_ua_server = nullptr;
 
-size_t const OPC_UA_SERVER_THREAD_STACK_SIZE = 65536; /* 64 kB */
+static size_t const OPC_UA_SERVER_THREAD_STACK_SIZE = 65536*2; /* 64*2 kB */
 static uint8_t alignas(uint32_t) OPC_UA_SERVER_THREAD_STACK[OPC_UA_SERVER_THREAD_STACK_SIZE];
 rtos::Thread opc_ua_server_thread(osPriorityNormal, OPC_UA_SERVER_THREAD_STACK_SIZE, OPC_UA_SERVER_THREAD_STACK);
+
+static size_t const OPC_UA_SERVER_THREAD_HEAP_SIZE = 65536*2; /* 64*2 kB */
+template <size_t SIZE> struct alignas(O1HEAP_ALIGNMENT) OPC_UA_HEAP final : public std::array<uint8_t, SIZE> {};
+static OPC_UA_HEAP<OPC_UA_SERVER_THREAD_HEAP_SIZE> OPC_UA_SERVER_THREAD_HEAP;
+O1HeapInstance * o1heap_ins = nullptr;
 
 UA_Int32 myInteger = 42;
 
@@ -70,6 +74,61 @@ REDIRECT_STDOUT_TO(Serial)
 /**************************************************************************************
  * LOCAL FUNCTIONS
  **************************************************************************************/
+
+extern "C" void * o1heap_malloc(size_t size)
+{
+  if (!o1heapDoInvariantsHold(o1heap_ins))
+    Serial.println("malloc error");
+
+  void * new_ptr = o1heapAllocate(o1heap_ins, size);
+
+  char msg[64];
+  snprintf(msg, sizeof(msg), "malloc: %d (%X)", size, new_ptr);
+  Serial.println(msg);
+
+  return new_ptr;
+}
+
+extern "C" void o1heap_free(void * ptr)
+{
+  if (!o1heapDoInvariantsHold(o1heap_ins))
+    Serial.println("free error");
+
+  char msg[64];
+  snprintf(msg, sizeof(msg), "free: (%X)", ptr);
+  Serial.println(msg);
+
+  o1heapFree(o1heap_ins, ptr);
+}
+
+extern "C" void * o1heap_calloc(size_t nelem, size_t elsize)
+{
+  if (!o1heapDoInvariantsHold(o1heap_ins))
+    Serial.println("calloc error");
+
+  char msg[64];
+  snprintf(msg, sizeof(msg), "calloc: nelem = %d, elsize = %d", nelem, elsize);
+  Serial.println(msg);
+
+  void * ptr = o1heap_malloc(nelem * elsize);
+  memset(ptr, 0, nelem * elsize);
+  return ptr;
+}
+
+extern "C" void * o1heap_realloc(void * old_ptr, size_t size)
+{
+  if (!o1heapDoInvariantsHold(o1heap_ins))
+    Serial.println("realloc error");
+
+  char msg[64];
+  snprintf(msg, sizeof(msg), "realloc: old_ptr = %X, size = %d", old_ptr, size);
+  Serial.println(msg);
+
+  void * new_ptr = o1heap_malloc(size);
+  memcpy(new_ptr, old_ptr, size);
+  o1heap_free(old_ptr);
+  return new_ptr;
+}
 
 //void updater(UA_Server *server) {
 //  while (1) {
@@ -99,42 +158,59 @@ void setup()
   Serial.print("Our IP is ");
   Serial.println(Ethernet.localIP());
 
-  /* Create a server listening on port 4840 (default) */
-  opc_ua_server = UA_Server_new();
+  /* Initialize heap memory. */
+  o1heap_ins = o1heapInit(OPC_UA_SERVER_THREAD_HEAP.data(), OPC_UA_SERVER_THREAD_HEAP.size());
+  if (o1heap_ins == nullptr) {
+    Serial.println("o1heap initialisation failed.");
+    for (;;) { }
+  }
+  char o1heap_info[128] = {0};
+  snprintf(o1heap_info,
+           sizeof(o1heap_info),
+           "o1Heap capacity: %d | allocated: %d | peak_allocated: %d",
+           o1heapGetDiagnostics(o1heap_ins).capacity,
+           o1heapGetDiagnostics(o1heap_ins).allocated,
+           o1heapGetDiagnostics(o1heap_ins).peak_allocated);
+  Serial.println(o1heap_info);
 
-  /* Add a variable node to the server */
-
-  /* 1) Define the variable attributes */
-  UA_VariableAttributes attr = UA_VariableAttributes_default;
-  attr.displayName = UA_LOCALIZEDTEXT("en-US", "the answer");
-  attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE | UA_ACCESSLEVELMASK_HISTORYREAD;
-  /* We also set this node to historizing, so the server internals also know from it. */
-  attr.historizing = true;
-  UA_Variant_setScalar(&attr.value, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
-
-//  rtos::Thread t;
-//  t.start(mbed::callback(updater, opc_ua_server));
-
-  /* 2) Define where the node shall be added with which browsename */
-  UA_NodeId newNodeId = UA_NODEID_STRING(1, "the.answer");
-  UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
-  UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
-  UA_NodeId variableType = UA_NODEID_NULL; /* take the default variable type */
-  UA_QualifiedName browseName = UA_QUALIFIEDNAME(1, "the answer");
-
-  /* 3) Add the node */
-  UA_Server_addVariableNode(opc_ua_server,
-                            newNodeId,
-                            parentNodeId,
-                            parentReferenceNodeId,
-                            browseName,
-                            variableType,
-                            attr,
-                            NULL, NULL);
+  UA_mallocSingleton  = o1heap_malloc;
+  UA_freeSingleton    = o1heap_free;
+  UA_callocSingleton  = o1heap_calloc;
+  UA_reallocSingleton = o1heap_realloc;
 
   opc_ua_server_thread.start(
     +[]()
     {
+      /* Create a server listening on port 4840 (default) */
+      opc_ua_server = UA_Server_new();
+
+      /* Add a variable node to the server */
+
+      /* 1) Define the variable attributes */
+      UA_VariableAttributes attr = UA_VariableAttributes_default;
+      attr.displayName = UA_LOCALIZEDTEXT("en-US", "the answer");
+      attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE | UA_ACCESSLEVELMASK_HISTORYREAD;
+      /* We also set this node to historizing, so the server internals also know from it. */
+      attr.historizing = true;
+      UA_Variant_setScalar(&attr.value, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
+
+      /* 2) Define where the node shall be added with which browsename */
+      UA_NodeId newNodeId = UA_NODEID_STRING(1, "the.answer");
+      UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
+      UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
+      UA_NodeId variableType = UA_NODEID_NULL; /* take the default variable type */
+      UA_QualifiedName browseName = UA_QUALIFIEDNAME(1, "the answer");
+
+      /* 3) Add the node */
+      UA_Server_addVariableNode(opc_ua_server,
+                                newNodeId,
+                                parentNodeId,
+                                parentReferenceNodeId,
+                                browseName,
+                                variableType,
+                                attr,
+                                NULL, NULL);
+
       /* Print some threading related message. */
       char thd_info_msg[128] = {0};
       snprintf(thd_info_msg,
