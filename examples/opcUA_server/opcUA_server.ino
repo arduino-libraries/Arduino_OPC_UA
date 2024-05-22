@@ -206,7 +206,7 @@ void setup()
                    UA_QUALIFIEDNAME(1, "the answer"),
                    the_answer);
 
-      bool const output_0_active = false;
+      bool const relay_1_active = false;
       add_variable(opc_ua_server,
                    UA_LOCALIZEDTEXT("en-US", "OUTPUT 1"),
                    UA_LOCALIZEDTEXT("en-US","Control relay \"OUTPUT 1\""),
@@ -215,7 +215,7 @@ void setup()
                    UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
                    UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
                    UA_QUALIFIEDNAME(1, "Relay OUTPUT 1"),
-                   output_0_active);
+                   relay_1_active);
 
       /* Print some threading related message. */
       char thd_info_msg[128] = {0};
