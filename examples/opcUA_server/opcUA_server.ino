@@ -208,9 +208,11 @@ void setup()
                         the_answer);
       if (UA_StatusCode_isBad(rc))
       {
-        char msg[32] = {0};
-        snprintf(msg, sizeof(msg), "add_variable(..., the_answer) failed with %s", UA_StatusCode_name(rc));
-        Serial.println(msg);
+        UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
+        UA_LOG_ERROR(config->logging,
+                     UA_LOGCATEGORY_SERVER,
+                     "add_variable(..., the_answer) failed with %s",
+                     UA_StatusCode_name(rc));
       }
 
       bool const relay_1_active = false;
@@ -225,9 +227,11 @@ void setup()
                         relay_1_active);
       if (UA_StatusCode_isBad(rc))
       {
-        char msg[32] = {0};
-        snprintf(msg, sizeof(msg), "add_variable(..., relay_1_active) failed with %s", UA_StatusCode_name(rc));
-        Serial.println(msg);
+        UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
+        UA_LOG_ERROR(config->logging,
+                     UA_LOGCATEGORY_SERVER,
+                     "add_variable(..., relay_1_active) failed with %s",
+                     UA_StatusCode_name(rc));
       }
 
       /* Print some threading related message. */
