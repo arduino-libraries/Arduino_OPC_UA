@@ -2,8 +2,8 @@
  * visit http://open62541.org/ for information about this software
  * Git-Revision: v1.4.0-dirty
  */
-
 /*
+
  * Copyright (C) 2014-2021 the contributors as stated in the AUTHORS file
  *
  * This file is part of open62541. open62541 is free software: you can

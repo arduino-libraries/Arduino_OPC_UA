@@ -194,28 +194,41 @@ void setup()
       /* Create a server listening on port 4840 (default) */
       opc_ua_server = UA_Server_new();
 
+      UA_StatusCode rc = UA_STATUSCODE_GOOD;
       /* Add a variable node to the server */
       uint32_t const the_answer = 42;
-      add_variable(opc_ua_server,
-                   UA_LOCALIZEDTEXT("en-US", "the answer"),
-                   UA_LOCALIZEDTEXT("en-US","42 is the answer to everything"),
-                   UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE,
-                   UA_NODEID_STRING(1, "the.answer"),
-                   UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-                   UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
-                   UA_QUALIFIEDNAME(1, "the answer"),
-                   the_answer);
+      rc = add_variable(opc_ua_server,
+                        UA_LOCALIZEDTEXT("en-US", "the answer"),
+                        UA_LOCALIZEDTEXT("en-US","42 is the answer to everything"),
+                        UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE,
+                        UA_NODEID_STRING(1, "the.answer"),
+                        UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
+                        UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
+                        UA_QUALIFIEDNAME(1, "the answer"),
+                        the_answer);
+      if (UA_StatusCode_isBad(rc))
+      {
+        char msg[32] = {0};
+        snprintf(msg, sizeof(msg), "add_variable(..., the_answer) failed with %s", UA_StatusCode_name(rc));
+        Serial.println(msg);
+      }
 
       bool const relay_1_active = false;
-      add_variable(opc_ua_server,
-                   UA_LOCALIZEDTEXT("en-US", "OUTPUT 1"),
-                   UA_LOCALIZEDTEXT("en-US","Control relay \"OUTPUT 1\""),
-                   UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE,
-                   UA_NODEID_STRING(1, "relay.output1"),
-                   UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-                   UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
-                   UA_QUALIFIEDNAME(1, "Relay OUTPUT 1"),
-                   relay_1_active);
+      rc = add_variable(opc_ua_server,
+                        UA_LOCALIZEDTEXT("en-US", "OUTPUT 1"),
+                        UA_LOCALIZEDTEXT("en-US","Control relay \"OUTPUT 1\""),
+                        UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE,
+                        UA_NODEID_STRING(1, "relay.output1"),
+                        UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
+                        UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
+                        UA_QUALIFIEDNAME(1, "Relay OUTPUT 1"),
+                        relay_1_active);
+      if (UA_StatusCode_isBad(rc))
+      {
+        char msg[32] = {0};
+        snprintf(msg, sizeof(msg), "add_variable(..., relay_1_active) failed with %s", UA_StatusCode_name(rc));
+        Serial.println(msg);
+      }
 
       /* Print some threading related message. */
       char thd_info_msg[128] = {0};

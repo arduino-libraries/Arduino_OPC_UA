@@ -38,15 +38,15 @@ void UA_Variant_setScalar<uint32_t>(UA_VariableAttributes * attr, uint32_t const
 }
 
 template <typename T>
-void add_variable(UA_Server * server,
-                  UA_LocalizedText const displayName,
-                  UA_LocalizedText const description,
-                  UA_Byte const accessLevel,
-                  UA_NodeId const nodeId,
-                  UA_NodeId const parentNodeId,
-                  UA_NodeId const parentReferenceNodeId,
-                  UA_QualifiedName const browseName,
-                  T const value)
+UA_StatusCode add_variable(UA_Server * server,
+                           UA_LocalizedText const displayName,
+                           UA_LocalizedText const description,
+                           UA_Byte const accessLevel,
+                           UA_NodeId const nodeId,
+                           UA_NodeId const parentNodeId,
+                           UA_NodeId const parentReferenceNodeId,
+                           UA_QualifiedName const browseName,
+                           T const value)
 {
   /* 1) Define the variable attributes */
   UA_VariableAttributes attr = UA_VariableAttributes_default;
@@ -57,13 +57,16 @@ void add_variable(UA_Server * server,
   attr.accessLevel = accessLevel;
 
   /* 2) Define where the node shall be added with which browsename */
-  UA_Server_addVariableNode(server,
-                            nodeId,
-                            parentNodeId,
-                            parentReferenceNodeId,
-                            browseName,
-                            UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
-                            attr,
-                            NULL,
-                            NULL);
+  UA_StatusCode const rc = UA_Server_addVariableNode(
+    server,
+    nodeId,
+    parentNodeId,
+    parentReferenceNodeId,
+    browseName,
+    UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
+    attr,
+    NULL,
+    NULL);
+
+  return rc;
 }
