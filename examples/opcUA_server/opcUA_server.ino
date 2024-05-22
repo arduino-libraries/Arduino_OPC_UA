@@ -62,7 +62,7 @@ extern "C"
 
 UA_Server * opc_ua_server = nullptr;
 
-static size_t const OPC_UA_SERVER_THREAD_STACK_SIZE = 65536; /* 64 kB */
+static size_t const OPC_UA_SERVER_THREAD_STACK_SIZE = 32768; /* 32 kB */
 static uint8_t alignas(uint32_t) OPC_UA_SERVER_THREAD_STACK[OPC_UA_SERVER_THREAD_STACK_SIZE];
 rtos::Thread opc_ua_server_thread(osPriorityNormal, OPC_UA_SERVER_THREAD_STACK_SIZE, OPC_UA_SERVER_THREAD_STACK);
 
