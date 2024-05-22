@@ -11,6 +11,7 @@
 
 #include "open62541.h"
 #include "o1heap/o1heap.h"
+#include "add_variable.hpp"
 
 #if !defined(ARDUINO_OPTA)
 # error "This library does only support Arduino Opta"

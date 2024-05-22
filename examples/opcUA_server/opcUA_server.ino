@@ -71,8 +71,6 @@ template <size_t SIZE> struct alignas(O1HEAP_ALIGNMENT) OPC_UA_HEAP final : publ
 static OPC_UA_HEAP<OPC_UA_SERVER_THREAD_HEAP_SIZE> OPC_UA_SERVER_THREAD_HEAP;
 O1HeapInstance * o1heap_ins = nullptr;
 
-UA_Int32 myInteger = 42;
-
 REDIRECT_STDOUT_TO(Serial)
 
 /**************************************************************************************
@@ -197,31 +195,14 @@ void setup()
       opc_ua_server = UA_Server_new();
 
       /* Add a variable node to the server */
-
-      /* 1) Define the variable attributes */
-      UA_VariableAttributes attr = UA_VariableAttributes_default;
-      attr.displayName = UA_LOCALIZEDTEXT("en-US", "the answer");
-      attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE | UA_ACCESSLEVELMASK_HISTORYREAD;
-      /* We also set this node to historizing, so the server internals also know from it. */
-      attr.historizing = true;
-      UA_Variant_setScalar(&attr.value, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
-
-      /* 2) Define where the node shall be added with which browsename */
-      UA_NodeId newNodeId = UA_NODEID_STRING(1, "the.answer");
-      UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
-      UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
-      UA_NodeId variableType = UA_NODEID_NULL; /* take the default variable type */
-      UA_QualifiedName browseName = UA_QUALIFIEDNAME(1, "the answer");
-
-      /* 3) Add the node */
-      UA_Server_addVariableNode(opc_ua_server,
-                                newNodeId,
-                                parentNodeId,
-                                parentReferenceNodeId,
-                                browseName,
-                                variableType,
-                                attr,
-                                NULL, NULL);
+      uint32_t const the_answer = 42;
+      add_variable(opc_ua_server,
+                   UA_LOCALIZEDTEXT("en-US", "the answer"),
+                   UA_LOCALIZEDTEXT("en-US","42 is the answer to everything"),
+                   UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE,
+                   UA_NODEID_STRING(1, "the.answer"),
+                   UA_QUALIFIEDNAME(1, "the answer"),
+                   the_answer);
 
       /* Print some threading related message. */
       char thd_info_msg[128] = {0};
