@@ -19,6 +19,8 @@ void add_variable(UA_Server * server,
                   UA_LocalizedText const description,
                   UA_Byte const accessLevel,
                   UA_NodeId const nodeId,
+                  UA_NodeId const parentNodeId,
+                  UA_NodeId const parentReferenceNodeId,
                   UA_QualifiedName const browseName,
                   T const value);
 

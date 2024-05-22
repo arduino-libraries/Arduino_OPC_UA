@@ -15,13 +15,20 @@ template <typename T>
 UA_DataType to_UA_DataType() { }
 
 template <>
-UA_DataType to_UA_DataType<uint32_t>()
-{
-  return UA_TYPES[UA_TYPES_INT32];
-}
+UA_DataType to_UA_DataType<bool>() { return UA_TYPES[UA_TYPES_BOOLEAN]; }
+
+template <>
+UA_DataType to_UA_DataType<uint32_t>() { return UA_TYPES[UA_TYPES_INT32]; }
 
 template <typename T>
 void UA_Variant_setScalar(UA_VariableAttributes * attr, T const value);
+
+template <>
+void UA_Variant_setScalar<bool>(UA_VariableAttributes * attr, bool const value)
+{
+  UA_Boolean myBoolean = value;
+  UA_Variant_setScalar(&(attr->value), &myBoolean, &UA_TYPES[UA_TYPES_BOOLEAN]);
+}
 
 template <>
 void UA_Variant_setScalar<uint32_t>(UA_VariableAttributes * attr, uint32_t const value)
@@ -36,6 +43,8 @@ void add_variable(UA_Server * server,
                   UA_LocalizedText const description,
                   UA_Byte const accessLevel,
                   UA_NodeId const nodeId,
+                  UA_NodeId const parentNodeId,
+                  UA_NodeId const parentReferenceNodeId,
                   UA_QualifiedName const browseName,
                   T const value)
 {
@@ -48,16 +57,12 @@ void add_variable(UA_Server * server,
   attr.accessLevel = accessLevel;
 
   /* 2) Define where the node shall be added with which browsename */
-  UA_NodeId parentNodeId          = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
-  UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
-  UA_NodeId variableType          = UA_NODEID_NULL; /* take the default variable type */
-
   UA_Server_addVariableNode(server,
                             nodeId,
                             parentNodeId,
                             parentReferenceNodeId,
                             browseName,
-                            variableType,
+                            UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
                             attr,
                             NULL,
                             NULL);
