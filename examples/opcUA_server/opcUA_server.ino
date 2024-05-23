@@ -188,7 +188,7 @@ void setup()
       UA_LOG_INFO(config->logging,
                   UA_LOGCATEGORY_SERVER,
                   "Arduino Opta IP: %s",
-                  Ethernet.localIP().toString());
+                  Ethernet.localIP().toString().c_str());
 
       /* Log some data concerning heap allocation. */
       UA_LOG_INFO(config->logging,
