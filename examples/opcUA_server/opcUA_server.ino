@@ -165,8 +165,6 @@ void setup()
 
   /* Initialize Ethernet interface and print obtained IP to Serial. */
   Ethernet.begin();
-  Serial.print("Our IP is ");
-  Serial.println(Ethernet.localIP());
 
   /* Initialize heap memory. */
   o1heap_ins = o1heapInit(OPC_UA_SERVER_THREAD_HEAP.data(), OPC_UA_SERVER_THREAD_HEAP.size());
@@ -174,15 +172,6 @@ void setup()
     Serial.println("o1heap initialisation failed.");
     for (;;) { }
   }
-  char o1heap_info[128] = {0};
-  snprintf(o1heap_info,
-           sizeof(o1heap_info),
-           "o1Heap capacity: %d | allocated: %d | peak_allocated: %d",
-           o1heapGetDiagnostics(o1heap_ins).capacity,
-           o1heapGetDiagnostics(o1heap_ins).allocated,
-           o1heapGetDiagnostics(o1heap_ins).peak_allocated);
-  Serial.println(o1heap_info);
-
   UA_mallocSingleton  = o1heap_malloc;
   UA_freeSingleton    = o1heap_free;
   UA_callocSingleton  = o1heap_calloc;
@@ -193,6 +182,21 @@ void setup()
     {
       /* Create a server listening on port 4840 (default) */
       opc_ua_server = UA_Server_new();
+      UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
+
+      /* Printing OPC/UA server IP and port. */
+      UA_LOG_INFO(config->logging,
+                  UA_LOGCATEGORY_SERVER,
+                  "Arduino Opta IP: %s",
+                  Ethernet.localIP().toString());
+
+      /* Log some data concerning heap allocation. */
+      UA_LOG_INFO(config->logging,
+                  UA_LOGCATEGORY_SERVER,
+                  "o1Heap capacity: %d | allocated: %d | peak_allocated: %d",
+                  o1heapGetDiagnostics(o1heap_ins).capacity,
+                  o1heapGetDiagnostics(o1heap_ins).allocated,
+                  o1heapGetDiagnostics(o1heap_ins).peak_allocated);
 
       UA_StatusCode rc = UA_STATUSCODE_GOOD;
       /* Add a variable node to the server */
@@ -215,43 +219,24 @@ void setup()
                      UA_StatusCode_name(rc));
       }
 
-      bool const relay_1_active = false;
-      rc = add_variable(opc_ua_server,
-                        UA_LOCALIZEDTEXT("en-US", "OUTPUT 1"),
-                        UA_LOCALIZEDTEXT("en-US","Control relay \"OUTPUT 1\""),
-                        UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE,
-                        UA_NODEID_STRING(1, "relay.output1"),
-                        UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-                        UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
-                        UA_QUALIFIEDNAME(1, "Relay OUTPUT 1"),
-                        relay_1_active);
+      rc = opc_ua_define_relay_1(opc_ua_server);
       if (UA_StatusCode_isBad(rc))
       {
         UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
         UA_LOG_ERROR(config->logging,
                      UA_LOGCATEGORY_SERVER,
-                     "add_variable(..., relay_1_active) failed with %s",
+                     "opc_ua_define_relay_1(...) failed with %s",
                      UA_StatusCode_name(rc));
       }
 
-      manuallyDefinePump(opc_ua_server);
-      defineObjectTypes(opc_ua_server);
-      addPumpObjectInstance(opc_ua_server, "pump2");
-      addPumpObjectInstance(opc_ua_server, "pump3");
-      addPumpTypeConstructor(opc_ua_server);
-      addPumpObjectInstance(opc_ua_server, "pump4");
-      addPumpObjectInstance(opc_ua_server, "pump5");
-
       /* Print some threading related message. */
-      char thd_info_msg[128] = {0};
-      snprintf(thd_info_msg,
-               sizeof(thd_info_msg),
-               "stack: size = %d | free = %d | used = %d | max = %d",
-               opc_ua_server_thread.stack_size(),
-               opc_ua_server_thread.free_stack(),
-               opc_ua_server_thread.used_stack(),
-               opc_ua_server_thread.max_stack());
-      Serial.println(thd_info_msg);
+      UA_LOG_INFO(config->logging,
+                  UA_LOGCATEGORY_SERVER,
+                  "stack: size = %d | free = %d | used = %d | max = %d",
+                  opc_ua_server_thread.stack_size(),
+                  opc_ua_server_thread.free_stack(),
+                  opc_ua_server_thread.used_stack(),
+                  opc_ua_server_thread.max_stack());
 
       /* Run the server (until ctrl-c interrupt) */
       UA_StatusCode const status = UA_Server_runUntilInterrupt(opc_ua_server);
