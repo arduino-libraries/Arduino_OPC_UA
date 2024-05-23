@@ -164,12 +164,15 @@ void setup()
   while (!Serial) { }
 
   /* Initialize Ethernet interface and print obtained IP to Serial. */
-  Ethernet.begin();
+  if (!Ethernet.begin()) {
+    Serial.println("\"Ethernet.begin()\" failed.");
+    for (;;) { }
+  }
 
   /* Initialize heap memory. */
   o1heap_ins = o1heapInit(OPC_UA_SERVER_THREAD_HEAP.data(), OPC_UA_SERVER_THREAD_HEAP.size());
   if (o1heap_ins == nullptr) {
-    Serial.println("o1heap initialisation failed.");
+    Serial.println("\"o1heapInit\" failed.");
     for (;;) { }
   }
   UA_mallocSingleton  = o1heap_malloc;
@@ -193,7 +196,7 @@ void setup()
       /* Log some data concerning heap allocation. */
       UA_LOG_INFO(config->logging,
                   UA_LOGCATEGORY_SERVER,
-                  "o1Heap capacity: %d | allocated: %d | peak_allocated: %d",
+                  "o1heap: capacity: %d | allocated: %d | peak_allocated: %d",
                   o1heapGetDiagnostics(o1heap_ins).capacity,
                   o1heapGetDiagnostics(o1heap_ins).allocated,
                   o1heapGetDiagnostics(o1heap_ins).peak_allocated);
