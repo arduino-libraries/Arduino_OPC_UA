@@ -193,14 +193,6 @@ void setup()
                   "Arduino Opta IP: %s",
                   Ethernet.localIP().toString().c_str());
 
-      /* Log some data concerning heap allocation. */
-      UA_LOG_INFO(config->logging,
-                  UA_LOGCATEGORY_SERVER,
-                  "o1heap: capacity: %d | allocated: %d | peak_allocated: %d",
-                  o1heapGetDiagnostics(o1heap_ins).capacity,
-                  o1heapGetDiagnostics(o1heap_ins).allocated,
-                  o1heapGetDiagnostics(o1heap_ins).peak_allocated);
-
       UA_StatusCode rc = UA_STATUSCODE_GOOD;
       /* Add a variable node to the server */
       uint32_t const the_answer = 42;
@@ -240,6 +232,14 @@ void setup()
                   opc_ua_server_thread.free_stack(),
                   opc_ua_server_thread.used_stack(),
                   opc_ua_server_thread.max_stack());
+
+      /* Log some data concerning heap allocation. */
+      UA_LOG_INFO(config->logging,
+                  UA_LOGCATEGORY_SERVER,
+                  "o1heap: capacity: %d | allocated: %d | peak_allocated: %d",
+                  o1heapGetDiagnostics(o1heap_ins).capacity,
+                  o1heapGetDiagnostics(o1heap_ins).allocated,
+                  o1heapGetDiagnostics(o1heap_ins).peak_allocated);
 
       /* Run the server (until ctrl-c interrupt) */
       UA_StatusCode const status = UA_Server_runUntilInterrupt(opc_ua_server);
