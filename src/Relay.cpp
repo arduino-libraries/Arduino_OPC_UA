@@ -113,14 +113,14 @@ UA_StatusCode opc_ua_define_relay_1(UA_Server * server)
   }
 
   UA_VariableAttributes rpmAttr = UA_VariableAttributes_default;
-  UA_Double rpm = 50.0;
-  UA_Variant_setScalar(&rpmAttr.value, &rpm, &UA_TYPES[UA_TYPES_DOUBLE]);
-  rpmAttr.displayName = UA_LOCALIZEDTEXT("en-US", "MotorRPM");
+  UA_Boolean relay_open = true;
+  UA_Variant_setScalar(&rpmAttr.value, &relay_open, &UA_TYPES[UA_TYPES_BOOLEAN]);
+  rpmAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Relay Open");
   rc = UA_Server_addVariableNode(server,
                                  UA_NODEID_NULL,
                                  relayId,
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
-                                 UA_QUALIFIEDNAME(1, "MotorRPMs"),
+                                 UA_QUALIFIEDNAME(1, "Relay Open"),
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
                                  rpmAttr,
                                  NULL,
@@ -130,7 +130,7 @@ UA_StatusCode opc_ua_define_relay_1(UA_Server * server)
     UA_ServerConfig * config = UA_Server_getConfig(server);
     UA_LOG_ERROR(config->logging,
                  UA_LOGCATEGORY_SERVER,
-                 "UA_Server_addVariableNode(..., \"MotorRPMs\", ...) failed with %s",
+                 "UA_Server_addVariableNode(..., \"Relay Open\", ...) failed with %s",
                  UA_StatusCode_name(rc));
     return rc;
   }
