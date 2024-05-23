@@ -234,6 +234,14 @@ void setup()
                      UA_StatusCode_name(rc));
       }
 
+      manuallyDefinePump(opc_ua_server);
+      defineObjectTypes(opc_ua_server);
+      addPumpObjectInstance(opc_ua_server, "pump2");
+      addPumpObjectInstance(opc_ua_server, "pump3");
+      addPumpTypeConstructor(opc_ua_server);
+      addPumpObjectInstance(opc_ua_server, "pump4");
+      addPumpObjectInstance(opc_ua_server, "pump5");
+
       /* Print some threading related message. */
       char thd_info_msg[128] = {0};
       snprintf(thd_info_msg,
