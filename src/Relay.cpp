@@ -16,36 +16,21 @@
 #include <Arduino.h>
 
 /**************************************************************************************
- * INTERNAL FUNCTION DECLARATION
- **************************************************************************************/
-
-static UA_StatusCode
-relay_1_close_MethodCallback(UA_Server *server,
-                             const UA_NodeId *sessionId, void *sessionHandle,
-                             const UA_NodeId *methodId, void *methodContext,
-                             const UA_NodeId *objectId, void *objectContext,
-                             size_t inputSize, const UA_Variant *input,
-                             size_t outputSize, UA_Variant *output);
-
-static UA_StatusCode
-relay_1_open_MethodCallback(UA_Server *server,
-                            const UA_NodeId *sessionId, void *sessionHandle,
-                            const UA_NodeId *methodId, void *methodContext,
-                            const UA_NodeId *objectId, void *objectContext,
-                            size_t inputSize, const UA_Variant *input,
-                            size_t outputSize, UA_Variant *output);
-
-/**************************************************************************************
  * FUNCTION DEFINITION
  **************************************************************************************/
 
-UA_StatusCode opc_ua_define_relay_1(UA_Server * server)
+UA_StatusCode opc_ua_define_relay(UA_Server * server,
+                                  unsigned int const relay_num,
+                                  UA_MethodCallback relay_close_func,
+                                  UA_MethodCallback relay_open_func)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
   UA_NodeId relayId; /* get the nodeid assigned by the server */
 
   UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
-  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Relay 1");
+  char object_node_relay_name[16] = {0};
+  snprintf(object_node_relay_name, sizeof(object_node_relay_name), "Relay %d", relay_num);
+  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", object_node_relay_name);
   rc = UA_Server_addObjectNode(server,
                                UA_NODEID_NULL,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
@@ -167,14 +152,15 @@ UA_StatusCode opc_ua_define_relay_1(UA_Server * server)
                                relayId,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                UA_QUALIFIEDNAME(1, "close"),
-                               relay_close_attr, &relay_1_close_MethodCallback,
+                               relay_close_attr, relay_close_func,
                                0, NULL, 0, NULL, NULL, NULL);
   if (UA_StatusCode_isBad(rc))
   {
     UA_ServerConfig * config = UA_Server_getConfig(server);
     UA_LOG_ERROR(config->logging,
                  UA_LOGCATEGORY_SERVER,
-                 "UA_Server_addMethodNode(..., \"relay_1_close_MethodCallback\", ...) failed with %s",
+                 "UA_Server_addMethodNode(..., \"relay_%d_close_func\", ...) failed with %s",
+                 relay_num,
                  UA_StatusCode_name(rc));
     return rc;
   }
@@ -189,14 +175,15 @@ UA_StatusCode opc_ua_define_relay_1(UA_Server * server)
                                relayId,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                UA_QUALIFIEDNAME(1, "open"),
-                               relay_open_attr, &relay_1_open_MethodCallback,
+                               relay_open_attr, relay_open_func,
                                0, NULL, 0, NULL, NULL, NULL);
   if (UA_StatusCode_isBad(rc))
   {
     UA_ServerConfig * config = UA_Server_getConfig(server);
     UA_LOG_ERROR(config->logging,
                  UA_LOGCATEGORY_SERVER,
-                 "UA_Server_addMethodNode(..., \"relay_1_open_MethodCallback\", ...) failed with %s",
+                 "UA_Server_addMethodNode(..., \"relay_%d_open_MethodCallback\", ...) failed with %s",
+                 relay_num,
                  UA_StatusCode_name(rc));
     return rc;
   }
@@ -208,7 +195,7 @@ UA_StatusCode opc_ua_define_relay_1(UA_Server * server)
  * INTERNAL FUNCTION DEFINITION
  **************************************************************************************/
 
-static UA_StatusCode
+UA_StatusCode
 relay_1_close_MethodCallback(UA_Server *server,
                              const UA_NodeId *sessionId, void *sessionHandle,
                              const UA_NodeId *methodId, void *methodContext,
@@ -224,7 +211,7 @@ relay_1_close_MethodCallback(UA_Server *server,
   return UA_STATUSCODE_GOOD;
 }
 
-static UA_StatusCode
+UA_StatusCode
 relay_1_open_MethodCallback(UA_Server *server,
                             const UA_NodeId *sessionId, void *sessionHandle,
                             const UA_NodeId *methodId, void *methodContext,
@@ -237,5 +224,101 @@ relay_1_open_MethodCallback(UA_Server *server,
   digitalWrite(LED_D0, LOW);
   /* Write some debug output. */
   UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"relay_1_open_MethodCallback\" was called");
+  return UA_STATUSCODE_GOOD;
+}
+
+UA_StatusCode
+relay_2_close_MethodCallback(UA_Server *server,
+                             const UA_NodeId *sessionId, void *sessionHandle,
+                             const UA_NodeId *methodId, void *methodContext,
+                             const UA_NodeId *objectId, void *objectContext,
+                             size_t inputSize, const UA_Variant *input,
+                             size_t outputSize, UA_Variant *output)
+{
+  /* Close the default-open switch. */
+  digitalWrite(RELAY2, HIGH);
+  digitalWrite(LED_D1, HIGH);
+  /* Write some debug output. */
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"relay_2_close_MethodCallback\" was called");
+  return UA_STATUSCODE_GOOD;
+}
+
+UA_StatusCode
+relay_2_open_MethodCallback(UA_Server *server,
+                            const UA_NodeId *sessionId, void *sessionHandle,
+                            const UA_NodeId *methodId, void *methodContext,
+                            const UA_NodeId *objectId, void *objectContext,
+                            size_t inputSize, const UA_Variant *input,
+                            size_t outputSize, UA_Variant *output)
+{
+  /* Close the default-open switch. */
+  digitalWrite(RELAY2, LOW);
+  digitalWrite(LED_D1, LOW);
+  /* Write some debug output. */
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"relay_2_open_MethodCallback\" was called");
+  return UA_STATUSCODE_GOOD;
+}
+
+UA_StatusCode
+relay_3_close_MethodCallback(UA_Server *server,
+                             const UA_NodeId *sessionId, void *sessionHandle,
+                             const UA_NodeId *methodId, void *methodContext,
+                             const UA_NodeId *objectId, void *objectContext,
+                             size_t inputSize, const UA_Variant *input,
+                             size_t outputSize, UA_Variant *output)
+{
+  /* Close the default-open switch. */
+  digitalWrite(RELAY3, HIGH);
+  digitalWrite(LED_D2, HIGH);
+  /* Write some debug output. */
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"relay_3_close_MethodCallback\" was called");
+  return UA_STATUSCODE_GOOD;
+}
+
+UA_StatusCode
+relay_3_open_MethodCallback(UA_Server *server,
+                            const UA_NodeId *sessionId, void *sessionHandle,
+                            const UA_NodeId *methodId, void *methodContext,
+                            const UA_NodeId *objectId, void *objectContext,
+                            size_t inputSize, const UA_Variant *input,
+                            size_t outputSize, UA_Variant *output)
+{
+  /* Close the default-open switch. */
+  digitalWrite(RELAY3, LOW);
+  digitalWrite(LED_D2, LOW);
+  /* Write some debug output. */
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"relay_3_open_MethodCallback\" was called");
+  return UA_STATUSCODE_GOOD;
+}
+
+UA_StatusCode
+relay_4_close_MethodCallback(UA_Server *server,
+                             const UA_NodeId *sessionId, void *sessionHandle,
+                             const UA_NodeId *methodId, void *methodContext,
+                             const UA_NodeId *objectId, void *objectContext,
+                             size_t inputSize, const UA_Variant *input,
+                             size_t outputSize, UA_Variant *output)
+{
+  /* Close the default-open switch. */
+  digitalWrite(RELAY4, HIGH);
+  digitalWrite(LED_D3, HIGH);
+  /* Write some debug output. */
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"relay_4_close_MethodCallback\" was called");
+  return UA_STATUSCODE_GOOD;
+}
+
+UA_StatusCode
+relay_4_open_MethodCallback(UA_Server *server,
+                            const UA_NodeId *sessionId, void *sessionHandle,
+                            const UA_NodeId *methodId, void *methodContext,
+                            const UA_NodeId *objectId, void *objectContext,
+                            size_t inputSize, const UA_Variant *input,
+                            size_t outputSize, UA_Variant *output)
+{
+  /* Close the default-open switch. */
+  digitalWrite(RELAY4, LOW);
+  digitalWrite(LED_D3, LOW);
+  /* Write some debug output. */
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"relay_4_open_MethodCallback\" was called");
   return UA_STATUSCODE_GOOD;
 }

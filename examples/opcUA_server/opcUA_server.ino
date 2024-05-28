@@ -189,14 +189,41 @@ void setup()
       UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
       /* Define Arduino Opta's relays to be accessed via OPC/UA. */
-      rc = opc_ua_define_relay_1(opc_ua_server);
-      if (UA_StatusCode_isBad(rc))
+      unsigned int const ARDUINO_OPTA_RELAY_NUM_RELAYS = 4;
+
+      UA_MethodCallback const RELAY_CLOSE_METHOD_CALLBACK[ARDUINO_OPTA_RELAY_NUM_RELAYS] =
+        {
+          relay_1_close_MethodCallback,
+          relay_2_close_MethodCallback,
+          relay_3_close_MethodCallback,
+          relay_4_close_MethodCallback
+        };
+
+      UA_MethodCallback const RELAY_OPEN_METHOD_CALLBACK[ARDUINO_OPTA_RELAY_NUM_RELAYS] =
+        {
+          relay_1_open_MethodCallback,
+          relay_2_open_MethodCallback,
+          relay_3_open_MethodCallback,
+          relay_4_open_MethodCallback
+        };
+
+      for (unsigned int relay_num = 1;
+           relay_num <= ARDUINO_OPTA_RELAY_NUM_RELAYS;
+           relay_num++)
       {
-        UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
-        UA_LOG_ERROR(config->logging,
-                     UA_LOGCATEGORY_SERVER,
-                     "opc_ua_define_relay_1(...) failed with %s",
-                     UA_StatusCode_name(rc));
+        rc = opc_ua_define_relay(opc_ua_server,
+                                 relay_num,
+                                 RELAY_CLOSE_METHOD_CALLBACK[relay_num - 1],
+                                 RELAY_OPEN_METHOD_CALLBACK[relay_num - 1]);
+        if (UA_StatusCode_isBad(rc))
+        {
+          UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
+          UA_LOG_ERROR(config->logging,
+                       UA_LOGCATEGORY_SERVER,
+                       "opc_ua_define_relay(..., %d, ...) failed with %s",
+                       relay_num,
+                       UA_StatusCode_name(rc));
+        }
       }
 
       /* Print some threading related message. */
