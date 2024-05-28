@@ -145,18 +145,6 @@ extern "C" void * o1heap_realloc(void * old_ptr, size_t size)
   return new_ptr;
 }
 
-//void updater(UA_Server *server) {
-//  while (1) {
-//    delay(1000);
-//    UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, "the.answer");
-//    myInteger++;
-//    UA_Variant myVar;
-//    UA_Variant_init(&myVar);
-//    UA_Variant_setScalar(&myVar, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
-//    UA_Server_writeValue(server, myIntegerNodeId, myVar);
-//  }
-//}
-
 /**************************************************************************************
  * SETUP/LOOP
  **************************************************************************************/
@@ -199,26 +187,8 @@ void setup()
                   Ethernet.localIP().toString().c_str());
 
       UA_StatusCode rc = UA_STATUSCODE_GOOD;
-      /* Add a variable node to the server */
-      uint32_t const the_answer = 42;
-      rc = add_variable(opc_ua_server,
-                        UA_LOCALIZEDTEXT("en-US", "the answer"),
-                        UA_LOCALIZEDTEXT("en-US","42 is the answer to everything"),
-                        UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE,
-                        UA_NODEID_STRING(1, "the.answer"),
-                        UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-                        UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
-                        UA_QUALIFIEDNAME(1, "the answer"),
-                        the_answer);
-      if (UA_StatusCode_isBad(rc))
-      {
-        UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
-        UA_LOG_ERROR(config->logging,
-                     UA_LOGCATEGORY_SERVER,
-                     "add_variable(..., the_answer) failed with %s",
-                     UA_StatusCode_name(rc));
-      }
 
+      /* Define Arduino Opta's relays to be accessed via OPC/UA. */
       rc = opc_ua_define_relay_1(opc_ua_server);
       if (UA_StatusCode_isBad(rc))
       {
