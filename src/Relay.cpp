@@ -134,17 +134,17 @@ UA_StatusCode opc_ua_define_relay_1(UA_Server * server)
     return rc;
   }
 
-  UA_VariableAttributes rpmAttr = UA_VariableAttributes_default;
+  UA_VariableAttributes relay_status_attr = UA_VariableAttributes_default;
   UA_Boolean relay_open = true;
-  UA_Variant_setScalar(&rpmAttr.value, &relay_open, &UA_TYPES[UA_TYPES_BOOLEAN]);
-  rpmAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Relay Open");
+  UA_Variant_setScalar(&relay_status_attr.value, &relay_open, &UA_TYPES[UA_TYPES_BOOLEAN]);
+  relay_status_attr.displayName = UA_LOCALIZEDTEXT("en-US", "Relay Open");
   rc = UA_Server_addVariableNode(server,
                                  UA_NODEID_NULL,
                                  relayId,
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                  UA_QUALIFIEDNAME(1, "Relay Open"),
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
-                                 rpmAttr,
+                                 relay_status_attr,
                                  NULL,
                                  NULL);
   if (UA_StatusCode_isBad(rc))
