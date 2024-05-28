@@ -163,8 +163,7 @@ UA_StatusCode opc_ua_define_relay_1(UA_Server * server)
   relay_close_attr.executable = true;
   relay_close_attr.userExecutable = true;
   rc = UA_Server_addMethodNode(server,
-                               //UA_NODEID_STRING(1, "relay_1_close"),
-                               UA_NODEID_NUMERIC(1,62541),
+                               UA_NODEID_NULL,
                                relayId,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                UA_QUALIFIEDNAME(1, "close"),
@@ -186,8 +185,7 @@ UA_StatusCode opc_ua_define_relay_1(UA_Server * server)
   relay_open_attr.executable = true;
   relay_open_attr.userExecutable = true;
   rc = UA_Server_addMethodNode(server,
-                               //UA_NODEID_STRING(1, "relay_1_open"),
-                               UA_NODEID_NUMERIC(1,62542),
+                               UA_NODEID_NULL,
                                relayId,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                UA_QUALIFIEDNAME(1, "open"),
