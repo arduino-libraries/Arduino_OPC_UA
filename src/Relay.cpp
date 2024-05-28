@@ -219,7 +219,8 @@ relay_1_close_MethodCallback(UA_Server *server,
                              size_t outputSize, UA_Variant *output)
 {
   /* Close the default-open switch. */
-  digitalWrite(RELAY1, LOW);
+  digitalWrite(RELAY1, HIGH);
+  digitalWrite(LED_D0, HIGH);
   /* Write some debug output. */
   UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"relay_1_close_MethodCallback\" was called");
   return UA_STATUSCODE_GOOD;
@@ -234,7 +235,8 @@ relay_1_open_MethodCallback(UA_Server *server,
                             size_t outputSize, UA_Variant *output)
 {
   /* Close the default-open switch. */
-  digitalWrite(RELAY1, HIGH);
+  digitalWrite(RELAY1, LOW);
+  digitalWrite(LED_D0, LOW);
   /* Write some debug output. */
   UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"relay_1_open_MethodCallback\" was called");
   return UA_STATUSCODE_GOOD;
