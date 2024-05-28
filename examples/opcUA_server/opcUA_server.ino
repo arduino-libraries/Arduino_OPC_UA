@@ -252,7 +252,7 @@ void setup()
     });
 
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(D0, OUTPUT);
+  pinMode(RELAY1, OUTPUT);
 }
 
 void loop()
