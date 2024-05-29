@@ -6,6 +6,11 @@
 
 This library provides an implementation of [OPC/UA](https://en.wikipedia.org/wiki/OPC_Unified_Architecture) by porting the Fraunhofer [`open62541`](https://github.com/open62541/open62541) for the Arduino [Opta](https://www.arduino.cc/pro/hardware-arduino-opta/) `microPLC` family.
 
+### How-to-build/upload
+```bash
+arduino-cli compile --fqbn arduino:mbed_opta:opta -v examples/opcua_server -u -p /dev/ttyACM0
+```
+
 ### How-to-`opcua-client-gui`
 ```bash
 cd /tmp
