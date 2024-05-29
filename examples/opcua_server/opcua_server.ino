@@ -269,6 +269,7 @@ void setup()
            digital_input_num++)
       {
         rc = opc_ua_define_digital_input(opc_ua_server,
+                                         opta_digital_input_node_id,
                                          digital_input_num,
                                          BEFORE_READ_DIGITAL_INPUT_VALUE_CALLBACK[digital_input_num - 1]);
         if (UA_StatusCode_isBad(rc))

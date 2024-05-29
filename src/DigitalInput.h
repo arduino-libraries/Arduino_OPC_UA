@@ -29,7 +29,8 @@ typedef void (*onReadCallback)(UA_Server *server, const UA_NodeId *sessionId,
  **************************************************************************************/
 
 UA_StatusCode opc_ua_define_digital_input(UA_Server *server,
-                                          unsigned int const input_num,
+                                          UA_NodeId const opta_digital_input_node_id,
+                                          unsigned int const digital_input_num,
                                           onReadCallback before_read_digital);
 
 void before_read_digital_input_1(UA_Server *server,

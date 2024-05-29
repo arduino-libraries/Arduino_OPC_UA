@@ -20,48 +20,29 @@
  **************************************************************************************/
 
 UA_StatusCode opc_ua_define_digital_input(UA_Server *server,
-                                          unsigned int const input_num,
+                                          UA_NodeId const opta_digital_input_node_id,
+                                          unsigned int const digital_input_num,
                                           onReadCallback before_read_digital)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
-  UA_NodeId digitalInputId; /* get the nodeid assigned by the server */
-
-  UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
-  char object_node_digital_input_name[16] = {0};
-  snprintf(object_node_digital_input_name, sizeof(object_node_digital_input_name), "Digital Input %d", input_num);
-  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", object_node_digital_input_name);
-  rc = UA_Server_addObjectNode(server,
-                               UA_NODEID_NULL,
-                               UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-                               UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
-                               UA_QUALIFIEDNAME(1, object_node_digital_input_name),
-                               UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
-                               oAttr,
-                               NULL,
-                               &digitalInputId);
-  if (UA_StatusCode_isBad(rc))
-  {
-    UA_ServerConfig * config = UA_Server_getConfig(server);
-    UA_LOG_ERROR(config->logging,
-                 UA_LOGCATEGORY_SERVER,
-                 "UA_Server_addObjectNode(...) failed with %s",
-                 UA_StatusCode_name(rc));
-    return rc;
-  }
 
   UA_VariableAttributes digital_input_value_attr = UA_VariableAttributes_default;
   UA_Boolean digital_input_value = true;
   UA_Variant_setScalar(&digital_input_value_attr.value, &digital_input_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
-  digital_input_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", "Value");
+
+  char digital_input_value_display_name[32] = {0};
+  snprintf(digital_input_value_display_name, sizeof(digital_input_value_display_name), "Digital Input %d Value", digital_input_num);
+
+  digital_input_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", digital_input_value_display_name);
   digital_input_value_attr.accessLevel = UA_ACCESSLEVELMASK_READ;
 
   char digital_input_value_node_id[32] = {0};
-  snprintf(digital_input_value_node_id, sizeof(digital_input_value_node_id), "digital-input-value-%d", input_num);
+  snprintf(digital_input_value_node_id, sizeof(digital_input_value_node_id), "digital-input-value-%d", digital_input_num);
   rc = UA_Server_addVariableNode(server,
                                  UA_NODEID_STRING(1, digital_input_value_node_id),
-                                 digitalInputId,
+                                 opta_digital_input_node_id,
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
-                                 UA_QUALIFIEDNAME(1, "Value (High, Low)"),
+                                 UA_QUALIFIEDNAME(1, "Value"),
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
                                  digital_input_value_attr,
                                  NULL,
@@ -88,7 +69,7 @@ UA_StatusCode opc_ua_define_digital_input(UA_Server *server,
     UA_LOG_ERROR(config->logging,
                  UA_LOGCATEGORY_SERVER,
                  "UA_Server_setVariableNode_valueCallback(..., \"%d\", ...) failed with %s",
-                 input_num,
+                 digital_input_num,
                  UA_StatusCode_name(rc));
     return rc;
   }
