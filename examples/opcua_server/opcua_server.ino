@@ -224,31 +224,13 @@ void setup()
       }
 
       unsigned int const ARDUINO_OPTA_RELAY_NUM_RELAYS = 4;
-      UA_MethodCallback const RELAY_CLOSE_METHOD_CALLBACK[ARDUINO_OPTA_RELAY_NUM_RELAYS] =
-        {
-          relay_1_close_MethodCallback,
-          relay_2_close_MethodCallback,
-          relay_3_close_MethodCallback,
-          relay_4_close_MethodCallback
-        };
-
-      UA_MethodCallback const RELAY_OPEN_METHOD_CALLBACK[ARDUINO_OPTA_RELAY_NUM_RELAYS] =
-        {
-          relay_1_open_MethodCallback,
-          relay_2_open_MethodCallback,
-          relay_3_open_MethodCallback,
-          relay_4_open_MethodCallback
-        };
-
       for (unsigned int relay_num = 1;
            relay_num <= ARDUINO_OPTA_RELAY_NUM_RELAYS;
            relay_num++)
       {
         rc = opc_ua_define_relay(opc_ua_server,
                                  opta_relay_node_id,
-                                 relay_num,
-                                 RELAY_CLOSE_METHOD_CALLBACK[relay_num - 1],
-                                 RELAY_OPEN_METHOD_CALLBACK[relay_num - 1]);
+                                 relay_num);
         if (UA_StatusCode_isBad(rc))
         {
           UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
