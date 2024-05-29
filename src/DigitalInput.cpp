@@ -38,6 +38,7 @@ UA_StatusCode opc_ua_define_digital_input(UA_Server *server,
 
   char digital_input_value_node_id[32] = {0};
   snprintf(digital_input_value_node_id, sizeof(digital_input_value_node_id), "digital-input-value-%d", digital_input_num);
+
   rc = UA_Server_addVariableNode(server,
                                  UA_NODEID_STRING(1, digital_input_value_node_id),
                                  opta_digital_input_node_id,

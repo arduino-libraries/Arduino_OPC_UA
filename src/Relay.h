@@ -19,7 +19,8 @@
  * FUNCTION DECLARATION
  **************************************************************************************/
 
-UA_StatusCode opc_ua_define_relay(UA_Server *server,
+UA_StatusCode opc_ua_define_relay(UA_Server * server,
+                                  UA_NodeId const opta_relay_node_id,
                                   unsigned int const relay_num,
                                   UA_MethodCallback relay_close_func,
                                   UA_MethodCallback relay_open_func);

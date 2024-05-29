@@ -212,8 +212,18 @@ void setup()
       }
 
       /* Define Arduino Opta's relays to be accessed via OPC/UA. */
-      unsigned int const ARDUINO_OPTA_RELAY_NUM_RELAYS = 4;
+      UA_NodeId opta_relay_node_id;
+      rc = opc_ua_define_relay_obj(opc_ua_server, opta_node_id, &opta_relay_node_id);
+      if (UA_StatusCode_isBad(rc))
+      {
+        UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
+        UA_LOG_ERROR(config->logging,
+                     UA_LOGCATEGORY_SERVER,
+                     "opc_ua_define_relay_obj(...) failed with %s",
+                     UA_StatusCode_name(rc));
+      }
 
+      unsigned int const ARDUINO_OPTA_RELAY_NUM_RELAYS = 4;
       UA_MethodCallback const RELAY_CLOSE_METHOD_CALLBACK[ARDUINO_OPTA_RELAY_NUM_RELAYS] =
         {
           relay_1_close_MethodCallback,
@@ -235,6 +245,7 @@ void setup()
            relay_num++)
       {
         rc = opc_ua_define_relay(opc_ua_server,
+                                 opta_relay_node_id,
                                  relay_num,
                                  RELAY_CLOSE_METHOD_CALLBACK[relay_num - 1],
                                  RELAY_OPEN_METHOD_CALLBACK[relay_num - 1]);
