@@ -28,4 +28,4 @@ UA_StatusCode add_variable(UA_Server * server,
  * TEMPLATE FUNCTION IMPLEMENTATION
  **************************************************************************************/
 
-#include "add_variable.ipp"
+//#include "add_variable.ipp"

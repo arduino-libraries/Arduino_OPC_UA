@@ -188,6 +188,18 @@ void setup()
 
       UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
+      /* Define the Arduino Opta as a OPC/UA object. */
+      UA_NodeId opta_node_id;
+      rc = opc_ua_define_opta(opc_ua_server, &opta_node_id);
+      if (UA_StatusCode_isBad(rc))
+      {
+        UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
+        UA_LOG_ERROR(config->logging,
+                     UA_LOGCATEGORY_SERVER,
+                     "opc_ua_define_opta(...) failed with %s",
+                     UA_StatusCode_name(rc));
+      }
+
       /* Define Arduino Opta's relays to be accessed via OPC/UA. */
       unsigned int const ARDUINO_OPTA_RELAY_NUM_RELAYS = 4;
 
