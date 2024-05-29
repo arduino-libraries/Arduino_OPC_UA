@@ -17,8 +17,8 @@
  * FUNCTION DEFINITIONS
  **************************************************************************************/
 
-UA_StatusCode opc_ua_define_opta(UA_Server * server,
-                                 UA_NodeId * opta_node_id)
+UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
+                                     UA_NodeId * opta_node_id)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -113,4 +113,32 @@ UA_StatusCode opc_ua_define_opta(UA_Server * server,
   }
 
   return UA_STATUSCODE_GOOD;
+}
+
+UA_StatusCode opc_ua_define_digital_input_obj(UA_Server * server,
+                                              UA_NodeId const opta_node_id,
+                                              UA_NodeId * opta_digital_input_node_id)
+{
+  UA_StatusCode rc = UA_STATUSCODE_GOOD;
+
+  UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
+  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Digital Inputs");
+  rc = UA_Server_addObjectNode(server,
+                               UA_NODEID_NULL,
+                               opta_node_id,
+                               UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
+                               UA_QUALIFIEDNAME(1, "DigitalInputs"),
+                               UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
+                               oAttr,
+                               NULL,
+                               opta_digital_input_node_id);
+  if (UA_StatusCode_isBad(rc))
+  {
+    UA_ServerConfig * config = UA_Server_getConfig(server);
+    UA_LOG_ERROR(config->logging,
+                 UA_LOGCATEGORY_SERVER,
+                 "UA_Server_addObjectNode(...) failed with %s",
+                 UA_StatusCode_name(rc));
+    return rc;
+  }
 }

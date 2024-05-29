@@ -31,5 +31,9 @@
  * FUNCTION DECLARATIONS
  **************************************************************************************/
 
-UA_StatusCode opc_ua_define_opta(UA_Server * server,
-                                 UA_NodeId * opta_node_id);
+UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
+                                     UA_NodeId * opta_node_id);
+
+UA_StatusCode opc_ua_define_digital_input_obj(UA_Server * server,
+                                              UA_NodeId const opta_node_id,
+                                              UA_NodeId * opta_digital_input_node_id);

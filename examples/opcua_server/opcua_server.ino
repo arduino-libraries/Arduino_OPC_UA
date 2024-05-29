@@ -190,13 +190,24 @@ void setup()
 
       /* Define the Arduino Opta as a OPC/UA object. */
       UA_NodeId opta_node_id;
-      rc = opc_ua_define_opta(opc_ua_server, &opta_node_id);
+      rc = opc_ua_define_opta_obj(opc_ua_server, &opta_node_id);
       if (UA_StatusCode_isBad(rc))
       {
         UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
         UA_LOG_ERROR(config->logging,
                      UA_LOGCATEGORY_SERVER,
                      "opc_ua_define_opta(...) failed with %s",
+                     UA_StatusCode_name(rc));
+      }
+
+      UA_NodeId opta_digital_input_node_id;
+      rc = opc_ua_define_digital_input_obj(opc_ua_server, opta_node_id, &opta_digital_input_node_id);
+      if (UA_StatusCode_isBad(rc))
+      {
+        UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
+        UA_LOG_ERROR(config->logging,
+                     UA_LOGCATEGORY_SERVER,
+                     "opc_ua_define_digital_input_obj(...) failed with %s",
                      UA_StatusCode_name(rc));
       }
 
