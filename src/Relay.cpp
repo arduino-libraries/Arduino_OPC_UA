@@ -31,7 +31,9 @@ UA_StatusCode opc_ua_define_relay(UA_Server * server,
   snprintf(relay_value_display_name, sizeof(relay_value_display_name), "Relay %d Value", relay_num);
 
   relay_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", relay_value_display_name);
-  relay_value_attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
+  relay_value_attr.accessLevel =
+    UA_ACCESSLEVELMASK_READ |
+    UA_ACCESSLEVELMASK_WRITE | UA_ACCESSLEVELMASK_STATUSWRITE | UA_ACCESSLEVELMASK_TIMESTAMPWRITE; /* Status and timestamp write access necessary for opcua-client. */
 
   char relay_value_node_id[32] = {0};
   snprintf(relay_value_node_id, sizeof(relay_value_node_id), "relay-value-%d", relay_num);
