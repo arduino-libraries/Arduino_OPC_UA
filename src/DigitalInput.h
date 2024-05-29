@@ -28,6 +28,10 @@ typedef void (*onReadCallback)(UA_Server *server, const UA_NodeId *sessionId,
  * FUNCTION DECLARATION
  **************************************************************************************/
 
+UA_StatusCode opc_ua_define_digital_input_obj(UA_Server * server,
+                                              UA_NodeId const opta_node_id,
+                                              UA_NodeId * opta_digital_input_node_id);
+
 UA_StatusCode opc_ua_define_digital_input(UA_Server *server,
                                           UA_NodeId const opta_digital_input_node_id,
                                           unsigned int const digital_input_num,
