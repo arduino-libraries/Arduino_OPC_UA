@@ -15,6 +15,66 @@
 
 #include <Arduino.h>
 
+#include <map>
+
+/**************************************************************************************
+ * TYPEDEF
+ **************************************************************************************/
+
+enum class ArduinoOptaDigitalInput { I1, I2, I3, I4, I5, I6, I7, I8 };
+
+/**************************************************************************************
+ * CONSTANTS
+ **************************************************************************************/
+
+static std::map<ArduinoOptaDigitalInput, pin_size_t> const DIGITAL_INPUT_TO_ACTUAL_PIN_MAP =
+  {
+    {ArduinoOptaDigitalInput::I1, A0},
+    {ArduinoOptaDigitalInput::I2, A1},
+    {ArduinoOptaDigitalInput::I3, A2},
+    {ArduinoOptaDigitalInput::I4, A3},
+    {ArduinoOptaDigitalInput::I5, A4},
+    {ArduinoOptaDigitalInput::I6, A5},
+    {ArduinoOptaDigitalInput::I7, A6},
+    {ArduinoOptaDigitalInput::I8, A7}
+  };
+
+static std::map<ArduinoOptaDigitalInput, UA_NodeId> const DIGITAL_INPUT_TO_OPCUA_NODE_ID_MAP =
+  {
+    {ArduinoOptaDigitalInput::I1, UA_NODEID_STRING(1, "digital-input-value-1")},
+    {ArduinoOptaDigitalInput::I2, UA_NODEID_STRING(1, "digital-input-value-2")},
+    {ArduinoOptaDigitalInput::I3, UA_NODEID_STRING(1, "digital-input-value-3")},
+    {ArduinoOptaDigitalInput::I4, UA_NODEID_STRING(1, "digital-input-value-4")},
+    {ArduinoOptaDigitalInput::I5, UA_NODEID_STRING(1, "digital-input-value-5")},
+    {ArduinoOptaDigitalInput::I6, UA_NODEID_STRING(1, "digital-input-value-6")},
+    {ArduinoOptaDigitalInput::I7, UA_NODEID_STRING(1, "digital-input-value-7")},
+    {ArduinoOptaDigitalInput::I8, UA_NODEID_STRING(1, "digital-input-value-8")}
+  };
+
+/**************************************************************************************
+ * MODULE INTERNAL FUNCTION DEFINITION
+ **************************************************************************************/
+
+static PinStatus read_digital_input_pin(ArduinoOptaDigitalInput const digital_in_pin)
+{
+  /* Obtain the actual pin value. */
+  pinMode(DIGITAL_INPUT_TO_ACTUAL_PIN_MAP.at(digital_in_pin), INPUT);
+  PinStatus const in_x_val = digitalRead(DIGITAL_INPUT_TO_ACTUAL_PIN_MAP.at(digital_in_pin));
+  return in_x_val;
+}
+
+static void update_digital_input_node(UA_Server * server,
+                                      ArduinoOptaDigitalInput const digital_in_pin,
+                                      PinStatus const in_x_val)
+{
+  /* Update the corresponding OPC/UA node. */
+  UA_Boolean in_x_val_opcua_value = (in_x_val == HIGH) ? true : false;
+  UA_Variant in_x_val_opcua_variant;
+  UA_Variant_init(&in_x_val_opcua_variant);
+  UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
+  UA_Server_writeValue(server, DIGITAL_INPUT_TO_OPCUA_NODE_ID_MAP.at(digital_in_pin), in_x_val_opcua_variant);
+}
+
 /**************************************************************************************
  * FUNCTION DEFINITION
  **************************************************************************************/
@@ -47,7 +107,7 @@ UA_StatusCode opc_ua_define_digital_input_obj(UA_Server * server,
   }
 }
 
-UA_StatusCode opc_ua_define_digital_input(UA_Server *server,
+UA_StatusCode opc_ua_define_digital_input(UA_Server * server,
                                           UA_NodeId const opta_digital_input_node_id,
                                           unsigned int const digital_input_num,
                                           onReadCallback before_read_digital)
@@ -111,17 +171,10 @@ void before_read_digital_input_1(UA_Server *server,
                                  const UA_NodeId *nodeid, void *nodeContext,
                                  const UA_NumericRange *range, const UA_DataValue *data)
 {
-  /* Obtain the actual pin value. */
-  pinMode(A0, INPUT);
-  PinStatus const in_1_val = digitalRead(A0);
-  /* Update the corresponding OPC/UA node. */
-  UA_Boolean in_1_val_opcua_value = (in_1_val == HIGH) ? true : false;
-  UA_Variant in_1_val_opcua_variant;
-  UA_Variant_init(&in_1_val_opcua_variant);
-  UA_Variant_setScalar(&in_1_val_opcua_variant, &in_1_val_opcua_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
-  UA_Server_writeValue(server, UA_NODEID_STRING(1, "digital-input-value-1"), in_1_val_opcua_variant);
-  /* Write some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_1\" was called: %d", in_1_val);
+  ArduinoOptaDigitalInput const digital_in_pin = ArduinoOptaDigitalInput::I1;
+  PinStatus const in_x_val = read_digital_input_pin(digital_in_pin);
+  update_digital_input_node(server, digital_in_pin, in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_1\" was called: %d", in_x_val);
 }
 
 void before_read_digital_input_2(UA_Server *server,
@@ -129,9 +182,10 @@ void before_read_digital_input_2(UA_Server *server,
                                  const UA_NodeId *nodeid, void *nodeContext,
                                  const UA_NumericRange *range, const UA_DataValue *data)
 {
-  /* TODO */
-  /* Write some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_2\" was called");
+  ArduinoOptaDigitalInput const digital_in_pin = ArduinoOptaDigitalInput::I2;
+  PinStatus const in_x_val = read_digital_input_pin(digital_in_pin);
+  update_digital_input_node(server, digital_in_pin, in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_2\" was called: %d", in_x_val);
 }
 
 void before_read_digital_input_3(UA_Server *server,
@@ -139,9 +193,10 @@ void before_read_digital_input_3(UA_Server *server,
                                  const UA_NodeId *nodeid, void *nodeContext,
                                  const UA_NumericRange *range, const UA_DataValue *data)
 {
-  /* TODO */
-  /* Write some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_3\" was called");
+  ArduinoOptaDigitalInput const digital_in_pin = ArduinoOptaDigitalInput::I3;
+  PinStatus const in_x_val = read_digital_input_pin(digital_in_pin);
+  update_digital_input_node(server, digital_in_pin, in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_3\" was called: %d", in_x_val);
 }
 
 void before_read_digital_input_4(UA_Server *server,
@@ -149,9 +204,10 @@ void before_read_digital_input_4(UA_Server *server,
                                  const UA_NodeId *nodeid, void *nodeContext,
                                  const UA_NumericRange *range, const UA_DataValue *data)
 {
-  /* TODO */
-  /* Write some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_4\" was called");
+  ArduinoOptaDigitalInput const digital_in_pin = ArduinoOptaDigitalInput::I4;
+  PinStatus const in_x_val = read_digital_input_pin(digital_in_pin);
+  update_digital_input_node(server, digital_in_pin, in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_4\" was called: %d", in_x_val);
 }
 
 void before_read_digital_input_5(UA_Server *server,
@@ -159,9 +215,10 @@ void before_read_digital_input_5(UA_Server *server,
                                  const UA_NodeId *nodeid, void *nodeContext,
                                  const UA_NumericRange *range, const UA_DataValue *data)
 {
-  /* TODO */
-  /* Write some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_5\" was called");
+  ArduinoOptaDigitalInput const digital_in_pin = ArduinoOptaDigitalInput::I5;
+  PinStatus const in_x_val = read_digital_input_pin(digital_in_pin);
+  update_digital_input_node(server, digital_in_pin, in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_5\" was called: %d", in_x_val);
 }
 
 void before_read_digital_input_6(UA_Server *server,
@@ -169,9 +226,10 @@ void before_read_digital_input_6(UA_Server *server,
                                  const UA_NodeId *nodeid, void *nodeContext,
                                  const UA_NumericRange *range, const UA_DataValue *data)
 {
-  /* TODO */
-  /* Write some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_6\" was called");
+  ArduinoOptaDigitalInput const digital_in_pin = ArduinoOptaDigitalInput::I6;
+  PinStatus const in_x_val = read_digital_input_pin(digital_in_pin);
+  update_digital_input_node(server, digital_in_pin, in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_6\" was called: %d", in_x_val);
 }
 
 void before_read_digital_input_7(UA_Server *server,
@@ -179,9 +237,10 @@ void before_read_digital_input_7(UA_Server *server,
                                  const UA_NodeId *nodeid, void *nodeContext,
                                  const UA_NumericRange *range, const UA_DataValue *data)
 {
-  /* TODO */
-  /* Write some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_7\" was called");
+  ArduinoOptaDigitalInput const digital_in_pin = ArduinoOptaDigitalInput::I7;
+  PinStatus const in_x_val = read_digital_input_pin(digital_in_pin);
+  update_digital_input_node(server, digital_in_pin, in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_7\" was called: %d", in_x_val);
 }
 
 void before_read_digital_input_8(UA_Server *server,
@@ -189,7 +248,8 @@ void before_read_digital_input_8(UA_Server *server,
                                  const UA_NodeId *nodeid, void *nodeContext,
                                  const UA_NumericRange *range, const UA_DataValue *data)
 {
-  /* TODO */
-  /* Write some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_8\" was called");
+  ArduinoOptaDigitalInput const digital_in_pin = ArduinoOptaDigitalInput::I8;
+  PinStatus const in_x_val = read_digital_input_pin(digital_in_pin);
+  update_digital_input_node(server, digital_in_pin, in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_8\" was called: %d", in_x_val);
 }
