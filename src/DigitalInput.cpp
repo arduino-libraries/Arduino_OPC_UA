@@ -111,9 +111,17 @@ void before_read_digital_input_1(UA_Server *server,
                                  const UA_NodeId *nodeid, void *nodeContext,
                                  const UA_NumericRange *range, const UA_DataValue *data)
 {
-  /* TODO */
+  /* Obtain the actual pin value. */
+  pinMode(A0, INPUT);
+  PinStatus const in_1_val = digitalRead(A0);
+  /* Update the corresponding OPC/UA node. */
+  UA_Boolean in_1_val_opcua_value = (in_1_val == HIGH) ? true : false;
+  UA_Variant in_1_val_opcua_variant;
+  UA_Variant_init(&in_1_val_opcua_variant);
+  UA_Variant_setScalar(&in_1_val_opcua_variant, &in_1_val_opcua_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
+  UA_Server_writeValue(server, UA_NODEID_STRING(1, "digital-input-value-1"), in_1_val_opcua_variant);
   /* Write some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_1\" was called");
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "\"before_read_digital_input_1\" was called: %d", in_1_val);
 }
 
 void before_read_digital_input_2(UA_Server *server,
