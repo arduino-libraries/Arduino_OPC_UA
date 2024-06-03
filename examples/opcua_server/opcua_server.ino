@@ -72,6 +72,8 @@ UA_Server * opc_ua_server = nullptr;
 O1HeapInstance * o1heap_ins = nullptr;
 rtos::Thread opc_ua_server_thread(osPriorityNormal, OPC_UA_SERVER_THREAD_STACK.size(), OPC_UA_SERVER_THREAD_STACK.data());
 
+opcua::DigitalInput opta_digital_input;
+
 /**************************************************************************************
  * DEFINES
  **************************************************************************************/
@@ -200,16 +202,21 @@ void setup()
                      UA_StatusCode_name(rc));
       }
 
-      UA_NodeId opta_digital_input_node_id;
-      rc = opc_ua_define_digital_input_obj(opc_ua_server, opta_node_id, &opta_digital_input_node_id);
-      if (UA_StatusCode_isBad(rc))
-      {
-        UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
-        UA_LOG_ERROR(config->logging,
-                     UA_LOGCATEGORY_SERVER,
-                     "opc_ua_define_digital_input_obj(...) failed with %s",
-                     UA_StatusCode_name(rc));
+      /* Define Arduino Opta's digital inputs base object. */
+      rc = opta_digital_input.begin(opc_ua_server, opta_node_id);
+      if (UA_StatusCode_isBad(rc)) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opta_digital_input.begin(...) failed with %s", UA_StatusCode_name(rc));
+        return;
       }
+      /* Add the various digital input pins. */
+      rc = opta_digital_input.add_digital_input_pin(opc_ua_server, UA_NODEID_STRING(1, "digital-input-value-1"), "Digital Input 1 Value", opcua::on_read_request_opta_digital_input_1);
+      rc = opta_digital_input.add_digital_input_pin(opc_ua_server, UA_NODEID_STRING(1, "digital-input-value-2"), "Digital Input 2 Value", opcua::on_read_request_opta_digital_input_2);
+      rc = opta_digital_input.add_digital_input_pin(opc_ua_server, UA_NODEID_STRING(1, "digital-input-value-3"), "Digital Input 3 Value", opcua::on_read_request_opta_digital_input_3);
+      rc = opta_digital_input.add_digital_input_pin(opc_ua_server, UA_NODEID_STRING(1, "digital-input-value-4"), "Digital Input 4 Value", opcua::on_read_request_opta_digital_input_4);
+      rc = opta_digital_input.add_digital_input_pin(opc_ua_server, UA_NODEID_STRING(1, "digital-input-value-5"), "Digital Input 5 Value", opcua::on_read_request_opta_digital_input_5);
+      rc = opta_digital_input.add_digital_input_pin(opc_ua_server, UA_NODEID_STRING(1, "digital-input-value-6"), "Digital Input 6 Value", opcua::on_read_request_opta_digital_input_6);
+      rc = opta_digital_input.add_digital_input_pin(opc_ua_server, UA_NODEID_STRING(1, "digital-input-value-7"), "Digital Input 7 Value", opcua::on_read_request_opta_digital_input_7);
+      rc = opta_digital_input.add_digital_input_pin(opc_ua_server, UA_NODEID_STRING(1, "digital-input-value-8"), "Digital Input 8 Value", opcua::on_read_request_opta_digital_input_8);
 
       /* Define Arduino Opta's relays to be accessed via OPC/UA. */
       UA_NodeId opta_relay_node_id;
@@ -238,23 +245,6 @@ void setup()
                        UA_LOGCATEGORY_SERVER,
                        "opc_ua_define_relay(..., %d, ...) failed with %s",
                        relay_num,
-                       UA_StatusCode_name(rc));
-        }
-      }
-
-      /* Define Arduino Opta's digital inputs to be accessed via OPC/UA. */
-      for (auto const digital_in_pin : ArduinoOptaDigitalInputList)
-      {
-        rc = opc_ua_define_digital_input(opc_ua_server,
-                                         opta_digital_input_node_id,
-                                         digital_in_pin);
-        if (UA_StatusCode_isBad(rc))
-        {
-          UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
-          UA_LOG_ERROR(config->logging,
-                       UA_LOGCATEGORY_SERVER,
-                       "opc_ua_define_digital_input(..., %d, ...) failed with %s",
-                       (int)digital_in_pin,
                        UA_StatusCode_name(rc));
         }
       }
