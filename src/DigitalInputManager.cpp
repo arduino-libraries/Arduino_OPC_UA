@@ -11,13 +11,27 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "DigitalInput.h"
+#include "DigitalInputManager.h"
 
 #include <map>
+
+#include <Arduino.h>
+
+/**************************************************************************************
+ * NAMESPACE
+ **************************************************************************************/
+
+namespace opcua
+{
 
 /**************************************************************************************
  * CONSTANTS
  **************************************************************************************/
+
+enum class ArduinoOptaDigitalInput
+{
+  I1, I2, I3, I4, I5, I6, I7, I8
+};
 
 static std::map<ArduinoOptaDigitalInput, pin_size_t> const DIGITAL_INPUT_TO_ACTUAL_PIN_MAP =
   {
@@ -32,17 +46,10 @@ static std::map<ArduinoOptaDigitalInput, pin_size_t> const DIGITAL_INPUT_TO_ACTU
   };
 
 /**************************************************************************************
- * NAMESPACE
- **************************************************************************************/
-
-namespace opcua
-{
-
-/**************************************************************************************
  * CTOR/DTOR
  **************************************************************************************/
 
-DigitalInput::DigitalInput()
+DigitalInputManager::DigitalInputManager()
 : _is_initialized{false}
 {
   /* Nothing happens here. */
@@ -52,7 +59,7 @@ DigitalInput::DigitalInput()
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-UA_StatusCode DigitalInput::begin(UA_Server * server,
+UA_StatusCode DigitalInputManager::begin(UA_Server * server,
                                   UA_NodeId const parent_node_id)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
@@ -70,7 +77,7 @@ UA_StatusCode DigitalInput::begin(UA_Server * server,
                                &_digital_input_node_id);
   if (UA_StatusCode_isBad(rc))
   {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,  "DigitalInput::begin: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,  "DigitalInputManager::begin: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
     return rc;
   }
 
@@ -82,7 +89,7 @@ UA_StatusCode DigitalInput::begin(UA_Server * server,
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-UA_StatusCode DigitalInput::add_digital_input_pin(UA_Server * server,
+UA_StatusCode DigitalInputManager::add_digital_input(UA_Server * server,
                                                   UA_NodeId const digital_input_pin_node_id,
                                                   char const * digital_input_pin_display_name,
                                                   onReadRequestFunc const on_read_request)
@@ -111,7 +118,7 @@ UA_StatusCode DigitalInput::add_digital_input_pin(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInput::add_digital_input_pin: UA_Server_addVariableNode(...) failed with %s",
+                 "DigitalInputManager::add_digital_input: UA_Server_addVariableNode(...) failed with %s",
                  UA_StatusCode_name(rc));
     return rc;
   }
@@ -123,7 +130,7 @@ UA_StatusCode DigitalInput::add_digital_input_pin(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInput::add_digital_input_pin: UA_Server_setVariableNode_valueCallback(...) failed with %s",
+                 "DigitalInputManager::add_digital_input: UA_Server_setVariableNode_valueCallback(...) failed with %s",
                  UA_StatusCode_name(rc));
     return rc;
   }

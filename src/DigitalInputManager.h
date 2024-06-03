@@ -15,11 +15,6 @@
 
 #include "open62541.h"
 
-#include <Arduino.h>
-
-#include <list>
-#include <functional>
-
 /**************************************************************************************
  * NAMESPACE
  **************************************************************************************/
@@ -31,10 +26,10 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class DigitalInput
+class DigitalInputManager
 {
 public:
-  DigitalInput();
+  DigitalInputManager();
 
   UA_StatusCode begin(UA_Server * server,
                       UA_NodeId const parent_node_id);
@@ -47,10 +42,10 @@ public:
                                     const UA_NumericRange *range,
                                     const UA_DataValue *value);
 
-  UA_StatusCode add_digital_input_pin(UA_Server * server,
-                                      UA_NodeId const digital_input_pin_node_id,
-                                      char const * digital_input_pin_display_name,
-                                      onReadRequestFunc const on_read_request);
+  UA_StatusCode add_digital_input(UA_Server * server,
+                                  UA_NodeId const digital_input_pin_node_id,
+                                  char const * digital_input_pin_display_name,
+                                  onReadRequestFunc const on_read_request);
 
 
 private:
@@ -76,36 +71,3 @@ void on_read_request_opta_digital_input_8(UA_Server *server, const UA_NodeId *se
  **************************************************************************************/
 
 } /* opcua */
-
-/**************************************************************************************
- * TYPEDEF
- **************************************************************************************/
-
-enum class ArduinoOptaDigitalInput
-{
-  I1, I2, I3, I4, I5, I6, I7, I8
-};
-
-/**************************************************************************************
- * CONSTANT
- **************************************************************************************/
-
-static std::list <ArduinoOptaDigitalInput> const ArduinoOptaDigitalInputList =
-  {
-    ArduinoOptaDigitalInput::I1,
-    ArduinoOptaDigitalInput::I2,
-    ArduinoOptaDigitalInput::I3,
-    ArduinoOptaDigitalInput::I4,
-    ArduinoOptaDigitalInput::I5,
-    ArduinoOptaDigitalInput::I6,
-    ArduinoOptaDigitalInput::I7,
-    ArduinoOptaDigitalInput::I8
-  };
-
-UA_StatusCode opc_ua_define_digital_input_obj(UA_Server *server,
-                                              UA_NodeId const opta_node_id,
-                                              UA_NodeId *opta_digital_input_node_id);
-
-UA_StatusCode opc_ua_define_digital_input(UA_Server *server,
-                                          UA_NodeId const opta_digital_input_node_id,
-                                          ArduinoOptaDigitalInput const digital_in_pin);

@@ -17,7 +17,7 @@
 #include "o1heap/o1heap.h"
 #include "add_variable.hpp"
 #include "Relay.h"
-#include "DigitalInput.h"
+#include "DigitalInputManager.h"
 
 /**************************************************************************************
  * DEFINES
