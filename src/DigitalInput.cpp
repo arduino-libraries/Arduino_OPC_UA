@@ -18,10 +18,57 @@
 #include <map>
 
 /**************************************************************************************
+ * FUNCTION DEFINITION
+ **************************************************************************************/
+
+void before_read_digital_input_1(UA_Server *server,
+                                 const UA_NodeId *sessionId, void *sessionContext,
+                                 const UA_NodeId *nodeid, void *nodeContext,
+                                 const UA_NumericRange *range, const UA_DataValue *data);
+
+void before_read_digital_input_2(UA_Server *server,
+                                 const UA_NodeId *sessionId, void *sessionContext,
+                                 const UA_NodeId *nodeid, void *nodeContext,
+                                 const UA_NumericRange *range, const UA_DataValue *data);
+
+void before_read_digital_input_3(UA_Server *server,
+                                 const UA_NodeId *sessionId, void *sessionContext,
+                                 const UA_NodeId *nodeid, void *nodeContext,
+                                 const UA_NumericRange *range, const UA_DataValue *data);
+
+void before_read_digital_input_4(UA_Server *server,
+                                 const UA_NodeId *sessionId, void *sessionContext,
+                                 const UA_NodeId *nodeid, void *nodeContext,
+                                 const UA_NumericRange *range, const UA_DataValue *data);
+
+void before_read_digital_input_5(UA_Server *server,
+                                 const UA_NodeId *sessionId, void *sessionContext,
+                                 const UA_NodeId *nodeid, void *nodeContext,
+                                 const UA_NumericRange *range, const UA_DataValue *data);
+
+void before_read_digital_input_6(UA_Server *server,
+                                 const UA_NodeId *sessionId, void *sessionContext,
+                                 const UA_NodeId *nodeid, void *nodeContext,
+                                 const UA_NumericRange *range, const UA_DataValue *data);
+
+void before_read_digital_input_7(UA_Server *server,
+                                 const UA_NodeId *sessionId, void *sessionContext,
+                                 const UA_NodeId *nodeid, void *nodeContext,
+                                 const UA_NumericRange *range, const UA_DataValue *data);
+
+void before_read_digital_input_8(UA_Server *server,
+                                 const UA_NodeId *sessionId, void *sessionContext,
+                                 const UA_NodeId *nodeid, void *nodeContext,
+                                 const UA_NumericRange *range, const UA_DataValue *data);
+
+/**************************************************************************************
  * TYPEDEF
  **************************************************************************************/
 
-enum class ArduinoOptaDigitalInput { I1, I2, I3, I4, I5, I6, I7, I8 };
+typedef void (*onReadCallback)(UA_Server *server, const UA_NodeId *sessionId,
+                               void *sessionContext, const UA_NodeId *nodeid,
+                               void *nodeContext, const UA_NumericRange *range,
+                               const UA_DataValue *value);
 
 /**************************************************************************************
  * CONSTANTS
@@ -39,6 +86,18 @@ static std::map<ArduinoOptaDigitalInput, pin_size_t> const DIGITAL_INPUT_TO_ACTU
     {ArduinoOptaDigitalInput::I8, A7}
   };
 
+static std::map<ArduinoOptaDigitalInput, uint16_t> const DIGITAL_INPUT_TO_NUMERIC_VALUE_MAP =
+  {
+    {ArduinoOptaDigitalInput::I1, 1},
+    {ArduinoOptaDigitalInput::I2, 2},
+    {ArduinoOptaDigitalInput::I3, 3},
+    {ArduinoOptaDigitalInput::I4, 4},
+    {ArduinoOptaDigitalInput::I5, 5},
+    {ArduinoOptaDigitalInput::I6, 6},
+    {ArduinoOptaDigitalInput::I7, 7},
+    {ArduinoOptaDigitalInput::I8, 8}
+  };
+
 static std::map<ArduinoOptaDigitalInput, UA_NodeId> const DIGITAL_INPUT_TO_OPCUA_NODE_ID_MAP =
   {
     {ArduinoOptaDigitalInput::I1, UA_NODEID_STRING(1, "digital-input-value-1")},
@@ -49,6 +108,18 @@ static std::map<ArduinoOptaDigitalInput, UA_NodeId> const DIGITAL_INPUT_TO_OPCUA
     {ArduinoOptaDigitalInput::I6, UA_NODEID_STRING(1, "digital-input-value-6")},
     {ArduinoOptaDigitalInput::I7, UA_NODEID_STRING(1, "digital-input-value-7")},
     {ArduinoOptaDigitalInput::I8, UA_NODEID_STRING(1, "digital-input-value-8")}
+  };
+
+static std::map<ArduinoOptaDigitalInput, onReadCallback> const DIGITAL_INPUT_TO_INPUT_VALUE_CALLBACK_MAP =
+  {
+    {ArduinoOptaDigitalInput::I1, before_read_digital_input_1},
+    {ArduinoOptaDigitalInput::I2, before_read_digital_input_2},
+    {ArduinoOptaDigitalInput::I3, before_read_digital_input_3},
+    {ArduinoOptaDigitalInput::I4, before_read_digital_input_4},
+    {ArduinoOptaDigitalInput::I5, before_read_digital_input_5},
+    {ArduinoOptaDigitalInput::I6, before_read_digital_input_6},
+    {ArduinoOptaDigitalInput::I7, before_read_digital_input_7},
+    {ArduinoOptaDigitalInput::I8, before_read_digital_input_8}
   };
 
 /**************************************************************************************
@@ -109,8 +180,7 @@ UA_StatusCode opc_ua_define_digital_input_obj(UA_Server * server,
 
 UA_StatusCode opc_ua_define_digital_input(UA_Server * server,
                                           UA_NodeId const opta_digital_input_node_id,
-                                          unsigned int const digital_input_num,
-                                          onReadCallback before_read_digital)
+                                          ArduinoOptaDigitalInput const digital_in_pin)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -119,16 +189,13 @@ UA_StatusCode opc_ua_define_digital_input(UA_Server * server,
   UA_Variant_setScalar(&digital_input_value_attr.value, &digital_input_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
 
   char digital_input_value_display_name[32] = {0};
-  snprintf(digital_input_value_display_name, sizeof(digital_input_value_display_name), "Digital Input %d Value", digital_input_num);
+  snprintf(digital_input_value_display_name, sizeof(digital_input_value_display_name), "Digital Input %d Value", DIGITAL_INPUT_TO_NUMERIC_VALUE_MAP.at(digital_in_pin));
 
   digital_input_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", digital_input_value_display_name);
   digital_input_value_attr.accessLevel = UA_ACCESSLEVELMASK_READ;
 
-  char digital_input_value_node_id[32] = {0};
-  snprintf(digital_input_value_node_id, sizeof(digital_input_value_node_id), "digital-input-value-%d", digital_input_num);
-
   rc = UA_Server_addVariableNode(server,
-                                 UA_NODEID_STRING(1, digital_input_value_node_id),
+                                 DIGITAL_INPUT_TO_OPCUA_NODE_ID_MAP.at(digital_in_pin),
                                  opta_digital_input_node_id,
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                  UA_QUALIFIEDNAME(1, "Value"),
@@ -147,10 +214,10 @@ UA_StatusCode opc_ua_define_digital_input(UA_Server * server,
   }
 
   UA_ValueCallback callback;
-  callback.onRead = before_read_digital;
+  callback.onRead = DIGITAL_INPUT_TO_INPUT_VALUE_CALLBACK_MAP.at(digital_in_pin);
   callback.onWrite = NULL;
   rc = UA_Server_setVariableNode_valueCallback(server,
-                                               UA_NODEID_STRING(1, digital_input_value_node_id),
+                                               DIGITAL_INPUT_TO_OPCUA_NODE_ID_MAP.at(digital_in_pin),
                                                callback);
   if (UA_StatusCode_isBad(rc))
   {
@@ -158,7 +225,7 @@ UA_StatusCode opc_ua_define_digital_input(UA_Server * server,
     UA_LOG_ERROR(config->logging,
                  UA_LOGCATEGORY_SERVER,
                  "UA_Server_setVariableNode_valueCallback(..., \"%d\", ...) failed with %s",
-                 digital_input_num,
+                 DIGITAL_INPUT_TO_NUMERIC_VALUE_MAP.at(digital_in_pin),
                  UA_StatusCode_name(rc));
     return rc;
   }

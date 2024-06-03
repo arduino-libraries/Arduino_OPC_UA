@@ -15,14 +15,29 @@
 
 #include "open62541.h"
 
+#include <list>
+
 /**************************************************************************************
- * TYPE DEFINITION
+ * TYPEDEF
  **************************************************************************************/
 
-typedef void (*onReadCallback)(UA_Server *server, const UA_NodeId *sessionId,
-                               void *sessionContext, const UA_NodeId *nodeid,
-                                void *nodeContext, const UA_NumericRange *range,
-                                const UA_DataValue *value);
+enum class ArduinoOptaDigitalInput { I1, I2, I3, I4, I5, I6, I7, I8 };
+
+/**************************************************************************************
+ * CONSTANT
+ **************************************************************************************/
+
+static std::list<ArduinoOptaDigitalInput> const ArduinoOptaDigitalInputList =
+  {
+    ArduinoOptaDigitalInput::I1,
+    ArduinoOptaDigitalInput::I2,
+    ArduinoOptaDigitalInput::I3,
+    ArduinoOptaDigitalInput::I4,
+    ArduinoOptaDigitalInput::I5,
+    ArduinoOptaDigitalInput::I6,
+    ArduinoOptaDigitalInput::I7,
+    ArduinoOptaDigitalInput::I8
+  };
 
 /**************************************************************************************
  * FUNCTION DECLARATION
@@ -34,45 +49,4 @@ UA_StatusCode opc_ua_define_digital_input_obj(UA_Server * server,
 
 UA_StatusCode opc_ua_define_digital_input(UA_Server *server,
                                           UA_NodeId const opta_digital_input_node_id,
-                                          unsigned int const digital_input_num,
-                                          onReadCallback before_read_digital);
-
-void before_read_digital_input_1(UA_Server *server,
-                                 const UA_NodeId *sessionId, void *sessionContext,
-                                 const UA_NodeId *nodeid, void *nodeContext,
-                                 const UA_NumericRange *range, const UA_DataValue *data);
-
-void before_read_digital_input_2(UA_Server *server,
-                                 const UA_NodeId *sessionId, void *sessionContext,
-                                 const UA_NodeId *nodeid, void *nodeContext,
-                                 const UA_NumericRange *range, const UA_DataValue *data);
-
-void before_read_digital_input_3(UA_Server *server,
-                                 const UA_NodeId *sessionId, void *sessionContext,
-                                 const UA_NodeId *nodeid, void *nodeContext,
-                                 const UA_NumericRange *range, const UA_DataValue *data);
-
-void before_read_digital_input_4(UA_Server *server,
-                                 const UA_NodeId *sessionId, void *sessionContext,
-                                 const UA_NodeId *nodeid, void *nodeContext,
-                                 const UA_NumericRange *range, const UA_DataValue *data);
-
-void before_read_digital_input_5(UA_Server *server,
-                                 const UA_NodeId *sessionId, void *sessionContext,
-                                 const UA_NodeId *nodeid, void *nodeContext,
-                                 const UA_NumericRange *range, const UA_DataValue *data);
-
-void before_read_digital_input_6(UA_Server *server,
-                                 const UA_NodeId *sessionId, void *sessionContext,
-                                 const UA_NodeId *nodeid, void *nodeContext,
-                                 const UA_NumericRange *range, const UA_DataValue *data);
-
-void before_read_digital_input_7(UA_Server *server,
-                                 const UA_NodeId *sessionId, void *sessionContext,
-                                 const UA_NodeId *nodeid, void *nodeContext,
-                                 const UA_NumericRange *range, const UA_DataValue *data);
-
-void before_read_digital_input_8(UA_Server *server,
-                                 const UA_NodeId *sessionId, void *sessionContext,
-                                 const UA_NodeId *nodeid, void *nodeContext,
-                                 const UA_NumericRange *range, const UA_DataValue *data);
+                                          ArduinoOptaDigitalInput const digital_in_pin);

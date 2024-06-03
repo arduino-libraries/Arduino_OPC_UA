@@ -243,35 +243,18 @@ void setup()
       }
 
       /* Define Arduino Opta's digital inputs to be accessed via OPC/UA. */
-      unsigned int const ARDUINO_OPTA_NUM_DIGITAL_INPUTS = 8;
-
-      onReadCallback const BEFORE_READ_DIGITAL_INPUT_VALUE_CALLBACK[ARDUINO_OPTA_NUM_DIGITAL_INPUTS] =
-        {
-          before_read_digital_input_1,
-          before_read_digital_input_2,
-          before_read_digital_input_3,
-          before_read_digital_input_4,
-          before_read_digital_input_5,
-          before_read_digital_input_6,
-          before_read_digital_input_7,
-          before_read_digital_input_8
-        };
-
-      for (unsigned int digital_input_num = 1;
-           digital_input_num <= ARDUINO_OPTA_NUM_DIGITAL_INPUTS;
-           digital_input_num++)
+      for (auto const digital_in_pin : ArduinoOptaDigitalInputList)
       {
         rc = opc_ua_define_digital_input(opc_ua_server,
                                          opta_digital_input_node_id,
-                                         digital_input_num,
-                                         BEFORE_READ_DIGITAL_INPUT_VALUE_CALLBACK[digital_input_num - 1]);
+                                         digital_in_pin);
         if (UA_StatusCode_isBad(rc))
         {
           UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
           UA_LOG_ERROR(config->logging,
                        UA_LOGCATEGORY_SERVER,
                        "opc_ua_define_digital_input(..., %d, ...) failed with %s",
-                       digital_input_num,
+                       (int)digital_in_pin,
                        UA_StatusCode_name(rc));
         }
       }
