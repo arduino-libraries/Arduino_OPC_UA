@@ -1,0 +1,118 @@
+/*
+ * Copyright (c) 2024 Arduino
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/**************************************************************************************
+ * INCLUDE
+ **************************************************************************************/
+
+#include "DigitalInput.h"
+
+/**************************************************************************************
+ * NAMESPACE
+ **************************************************************************************/
+
+namespace opcua
+{
+
+/**************************************************************************************
+ * FUNCTION DEFINITION
+ **************************************************************************************/
+
+static void digital_input_on_read_request(UA_Server *server,
+                                          const UA_NodeId *sessionId,
+                                          void *sessionContext,
+                                          const UA_NodeId *nodeid,
+                                          void *nodeContext,
+                                          const UA_NumericRange *range,
+                                          const UA_DataValue *data)
+{
+  DigitalInput * this_ptr = reinterpret_cast<DigitalInput *>(nodeContext);
+  this_ptr->onReadRequest(server, nodeid);
+}
+
+/**************************************************************************************
+ * CTOR/DTOR
+ **************************************************************************************/
+
+DigitalInput::DigitalInput(UA_Server * server,
+                           UA_NodeId const & parent_node_id,
+                           const char * display_name,
+                           OnReadRequestFunc const on_read_request)
+: _on_read_request{on_read_request}
+{
+  UA_VariableAttributes digital_input_value_attr = UA_VariableAttributes_default;
+
+  /* Obtain the current value of the input pin. */
+  PinStatus const in_x_val = _on_read_request();
+  UA_Boolean digital_input_value = (in_x_val == HIGH) ? true : false;
+  UA_Variant_setScalar(&digital_input_value_attr.value, &digital_input_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
+
+  digital_input_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", (char *)display_name);
+  digital_input_value_attr.accessLevel = UA_ACCESSLEVELMASK_READ;
+
+  /* Add the variable node. */
+  UA_StatusCode rc = UA_STATUSCODE_GOOD;
+  rc = UA_Server_addVariableNode(server,
+                                 UA_NODEID_NULL,
+                                 parent_node_id,
+                                 UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
+                                 UA_QUALIFIEDNAME(1, "Value"),
+                                 UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
+                                 digital_input_value_attr,
+                                 NULL,
+                                 &_node_id);
+  if (UA_StatusCode_isBad(rc))
+  {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "DigitalInput::Ctor: UA_Server_addVariableNode(...) failed with %s",
+                 UA_StatusCode_name(rc));
+    return;
+  }
+
+  rc = UA_Server_setNodeContext(server, _node_id, reinterpret_cast<void *>(this));
+  if (UA_StatusCode_isBad(rc))
+  {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "DigitalInput::Ctor: UA_Server_setNodeContext(...) failed with %s",
+                 UA_StatusCode_name(rc));
+    return;
+  }
+
+  UA_ValueCallback callback;
+  callback.onRead = digital_input_on_read_request;
+  callback.onWrite = NULL;
+  rc = UA_Server_setVariableNode_valueCallback(server, _node_id, callback);
+  if (UA_StatusCode_isBad(rc))
+  {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "DigitalInput::Ctor: UA_Server_setVariableNode_valueCallback(...) failed with %s",
+                 UA_StatusCode_name(rc));
+    return;
+  }
+}
+
+void DigitalInput::onReadRequest(UA_Server * server, UA_NodeId const * nodeid)
+{
+  /* Obtain the value of the digital input pin. */
+  PinStatus const in_x_val = _on_read_request();
+  /* Update the variable node. */
+  UA_Boolean in_x_val_opcua_value = (in_x_val == HIGH) ? true : false;
+  UA_Variant in_x_val_opcua_variant;
+  UA_Variant_init(&in_x_val_opcua_variant);
+  UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
+  UA_Server_writeValue(server, *nodeid, in_x_val_opcua_variant);
+  /* Some debug output. */
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalInput::Ctor: onReadRequest(...), value = %d", in_x_val);
+}
+
+/**************************************************************************************
+ * NAMESPACE
+ **************************************************************************************/
+
+} /* opcua */

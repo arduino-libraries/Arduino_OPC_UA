@@ -15,9 +15,10 @@
 
 #include "open62541.h"
 
-#include <list>
+#include <memory>
+#include <functional>
 
-#include "DigitalInput.h"
+#include <Arduino.h>
 
 /**************************************************************************************
  * NAMESPACE
@@ -30,25 +31,25 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class DigitalInputManager
+class DigitalInput
 {
 public:
-  DigitalInputManager();
+  typedef std::shared_ptr<DigitalInput> SharedPtr;
+  typedef std::function<PinStatus(void)> OnReadRequestFunc;
 
-  UA_StatusCode begin(UA_Server * server,
-                      UA_NodeId const parent_node_id);
+  DigitalInput(UA_Server * server,
+               UA_NodeId const & parent_node_id,
+               const char * display_name,
+               OnReadRequestFunc const on_read_request);
 
 
-  UA_StatusCode add_digital_input(UA_Server * server,
-                                  const char * display_name,
-                                  DigitalInput::OnReadRequestFunc const on_read_request_func);
+  /* Do not call, function is called by framework. */
+  void onReadRequest(UA_Server * server, UA_NodeId const * nodeid);
 
 
 private:
-  bool _is_initialized;
+  OnReadRequestFunc _on_read_request;
   UA_NodeId _node_id;
-
-  std::list<DigitalInput::SharedPtr> _digital_input_list;
 };
 
 /**************************************************************************************
