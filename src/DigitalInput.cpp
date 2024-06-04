@@ -81,7 +81,7 @@ DigitalInput::SharedPtr DigitalInput::create(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInput::Ctor: UA_Server_addVariableNode(...) failed with %s",
+                 "DigitalInput::create: UA_Server_addVariableNode(...) failed with %s",
                  UA_StatusCode_name(rc));
     return nullptr;
   }
@@ -93,7 +93,7 @@ DigitalInput::SharedPtr DigitalInput::create(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInput::Ctor: UA_Server_setNodeContext(...) failed with %s",
+                 "DigitalInput::create: UA_Server_setNodeContext(...) failed with %s",
                  UA_StatusCode_name(rc));
     return nullptr;
   }
@@ -105,7 +105,7 @@ DigitalInput::SharedPtr DigitalInput::create(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInput::Ctor: UA_Server_setVariableNode_valueCallback(...) failed with %s",
+                 "DigitalInput::create: UA_Server_setVariableNode_valueCallback(...) failed with %s",
                  UA_StatusCode_name(rc));
     return nullptr;
   }
@@ -124,7 +124,7 @@ void DigitalInput::onReadRequest(UA_Server * server, UA_NodeId const * node_id)
   UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
   UA_Server_writeValue(server, *node_id, in_x_val_opcua_variant);
   /* Some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalInput::Ctor: onReadRequest(...), value = %d", in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalInput::onReadRequest: value = %d", in_x_val);
 }
 
 /**************************************************************************************
