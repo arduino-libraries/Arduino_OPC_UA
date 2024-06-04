@@ -180,13 +180,10 @@ void setup()
     {
       /* Create a server listening on port 4840 (default) */
       opc_ua_server = UA_Server_new();
-      UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
 
       /* Printing OPC/UA server IP and port. */
-      UA_LOG_INFO(config->logging,
-                  UA_LOGCATEGORY_SERVER,
-                  "Arduino Opta IP: %s",
-                  Ethernet.localIP().toString().c_str());
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                  "Arduino Opta IP: %s", Ethernet.localIP().toString().c_str());
 
       UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -195,11 +192,8 @@ void setup()
       rc = opc_ua_define_opta_obj(opc_ua_server, &opta_node_id);
       if (UA_StatusCode_isBad(rc))
       {
-        UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
-        UA_LOG_ERROR(config->logging,
-                     UA_LOGCATEGORY_SERVER,
-                     "opc_ua_define_opta(...) failed with %s",
-                     UA_StatusCode_name(rc));
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_opta(...) failed with %s", UA_StatusCode_name(rc));
+        return;
       }
 
       /* Define Arduino Opta's digital inputs base object. */
@@ -223,11 +217,8 @@ void setup()
       rc = opc_ua_define_relay_obj(opc_ua_server, opta_node_id, &opta_relay_node_id);
       if (UA_StatusCode_isBad(rc))
       {
-        UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
-        UA_LOG_ERROR(config->logging,
-                     UA_LOGCATEGORY_SERVER,
-                     "opc_ua_define_relay_obj(...) failed with %s",
-                     UA_StatusCode_name(rc));
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_relay_obj(...) failed with %s", UA_StatusCode_name(rc));
+        return;
       }
 
       unsigned int const ARDUINO_OPTA_RELAY_NUM_RELAYS = 4;
@@ -240,18 +231,13 @@ void setup()
                                  relay_num);
         if (UA_StatusCode_isBad(rc))
         {
-          UA_ServerConfig * config = UA_Server_getConfig(opc_ua_server);
-          UA_LOG_ERROR(config->logging,
-                       UA_LOGCATEGORY_SERVER,
-                       "opc_ua_define_relay(..., %d, ...) failed with %s",
-                       relay_num,
-                       UA_StatusCode_name(rc));
+          UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_relay(..., %d, ...) failed with %s", relay_num, UA_StatusCode_name(rc));
+          return;
         }
       }
 
       /* Print some threading related message. */
-      UA_LOG_INFO(config->logging,
-                  UA_LOGCATEGORY_SERVER,
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
                   "stack: size = %d | free = %d | used = %d | max = %d",
                   opc_ua_server_thread.stack_size(),
                   opc_ua_server_thread.free_stack(),
@@ -259,8 +245,7 @@ void setup()
                   opc_ua_server_thread.max_stack());
 
       /* Log some data concerning heap allocation. */
-      UA_LOG_INFO(config->logging,
-                  UA_LOGCATEGORY_SERVER,
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
                   "o1heap: capacity: %d | allocated: %d | peak_allocated: %d",
                   o1heapGetDiagnostics(o1heap_ins).capacity,
                   o1heapGetDiagnostics(o1heap_ins).allocated,
@@ -268,7 +253,6 @@ void setup()
 
       /* Run the server (until ctrl-c interrupt) */
       UA_StatusCode const status = UA_Server_runUntilInterrupt(opc_ua_server);
-      Serial.println(status);
     });
 
   pinMode(LED_BUILTIN, OUTPUT);
