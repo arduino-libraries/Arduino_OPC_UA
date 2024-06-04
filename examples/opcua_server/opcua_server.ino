@@ -72,6 +72,7 @@ UA_Server * opc_ua_server = nullptr;
 O1HeapInstance * o1heap_ins = nullptr;
 rtos::Thread opc_ua_server_thread(osPriorityNormal, OPC_UA_SERVER_THREAD_STACK.size(), OPC_UA_SERVER_THREAD_STACK.data());
 
+opcua::AnalogInputManager::SharedPtr opta_analog_input_manager;
 opcua::DigitalInputManager::SharedPtr opta_digital_input_manager;
 
 /**************************************************************************************
@@ -147,6 +148,18 @@ extern "C" void * o1heap_realloc(void * old_ptr, size_t size)
   return new_ptr;
 }
 
+static float arduino_opta_analog_read(pin_size_t const pin)
+{
+  static float const VOLTAGE_MAX = 3.3;      // Maximum voltage that can be read
+  static float const RESOLUTION  = 4096.0;   // 12-bit resolution
+  static float const DIVIDER     = 0.3034;   // Voltage divider
+
+  int const pin_value = analogRead(pin);
+  float const pin_voltage = pin_value * (VOLTAGE_MAX / RESOLUTION) / DIVIDER;
+
+  return pin_voltage;
+}
+
 /**************************************************************************************
  * SETUP/LOOP
  **************************************************************************************/
@@ -195,6 +208,24 @@ void setup()
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_opta(...) failed with %s", UA_StatusCode_name(rc));
         return;
       }
+
+      /* Define Arduino Opta's analog inputs base object. */
+      opta_analog_input_manager = opcua::AnalogInputManager::create(opc_ua_server, opta_node_id);
+      if (!opta_analog_input_manager) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "AnalogInputManager::create(...) failed.");
+        return;
+      }
+      /* Configure analog solution to 12-Bit. */
+      analogReadResolution(12);
+      /* Add the various digital input pins. */
+      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 1", []() { return arduino_opta_analog_read(A0); });
+      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 2", []() { return arduino_opta_analog_read(A1); });
+      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 3", []() { return arduino_opta_analog_read(A2); });
+      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 4", []() { return arduino_opta_analog_read(A3); });
+      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 5", []() { return arduino_opta_analog_read(A4); });
+      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 6", []() { return arduino_opta_analog_read(A5); });
+      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 7", []() { return arduino_opta_analog_read(A6); });
+      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 8", []() { return arduino_opta_analog_read(A7); });
 
       /* Define Arduino Opta's digital inputs base object. */
       opta_digital_input_manager = opcua::DigitalInputManager::create(opc_ua_server, opta_node_id);

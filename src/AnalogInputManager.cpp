@@ -11,7 +11,7 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "DigitalInputManager.h"
+#include "AnalogInputManager.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -24,7 +24,7 @@ namespace opcua
  * CTOR/DTOR
  **************************************************************************************/
 
-DigitalInputManager::DigitalInputManager(UA_NodeId const & node_id)
+AnalogInputManager::AnalogInputManager(UA_NodeId const & node_id)
 : _node_id{node_id}
 {
   /* Nothing happens here. */
@@ -34,18 +34,18 @@ DigitalInputManager::DigitalInputManager(UA_NodeId const & node_id)
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-DigitalInputManager::SharedPtr DigitalInputManager::create(UA_Server * server, UA_NodeId const parent_node_id)
+AnalogInputManager::SharedPtr AnalogInputManager::create(UA_Server * server, UA_NodeId const parent_node_id)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
   UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
-  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Digital Inputs");
+  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Analog Inputs");
   UA_NodeId node_id;
   rc = UA_Server_addObjectNode(server,
                                UA_NODEID_NULL,
                                parent_node_id,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
-                               UA_QUALIFIEDNAME(1, "DigitalInputs"),
+                               UA_QUALIFIEDNAME(1, "AnalogInputs"),
                                UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
                                oAttr,
                                NULL,
@@ -53,11 +53,11 @@ DigitalInputManager::SharedPtr DigitalInputManager::create(UA_Server * server, U
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInputManager::create: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "AnalogInputManager::create: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
     return nullptr;
   }
 
-  auto const instance_ptr = std::make_shared<DigitalInputManager>(node_id);
+  auto const instance_ptr = std::make_shared<AnalogInputManager>(node_id);
   return instance_ptr;
 }
 
@@ -65,21 +65,21 @@ DigitalInputManager::SharedPtr DigitalInputManager::create(UA_Server * server, U
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-void DigitalInputManager::add_digital_input(UA_Server * server,
-                                            const char * display_name,
-                                            DigitalInput::OnReadRequestFunc const on_read_request_func)
+void AnalogInputManager::add_analog_input(UA_Server * server,
+                                          const char * display_name,
+                                          AnalogInput::OnReadRequestFunc const on_read_request_func)
 {
-  /* Create the digital input pin. */
-  auto const digital_input = DigitalInput::create(server, _node_id, display_name, on_read_request_func);
-  /* Validate digital input pin. */
-  if (!digital_input)
+  /* Create the analog input pin. */
+  auto const analog_input = AnalogInput::create(server, _node_id, display_name, on_read_request_func);
+  /* Validate analog input pin. */
+  if (!analog_input)
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInputManager::add_digital_input: DigitalInput::create(...) failed: returned nullptr");
+                 "AnalogInputManager::add_digital_input: AnalogInput::create(...) failed: returned nullptr");
     return;
   }
-  /* Add the digital input pin to our internal list. */
-  _digital_input_list.push_back(digital_input);
+  /* Add the analog input pin to our internal list. */
+  _analog_input_list.push_back(analog_input);
 }
 
 /**************************************************************************************
