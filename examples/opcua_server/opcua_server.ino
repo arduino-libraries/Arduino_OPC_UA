@@ -228,29 +228,11 @@ void setup()
       arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 7", []() { pinMode(A6, INPUT); return digitalRead(A6); });
       arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 8", []() { pinMode(A7, INPUT); return digitalRead(A7); });
 
-//      /* Define Arduino Opta's relays to be accessed via OPC/UA. */
-//      UA_NodeId opta_relay_node_id;
-//      rc = opc_ua_define_relay_obj(opc_ua_server, opta_node_id, &opta_relay_node_id);
-//      if (UA_StatusCode_isBad(rc))
-//      {
-//        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_relay_obj(...) failed with %s", UA_StatusCode_name(rc));
-//        return;
-//      }
-//
-//      unsigned int const ARDUINO_OPTA_RELAY_NUM_RELAYS = 4;
-//      for (unsigned int relay_num = 1;
-//           relay_num <= ARDUINO_OPTA_RELAY_NUM_RELAYS;
-//           relay_num++)
-//      {
-//        rc = opc_ua_define_relay(opc_ua_server,
-//                                 opta_relay_node_id,
-//                                 relay_num);
-//        if (UA_StatusCode_isBad(rc))
-//        {
-//          UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_relay(..., %d, ...) failed with %s", relay_num, UA_StatusCode_name(rc));
-//          return;
-//        }
-//      }
+      /* Add the various relay outputs. */
+      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 1");
+      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 2");
+      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 3");
+      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 4");
 
       /* Print some threading related message. */
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
@@ -272,9 +254,6 @@ void setup()
     });
 
   pinMode(LED_BUILTIN, OUTPUT);
-
-  pinMode(LED_D0, OUTPUT);
-  pinMode(RELAY1, OUTPUT);
 }
 
 void loop()

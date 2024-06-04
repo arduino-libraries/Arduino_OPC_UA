@@ -15,7 +15,10 @@
 
 #include "open62541.h"
 
+#include <list>
 #include <memory>
+
+#include "Relay.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -28,22 +31,24 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class Relay
+class RelayManager
 {
 public:
-  typedef std::shared_ptr<Relay> SharedPtr;
+  typedef std::shared_ptr<RelayManager> SharedPtr;
 
 
-  static SharedPtr create(UA_Server *server,
-                          UA_NodeId const &parent_node_id,
-                          const char *display_name);
+  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id);
 
 
-  Relay(UA_NodeId const &node_id);
+  RelayManager(UA_NodeId const & node_id);
+
+
+  void add_relay_output(UA_Server * server, const char * display_name);
 
 
 private:
   UA_NodeId _node_id;
+  std::list<Relay::SharedPtr> _relay_list;
 };
 
 /**************************************************************************************
@@ -51,4 +56,3 @@ private:
  **************************************************************************************/
 
 } /* opcua */
-

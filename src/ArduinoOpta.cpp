@@ -36,6 +36,11 @@ ArduinoOpta::ArduinoOpta(UA_Server * server, UA_NodeId const & node_id)
   if (!_digital_input_mgr) {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: DigitalInputManager::create(...) failed.");
   }
+
+  _relay_mgr = opcua::RelayManager::create(server, _node_id);
+  if (!_relay_mgr) {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: RelayManager::create(...) failed.");
+  }
 }
 
 /**************************************************************************************
