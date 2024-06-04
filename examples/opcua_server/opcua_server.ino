@@ -72,8 +72,7 @@ UA_Server * opc_ua_server = nullptr;
 O1HeapInstance * o1heap_ins = nullptr;
 rtos::Thread opc_ua_server_thread(osPriorityNormal, OPC_UA_SERVER_THREAD_STACK.size(), OPC_UA_SERVER_THREAD_STACK.data());
 
-opcua::AnalogInputManager::SharedPtr opta_analog_input_manager;
-opcua::DigitalInputManager::SharedPtr opta_digital_input_manager;
+opcua::ArduinoOpta::SharedPtr arduino_opta_opcua;
 
 /**************************************************************************************
  * DEFINES
@@ -201,71 +200,57 @@ void setup()
       UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
       /* Define the Arduino Opta as a OPC/UA object. */
-      UA_NodeId opta_node_id;
-      rc = opc_ua_define_opta_obj(opc_ua_server, &opta_node_id);
-      if (UA_StatusCode_isBad(rc))
-      {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_opta(...) failed with %s", UA_StatusCode_name(rc));
+      arduino_opta_opcua = opcua::ArduinoOpta::create(opc_ua_server);
+      if (!arduino_opta_opcua) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::ArduinoOpta::create(...) failed");
         return;
       }
 
-      /* Define Arduino Opta's analog inputs base object. */
-      opta_analog_input_manager = opcua::AnalogInputManager::create(opc_ua_server, opta_node_id);
-      if (!opta_analog_input_manager) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "AnalogInputManager::create(...) failed.");
-        return;
-      }
       /* Configure analog solution to 12-Bit. */
       analogReadResolution(12);
       /* Add the various digital input pins. */
-      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 1", []() { return arduino_opta_analog_read(A0); });
-      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 2", []() { return arduino_opta_analog_read(A1); });
-      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 3", []() { return arduino_opta_analog_read(A2); });
-      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 4", []() { return arduino_opta_analog_read(A3); });
-      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 5", []() { return arduino_opta_analog_read(A4); });
-      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 6", []() { return arduino_opta_analog_read(A5); });
-      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 7", []() { return arduino_opta_analog_read(A6); });
-      opta_analog_input_manager->add_analog_input(opc_ua_server, "Analog Input 8", []() { return arduino_opta_analog_read(A7); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 1", []() { return arduino_opta_analog_read(A0); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 2", []() { return arduino_opta_analog_read(A1); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 3", []() { return arduino_opta_analog_read(A2); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 4", []() { return arduino_opta_analog_read(A3); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 5", []() { return arduino_opta_analog_read(A4); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 6", []() { return arduino_opta_analog_read(A5); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 7", []() { return arduino_opta_analog_read(A6); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 8", []() { return arduino_opta_analog_read(A7); });
 
-      /* Define Arduino Opta's digital inputs base object. */
-      opta_digital_input_manager = opcua::DigitalInputManager::create(opc_ua_server, opta_node_id);
-      if (!opta_digital_input_manager) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalInputManager::create(...) failed.");
-        return;
-      }
       /* Add the various digital input pins. */
-      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 1", []() { pinMode(A0, INPUT); return digitalRead(A0); });
-      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 2", []() { pinMode(A1, INPUT); return digitalRead(A1); });
-      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 3", []() { pinMode(A2, INPUT); return digitalRead(A2); });
-      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 4", []() { pinMode(A3, INPUT); return digitalRead(A3); });
-      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 5", []() { pinMode(A4, INPUT); return digitalRead(A4); });
-      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 6", []() { pinMode(A5, INPUT); return digitalRead(A5); });
-      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 7", []() { pinMode(A6, INPUT); return digitalRead(A6); });
-      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 8", []() { pinMode(A7, INPUT); return digitalRead(A7); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 1", []() { pinMode(A0, INPUT); return digitalRead(A0); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 2", []() { pinMode(A1, INPUT); return digitalRead(A1); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 3", []() { pinMode(A2, INPUT); return digitalRead(A2); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 4", []() { pinMode(A3, INPUT); return digitalRead(A3); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 5", []() { pinMode(A4, INPUT); return digitalRead(A4); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 6", []() { pinMode(A5, INPUT); return digitalRead(A5); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 7", []() { pinMode(A6, INPUT); return digitalRead(A6); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 8", []() { pinMode(A7, INPUT); return digitalRead(A7); });
 
-      /* Define Arduino Opta's relays to be accessed via OPC/UA. */
-      UA_NodeId opta_relay_node_id;
-      rc = opc_ua_define_relay_obj(opc_ua_server, opta_node_id, &opta_relay_node_id);
-      if (UA_StatusCode_isBad(rc))
-      {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_relay_obj(...) failed with %s", UA_StatusCode_name(rc));
-        return;
-      }
-
-      unsigned int const ARDUINO_OPTA_RELAY_NUM_RELAYS = 4;
-      for (unsigned int relay_num = 1;
-           relay_num <= ARDUINO_OPTA_RELAY_NUM_RELAYS;
-           relay_num++)
-      {
-        rc = opc_ua_define_relay(opc_ua_server,
-                                 opta_relay_node_id,
-                                 relay_num);
-        if (UA_StatusCode_isBad(rc))
-        {
-          UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_relay(..., %d, ...) failed with %s", relay_num, UA_StatusCode_name(rc));
-          return;
-        }
-      }
+//      /* Define Arduino Opta's relays to be accessed via OPC/UA. */
+//      UA_NodeId opta_relay_node_id;
+//      rc = opc_ua_define_relay_obj(opc_ua_server, opta_node_id, &opta_relay_node_id);
+//      if (UA_StatusCode_isBad(rc))
+//      {
+//        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_relay_obj(...) failed with %s", UA_StatusCode_name(rc));
+//        return;
+//      }
+//
+//      unsigned int const ARDUINO_OPTA_RELAY_NUM_RELAYS = 4;
+//      for (unsigned int relay_num = 1;
+//           relay_num <= ARDUINO_OPTA_RELAY_NUM_RELAYS;
+//           relay_num++)
+//      {
+//        rc = opc_ua_define_relay(opc_ua_server,
+//                                 opta_relay_node_id,
+//                                 relay_num);
+//        if (UA_StatusCode_isBad(rc))
+//        {
+//          UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opc_ua_define_relay(..., %d, ...) failed with %s", relay_num, UA_StatusCode_name(rc));
+//          return;
+//        }
+//      }
 
       /* Print some threading related message. */
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,

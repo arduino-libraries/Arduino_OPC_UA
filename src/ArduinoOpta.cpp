@@ -11,21 +11,44 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "Arduino_open62541.h"
-
-#include <Arduino.h>
+#include "ArduinoOpta.h"
 
 /**************************************************************************************
- * FUNCTION DEFINITIONS
+ * NAMESPACE
  **************************************************************************************/
 
-UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
-                                     UA_NodeId * opta_node_id)
+namespace opcua
+{
+
+/**************************************************************************************
+ * CTOR/DTOR
+ **************************************************************************************/
+
+ArduinoOpta::ArduinoOpta(UA_Server * server, UA_NodeId const & node_id)
+: _node_id{node_id}
+{
+  _analog_input_mgr = opcua::AnalogInputManager::create(server, _node_id);
+  if (!_analog_input_mgr) {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: AnalogInputManager::create(...) failed.");
+  }
+
+  _digital_input_mgr = opcua::DigitalInputManager::create(server, _node_id);
+  if (!_digital_input_mgr) {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: DigitalInputManager::create(...) failed.");
+  }
+}
+
+/**************************************************************************************
+ * PUBLIC MEMBER FUNCTIONS
+ **************************************************************************************/
+
+ArduinoOpta::SharedPtr ArduinoOpta::create(UA_Server * server)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
   UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
   oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Arduino Opta");
+  UA_NodeId node_id;
   rc = UA_Server_addObjectNode(server,
                                UA_NODEID_NULL,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
@@ -34,15 +57,13 @@ UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
                                oAttr,
                                NULL,
-                               opta_node_id);
+                               &node_id);
   if (UA_StatusCode_isBad(rc))
   {
-    UA_ServerConfig * config = UA_Server_getConfig(server);
-    UA_LOG_ERROR(config->logging,
-                 UA_LOGCATEGORY_SERVER,
-                 "UA_Server_addObjectNode(...) failed with %s",
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "ArduinoOpta::create: UA_Server_addObjectNode(...) failed with %s",
                  UA_StatusCode_name(rc));
-    return rc;
+    return nullptr;
   }
 
   UA_VariableAttributes mnAttr = UA_VariableAttributes_default;
@@ -51,7 +72,7 @@ UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
   mnAttr.displayName = UA_LOCALIZEDTEXT("en-US", "ManufacturerName");
   rc = UA_Server_addVariableNode(server,
                                  UA_NODEID_NULL,
-                                 *opta_node_id,
+                                 node_id,
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                  UA_QUALIFIEDNAME(1, "ManufacturerName"),
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
@@ -60,12 +81,10 @@ UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
                                  NULL);
   if (UA_StatusCode_isBad(rc))
   {
-    UA_ServerConfig * config = UA_Server_getConfig(server);
-    UA_LOG_ERROR(config->logging,
-                 UA_LOGCATEGORY_SERVER,
-                 "UA_Server_addVariableNode(..., \"ManufacturerName\", ...) failed with %s",
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "ArduinoOpta::create: UA_Server_addVariableNode(..., \"ManufacturerName\", ...) failed with %s",
                  UA_StatusCode_name(rc));
-    return rc;
+    return nullptr;
   }
 
   UA_VariableAttributes modelAttr = UA_VariableAttributes_default;
@@ -74,7 +93,7 @@ UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
   modelAttr.displayName = UA_LOCALIZEDTEXT("en-US", "ModelName");
   rc = UA_Server_addVariableNode(server,
                                  UA_NODEID_NULL,
-                                 *opta_node_id,
+                                 node_id,
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                  UA_QUALIFIEDNAME(1, "ModelName"),
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
@@ -83,12 +102,10 @@ UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
                                  NULL);
   if (UA_StatusCode_isBad(rc))
   {
-    UA_ServerConfig * config = UA_Server_getConfig(server);
-    UA_LOG_ERROR(config->logging,
-                 UA_LOGCATEGORY_SERVER,
-                 "UA_Server_addVariableNode(..., \"ModelName\", ...) failed with %s",
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "ArduinoOpta::create: UA_Server_addVariableNode(..., \"ModelName\", ...) failed with %s",
                  UA_StatusCode_name(rc));
-    return rc;
+    return nullptr;
   }
 
   UA_VariableAttributes statusAttr = UA_VariableAttributes_default;
@@ -97,7 +114,7 @@ UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
   statusAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Status");
   rc = UA_Server_addVariableNode(server,
                                  UA_NODEID_NULL,
-                                 *opta_node_id,
+                                 node_id,
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                  UA_QUALIFIEDNAME(1, "Status"),
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
@@ -106,13 +123,18 @@ UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
                                  NULL);
   if (UA_StatusCode_isBad(rc))
   {
-    UA_ServerConfig * config = UA_Server_getConfig(server);
-    UA_LOG_ERROR(config->logging,
-                 UA_LOGCATEGORY_SERVER,
-                 "UA_Server_addVariableNode(..., \"Status\", ...) failed with %s",
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "ArduinoOpta::create: UA_Server_addVariableNode(..., \"Status\", ...) failed with %s",
                  UA_StatusCode_name(rc));
-    return rc;
+    return nullptr;
   }
 
-  return UA_STATUSCODE_GOOD;
+  auto const instance_ptr = std::make_shared<ArduinoOpta>(server, node_id);
+  return instance_ptr;
 }
+
+/**************************************************************************************
+ * NAMESPACE
+ **************************************************************************************/
+
+} /* opcua */

@@ -16,6 +16,7 @@
 #include "open62541.h"
 #include "o1heap/o1heap.h"
 #include "Relay.h"
+#include "ArduinoOpta.h"
 #include "AnalogInputManager.h"
 #include "DigitalInputManager.h"
 
@@ -26,10 +27,3 @@
 #if !defined(ARDUINO_OPTA)
 # error "This library does only support Arduino Opta"
 #endif
-
-/**************************************************************************************
- * FUNCTION DECLARATIONS
- **************************************************************************************/
-
-UA_StatusCode opc_ua_define_opta_obj(UA_Server * server,
-                                     UA_NodeId * opta_node_id);
