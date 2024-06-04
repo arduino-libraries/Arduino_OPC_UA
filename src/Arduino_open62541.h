@@ -15,7 +15,6 @@
 
 #include "open62541.h"
 #include "o1heap/o1heap.h"
-#include "add_variable.hpp"
 #include "Relay.h"
 #include "DigitalInputManager.h"
 
