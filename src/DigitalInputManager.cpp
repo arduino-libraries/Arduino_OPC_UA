@@ -78,7 +78,7 @@ UA_StatusCode DigitalInputManager::add_digital_input(UA_Server * server,
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
   /* Create the digital input pin. */
-  auto const digital_input = std::make_shared<DigitalInput>(server, _node_id, display_name, on_read_request_func);
+  auto const digital_input = DigitalInput::create(server, _node_id, display_name, on_read_request_func);
   /* Add the digital input pin to our internal list. */
   _digital_input_list.push_back(digital_input);
 
