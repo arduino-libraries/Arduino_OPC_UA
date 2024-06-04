@@ -28,8 +28,8 @@ namespace opcua
  * CTOR/DTOR
  **************************************************************************************/
 
-DigitalInputManager::DigitalInputManager()
-: _is_initialized{false}
+DigitalInputManager::DigitalInputManager(UA_NodeId const & node_id)
+: _node_id{node_id}
 {
   /* Nothing happens here. */
 }
@@ -38,13 +38,13 @@ DigitalInputManager::DigitalInputManager()
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-UA_StatusCode DigitalInputManager::begin(UA_Server * server,
-                                         UA_NodeId const parent_node_id)
+DigitalInputManager::SharedPtr DigitalInputManager::create(UA_Server * server, UA_NodeId const parent_node_id)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
   UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
   oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Digital Inputs");
+  UA_NodeId node_id;
   rc = UA_Server_addObjectNode(server,
                                UA_NODEID_NULL,
                                parent_node_id,
@@ -53,15 +53,16 @@ UA_StatusCode DigitalInputManager::begin(UA_Server * server,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
                                oAttr,
                                NULL,
-                               &_node_id);
+                               &node_id);
   if (UA_StatusCode_isBad(rc))
   {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,  "DigitalInputManager::begin: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
-    return rc;
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "DigitalInputManager::begin: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+    return nullptr;
   }
 
-  _is_initialized = true;
-  return rc;
+  auto const instance_ptr = std::make_shared<DigitalInputManager>(node_id);
+  return instance_ptr;
 }
 
 /**************************************************************************************
@@ -72,9 +73,6 @@ UA_StatusCode DigitalInputManager::add_digital_input(UA_Server * server,
                                                      const char * display_name,
                                                      DigitalInput::OnReadRequestFunc const on_read_request_func)
 {
-  if (!_is_initialized)
-    return UA_STATUSCODE_BAD;
-
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
   /* Create the digital input pin. */

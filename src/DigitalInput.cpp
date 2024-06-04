@@ -40,8 +40,7 @@ static void digital_input_on_read_request(UA_Server *server,
  * CTOR/DTOR
  **************************************************************************************/
 
-DigitalInput::DigitalInput(UA_NodeId const & node_id,
-                           OnReadRequestFunc const on_read_request)
+DigitalInput::DigitalInput(UA_NodeId const & node_id, OnReadRequestFunc const on_read_request)
 : _node_id{node_id}
 , _on_read_request{on_read_request}
 {

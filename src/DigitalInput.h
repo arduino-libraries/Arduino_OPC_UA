@@ -47,8 +47,7 @@ public:
   /* Do no invoke directly, use create for creating
    * new instances of DigitalInput.
    */
-  DigitalInput(UA_NodeId const & node_id,
-               OnReadRequestFunc const on_read_request);
+  DigitalInput(UA_NodeId const & node_id, OnReadRequestFunc const on_read_request);
 
 
   /* Do not call, function is called by framework. */

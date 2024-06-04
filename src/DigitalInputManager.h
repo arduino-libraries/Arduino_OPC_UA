@@ -16,6 +16,7 @@
 #include "open62541.h"
 
 #include <list>
+#include <memory>
 
 #include "DigitalInput.h"
 
@@ -33,10 +34,17 @@ namespace opcua
 class DigitalInputManager
 {
 public:
-  DigitalInputManager();
+  typedef std::shared_ptr<DigitalInputManager> SharedPtr;
 
-  UA_StatusCode begin(UA_Server * server,
-                      UA_NodeId const parent_node_id);
+
+  static SharedPtr create(UA_Server * server,
+                          UA_NodeId const parent_node_id);
+
+
+  /* Do no invoke directly, use create for creating
+   * new instances of DigitalInputManager.
+   */
+  DigitalInputManager(UA_NodeId const & node_id);
 
 
   UA_StatusCode add_digital_input(UA_Server * server,
@@ -45,9 +53,7 @@ public:
 
 
 private:
-  bool _is_initialized;
   UA_NodeId _node_id;
-
   std::list<DigitalInput::SharedPtr> _digital_input_list;
 };
 
