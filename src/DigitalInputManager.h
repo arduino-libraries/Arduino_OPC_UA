@@ -47,9 +47,9 @@ public:
   DigitalInputManager(UA_NodeId const & node_id);
 
 
-  UA_StatusCode add_digital_input(UA_Server * server,
-                                  const char * display_name,
-                                  DigitalInput::OnReadRequestFunc const on_read_request_func);
+  void add_digital_input(UA_Server * server,
+                         const char * display_name,
+                         DigitalInput::OnReadRequestFunc const on_read_request_func);
 
 
 private:

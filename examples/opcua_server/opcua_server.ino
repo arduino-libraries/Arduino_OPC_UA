@@ -209,14 +209,14 @@ void setup()
         return;
       }
       /* Add the various digital input pins. */
-      rc = opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 1", []() { pinMode(A0, INPUT); return digitalRead(A0); });
-      rc = opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 2", []() { pinMode(A1, INPUT); return digitalRead(A1); });
-      rc = opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 3", []() { pinMode(A2, INPUT); return digitalRead(A2); });
-      rc = opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 4", []() { pinMode(A3, INPUT); return digitalRead(A3); });
-      rc = opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 5", []() { pinMode(A4, INPUT); return digitalRead(A4); });
-      rc = opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 6", []() { pinMode(A5, INPUT); return digitalRead(A5); });
-      rc = opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 7", []() { pinMode(A6, INPUT); return digitalRead(A6); });
-      rc = opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 8", []() { pinMode(A7, INPUT); return digitalRead(A7); });
+      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 1", []() { pinMode(A0, INPUT); return digitalRead(A0); });
+      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 2", []() { pinMode(A1, INPUT); return digitalRead(A1); });
+      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 3", []() { pinMode(A2, INPUT); return digitalRead(A2); });
+      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 4", []() { pinMode(A3, INPUT); return digitalRead(A3); });
+      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 5", []() { pinMode(A4, INPUT); return digitalRead(A4); });
+      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 6", []() { pinMode(A5, INPUT); return digitalRead(A5); });
+      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 7", []() { pinMode(A6, INPUT); return digitalRead(A6); });
+      opta_digital_input_manager->add_digital_input(opc_ua_server, "Digital Input 8", []() { pinMode(A7, INPUT); return digitalRead(A7); });
 
       /* Define Arduino Opta's relays to be accessed via OPC/UA. */
       UA_NodeId opta_relay_node_id;

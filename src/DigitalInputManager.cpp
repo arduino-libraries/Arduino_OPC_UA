@@ -69,18 +69,21 @@ DigitalInputManager::SharedPtr DigitalInputManager::create(UA_Server * server, U
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-UA_StatusCode DigitalInputManager::add_digital_input(UA_Server * server,
-                                                     const char * display_name,
-                                                     DigitalInput::OnReadRequestFunc const on_read_request_func)
+void DigitalInputManager::add_digital_input(UA_Server * server,
+                                            const char * display_name,
+                                            DigitalInput::OnReadRequestFunc const on_read_request_func)
 {
-  UA_StatusCode rc = UA_STATUSCODE_GOOD;
-
   /* Create the digital input pin. */
   auto const digital_input = DigitalInput::create(server, _node_id, display_name, on_read_request_func);
+  /* Validate digital input pin. */
+  if (!digital_input)
+  {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "DigitalInputManager::add_digital_input: DigitalInput::create(...) failed: returned nullptr");
+    return;
+  }
   /* Add the digital input pin to our internal list. */
   _digital_input_list.push_back(digital_input);
-
-  return UA_STATUSCODE_GOOD;
 }
 
 /**************************************************************************************
