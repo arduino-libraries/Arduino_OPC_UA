@@ -57,7 +57,7 @@ DigitalInputManager::SharedPtr DigitalInputManager::create(UA_Server * server, U
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInputManager::begin: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "DigitalInputManager::create: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
     return nullptr;
   }
 
