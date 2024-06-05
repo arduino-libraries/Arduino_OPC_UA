@@ -38,12 +38,9 @@ class ArduinoOpta
 public:
   typedef std::shared_ptr<ArduinoOpta> SharedPtr;
 
-
   static SharedPtr create(UA_Server * server);
 
-
   ArduinoOpta(UA_Server * server, UA_NodeId const & node_id);
-
 
   inline AnalogInputManager::SharedPtr analog_input_mgr() const { return _analog_input_mgr; }
   inline DigitalInputManager::SharedPtr digital_input_mgr() const { return _digital_input_mgr; }

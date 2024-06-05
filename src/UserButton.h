@@ -37,12 +37,8 @@ public:
 
   static SharedPtr create(UA_Server * server, UA_NodeId const & parent_node_id);
 
-  /* Do no invoke directly, use create for creating
-   * new instances of UserButton.
-   */
   UserButton(UA_NodeId const & node_id);
 
-  /* Do not call, function is called by framework. */
   void onReadRequest(UA_Server * server, UA_NodeId const * node_id);
 
 

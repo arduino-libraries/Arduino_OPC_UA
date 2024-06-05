@@ -36,15 +36,9 @@ class DigitalInputManager
 public:
   typedef std::shared_ptr<DigitalInputManager> SharedPtr;
 
-
   static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id);
 
-
-  /* Do no invoke directly, use create for creating
-   * new instances of DigitalInputManager.
-   */
   DigitalInputManager(UA_NodeId const & node_id);
-
 
   void add_digital_input(UA_Server * server,
                          const char * display_name,

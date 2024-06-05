@@ -33,11 +33,9 @@ class Relay
 public:
   typedef std::shared_ptr<Relay> SharedPtr;
 
-
   static SharedPtr create(UA_Server *server,
                           UA_NodeId const &parent_node_id,
                           const char *display_name);
-
 
   Relay(UA_NodeId const &node_id);
 

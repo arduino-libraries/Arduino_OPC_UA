@@ -37,20 +37,13 @@ public:
   typedef std::shared_ptr<DigitalInput> SharedPtr;
   typedef std::function<PinStatus(void)> OnReadRequestFunc;
 
-
   static SharedPtr create(UA_Server * server,
                           UA_NodeId const & parent_node_id,
                           const char * display_name,
                           OnReadRequestFunc const on_read_request);
 
-
-  /* Do no invoke directly, use create for creating
-   * new instances of DigitalInput.
-   */
   DigitalInput(UA_NodeId const & node_id, OnReadRequestFunc const on_read_request);
 
-
-  /* Do not call, function is called by framework. */
   void onReadRequest(UA_Server * server, UA_NodeId const * node_id);
 
 

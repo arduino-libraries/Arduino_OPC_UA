@@ -36,16 +36,9 @@ class AnalogInputManager
 public:
   typedef std::shared_ptr<AnalogInputManager> SharedPtr;
 
+  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id);
 
-  static SharedPtr create(UA_Server * server,
-                          UA_NodeId const parent_node_id);
-
-
-  /* Do no invoke directly, use create for creating
-   * new instances of AnalogInputManager.
-   */
   AnalogInputManager(UA_NodeId const & node_id);
-
 
   void add_analog_input(UA_Server * server,
                         const char * display_name,
