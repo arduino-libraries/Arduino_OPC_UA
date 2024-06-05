@@ -67,7 +67,7 @@ Relay::SharedPtr Relay::create(UA_Server *server,
     return nullptr;
   }
 
-  /* Create an instance of DigitalInput here. */
+  /* Create an instance of Relay here. */
   auto const instance_ptr = std::make_shared<Relay>(node_id);
   return instance_ptr;
 }
