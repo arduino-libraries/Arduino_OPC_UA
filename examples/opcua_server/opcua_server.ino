@@ -229,10 +229,10 @@ void setup()
       arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 8", []() { pinMode(A7, INPUT); return digitalRead(A7); });
 
       /* Add the various relay outputs. */
-      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 1");
-      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 2");
-      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 3");
-      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 4");
+      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 1", [](bool const value) { pinMode(RELAY1, OUTPUT); digitalWrite(RELAY1, value); });
+      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 2", [](bool const value) { pinMode(RELAY2, OUTPUT); digitalWrite(RELAY2, value); });
+      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 3", [](bool const value) { pinMode(RELAY3, OUTPUT); digitalWrite(RELAY3, value); });
+      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 4", [](bool const value) { pinMode(RELAY4, OUTPUT); digitalWrite(RELAY4, value); });
 
       /* Print some threading related message. */
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,

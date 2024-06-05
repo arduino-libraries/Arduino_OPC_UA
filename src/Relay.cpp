@@ -21,11 +21,29 @@ namespace opcua
 {
 
 /**************************************************************************************
+ * FUNCTION DEFINITION
+ **************************************************************************************/
+
+static void relay_on_write_request(UA_Server *server,
+                                   const UA_NodeId *sessionId,
+                                   void *sessionContext,
+                                   const UA_NodeId *nodeid,
+                                   void *nodeContext,
+                                   const UA_NumericRange *range,
+                                   const UA_DataValue *data)
+{
+  bool const value = *(UA_Boolean *)(data->value.data) == true;
+  Relay * this_ptr = reinterpret_cast<Relay *>(nodeContext);
+  this_ptr->onWriteRequest(server, nodeid, value);
+}
+
+/**************************************************************************************
  * CTOR/DTOR
  **************************************************************************************/
 
-Relay::Relay(UA_NodeId const & node_id)
+Relay::Relay(UA_NodeId const & node_id, OnSetRelayStateFunc const on_set_relay_state)
   : _node_id{node_id}
+  , _on_set_relay_state{on_set_relay_state}
 {
 
 }
@@ -36,7 +54,8 @@ Relay::Relay(UA_NodeId const & node_id)
 
 Relay::SharedPtr Relay::create(UA_Server *server,
                                UA_NodeId const &parent_node_id,
-                               const char *display_name)
+                               const char *display_name,
+                               OnSetRelayStateFunc const on_set_relay_state)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -45,6 +64,7 @@ Relay::SharedPtr Relay::create(UA_Server *server,
   UA_Variant_setScalar(&relay_value_attr.value, &relay_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
 
   relay_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", (char *)display_name);
+  relay_value_attr.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
   relay_value_attr.accessLevel =
     UA_ACCESSLEVELMASK_READ |
     UA_ACCESSLEVELMASK_WRITE | UA_ACCESSLEVELMASK_STATUSWRITE |
@@ -68,8 +88,37 @@ Relay::SharedPtr Relay::create(UA_Server *server,
   }
 
   /* Create an instance of Relay here. */
-  auto const instance_ptr = std::make_shared<Relay>(node_id);
+  auto const instance_ptr = std::make_shared<Relay>(node_id, on_set_relay_state);
+
+  rc = UA_Server_setNodeContext(server, node_id, reinterpret_cast<void *>(instance_ptr.get()));
+  if (UA_StatusCode_isBad(rc))
+  {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "Relay::create: UA_Server_setNodeContext(...) failed with %s",
+                 UA_StatusCode_name(rc));
+    return nullptr;
+  }
+
+  UA_ValueCallback callback;
+  callback.onRead = NULL;
+  callback.onWrite = relay_on_write_request;
+  rc = UA_Server_setVariableNode_valueCallback(server, node_id, callback);
+  if (UA_StatusCode_isBad(rc))
+  {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "Relay::create: UA_Server_setVariableNode_valueCallback(...) failed with %s",
+                 UA_StatusCode_name(rc));
+    return nullptr;
+  }
+
   return instance_ptr;
+}
+
+void Relay::onWriteRequest(UA_Server * server, UA_NodeId const * node_id, bool const value)
+{
+  /* Some debug output. */
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Relay::onWriteRequest: value = %d", value);
+  _on_set_relay_state(value);
 }
 
 /**************************************************************************************

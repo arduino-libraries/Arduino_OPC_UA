@@ -40,7 +40,7 @@ public:
 
   RelayManager(UA_NodeId const & node_id);
 
-  void add_relay_output(UA_Server * server, const char * display_name);
+  void add_relay_output(UA_Server * server, const char * display_name, Relay::OnSetRelayStateFunc const on_set_relay_state);
 
 
 private:

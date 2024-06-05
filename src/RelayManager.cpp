@@ -128,18 +128,14 @@ RelayManager::SharedPtr RelayManager::create(UA_Server * server, UA_NodeId const
  **************************************************************************************/
 
 void RelayManager::add_relay_output(UA_Server * server,
-                                    const char * display_name)
+                                    const char * display_name,
+                                    Relay::OnSetRelayStateFunc const on_set_relay_state)
 {
-  /* Create the digital input pin. */
-  auto const relay = Relay::create(server, _node_id, display_name);
-  /* Validate digital input pin. */
-  if (!relay)
-  {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "RelayManager::add_relay_output: Relay::create(...) failed: returned nullptr");
+  auto const relay = Relay::create(server, _node_id, display_name, on_set_relay_state);
+  if (!relay) {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "RelayManager::add_relay_output: Relay::create(...) failed: returned nullptr");
     return;
   }
-  /* Add the digital input pin to our internal list. */
   _relay_list.push_back(relay);
 }
 
