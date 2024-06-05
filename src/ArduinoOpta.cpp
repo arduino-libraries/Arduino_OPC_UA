@@ -27,6 +27,11 @@ namespace opcua
 ArduinoOpta::ArduinoOpta(UA_Server * server, UA_NodeId const & node_id)
 : _node_id{node_id}
 {
+  _usr_button = opcua::UserButton::create(server, _node_id);
+  if (!_usr_button) {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: UserButton::create(...) failed.");
+  }
+
   _analog_input_mgr = opcua::AnalogInputManager::create(server, _node_id);
   if (!_analog_input_mgr) {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: AnalogInputManager::create(...) failed.");

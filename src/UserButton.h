@@ -17,10 +17,7 @@
 
 #include <memory>
 
-#include "RelayManager.h"
-#include "AnalogInputManager.h"
-#include "DigitalInputManager.h"
-#include "UserButton.h"
+#include <Arduino.h>
 
 /**************************************************************************************
  * NAMESPACE
@@ -33,29 +30,24 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class ArduinoOpta
+class UserButton
 {
 public:
-  typedef std::shared_ptr<ArduinoOpta> SharedPtr;
+  typedef std::shared_ptr<UserButton> SharedPtr;
 
+  static SharedPtr create(UA_Server * server, UA_NodeId const & parent_node_id);
 
-  static SharedPtr create(UA_Server * server);
+  /* Do no invoke directly, use create for creating
+   * new instances of UserButton.
+   */
+  UserButton(UA_NodeId const & node_id);
 
-
-  ArduinoOpta(UA_Server * server, UA_NodeId const & node_id);
-
-
-  inline AnalogInputManager::SharedPtr analog_input_mgr() const { return _analog_input_mgr; }
-  inline DigitalInputManager::SharedPtr digital_input_mgr() const { return _digital_input_mgr; }
-  inline RelayManager::SharedPtr relay_mgr() const { return _relay_mgr; }
+  /* Do not call, function is called by framework. */
+  void onReadRequest(UA_Server * server, UA_NodeId const * node_id);
 
 
 private:
   UA_NodeId _node_id;
-  UserButton::SharedPtr _usr_button;
-  AnalogInputManager::SharedPtr _analog_input_mgr;
-  DigitalInputManager::SharedPtr _digital_input_mgr;
-  RelayManager::SharedPtr _relay_mgr;
 };
 
 /**************************************************************************************
