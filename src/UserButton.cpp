@@ -79,7 +79,7 @@ UserButton::SharedPtr UserButton::create(UA_Server * server, UA_NodeId const & p
   /* Obtain the current value of the input pin. */
   pinMode(BTN_USER, INPUT);
   PinStatus const in_x_val = digitalRead(BTN_USER);
-  UA_Boolean user_button_value = (in_x_val == HIGH) ? true : false;
+  UA_Boolean user_button_value = (in_x_val == HIGH) ? false : true;
   UA_Variant_setScalar(&user_button_value_attr.value, &user_button_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
 
   user_button_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", "User Button Value");
@@ -138,7 +138,7 @@ void UserButton::onReadRequest(UA_Server * server, UA_NodeId const * node_id)
   pinMode(BTN_USER, INPUT);
   PinStatus const in_x_val = digitalRead(BTN_USER);
   /* Update the variable node. */
-  UA_Boolean in_x_val_opcua_value = (in_x_val == HIGH) ? true : false;
+  UA_Boolean in_x_val_opcua_value = (in_x_val == HIGH) ? false : true;
   UA_Variant in_x_val_opcua_variant;
   UA_Variant_init(&in_x_val_opcua_variant);
   UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
