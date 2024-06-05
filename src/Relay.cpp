@@ -60,7 +60,8 @@ Relay::SharedPtr Relay::create(UA_Server *server,
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
   UA_VariableAttributes relay_value_attr = UA_VariableAttributes_default;
-  UA_Boolean relay_value = true;
+
+  UA_Boolean relay_value = false;
   UA_Variant_setScalar(&relay_value_attr.value, &relay_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
 
   relay_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", (char *)display_name);
