@@ -83,6 +83,7 @@ UserButton::SharedPtr UserButton::create(UA_Server * server, UA_NodeId const & p
   UA_Variant_setScalar(&user_button_value_attr.value, &user_button_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
 
   user_button_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", "User Button Value");
+  user_button_value_attr.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
   user_button_value_attr.accessLevel = UA_ACCESSLEVELMASK_READ;
 
   /* Add the variable node. */

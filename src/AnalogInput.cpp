@@ -63,6 +63,7 @@ AnalogInput::SharedPtr AnalogInput::create(UA_Server * server,
   UA_Variant_setScalar(&analog_input_value_attr.value, &analog_input_value, &UA_TYPES[UA_TYPES_FLOAT]);
 
   analog_input_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", (char *)display_name);
+  analog_input_value_attr.dataType = UA_TYPES[UA_TYPES_FLOAT].typeId;
   analog_input_value_attr.accessLevel = UA_ACCESSLEVELMASK_READ;
 
   /* Add the variable node. */

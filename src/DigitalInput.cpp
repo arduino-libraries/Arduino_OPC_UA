@@ -64,6 +64,7 @@ DigitalInput::SharedPtr DigitalInput::create(UA_Server * server,
   UA_Variant_setScalar(&digital_input_value_attr.value, &digital_input_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
 
   digital_input_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", (char *)display_name);
+  digital_input_value_attr.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
   digital_input_value_attr.accessLevel = UA_ACCESSLEVELMASK_READ;
 
   /* Add the variable node. */
