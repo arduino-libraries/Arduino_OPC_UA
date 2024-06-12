@@ -24,13 +24,13 @@ namespace opcua
  * FUNCTION DEFINITION
  **************************************************************************************/
 
-static void relay_on_write_request(UA_Server *server,
-                                   const UA_NodeId *sessionId,
-                                   void *sessionContext,
-                                   const UA_NodeId *nodeid,
-                                   void *nodeContext,
-                                   const UA_NumericRange *range,
-                                   const UA_DataValue *data)
+static void led_on_write_request(UA_Server *server,
+                                 const UA_NodeId *sessionId,
+                                 void *sessionContext,
+                                 const UA_NodeId *nodeid,
+                                 void *nodeContext,
+                                 const UA_NumericRange *range,
+                                 const UA_DataValue *data)
 {
   bool const value = *(UA_Boolean *)(data->value.data) == true;
   Led * this_ptr = reinterpret_cast<Led *>(nodeContext);
@@ -53,20 +53,20 @@ Led::Led(UA_NodeId const & node_id, OnSetLedStateFunc const on_set_led_state)
  **************************************************************************************/
 
 Led::SharedPtr Led::create(UA_Server *server,
-                               UA_NodeId const &parent_node_id,
-                               const char *display_name,
-                               OnSetLedStateFunc const on_set_led_state)
+                           UA_NodeId const &parent_node_id,
+                           const char *display_name,
+                           OnSetLedStateFunc const on_set_led_state)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
-  UA_VariableAttributes relay_value_attr = UA_VariableAttributes_default;
+  UA_VariableAttributes led_value_attr = UA_VariableAttributes_default;
 
-  UA_Boolean relay_value = false;
-  UA_Variant_setScalar(&relay_value_attr.value, &relay_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
+  UA_Boolean led_value = false;
+  UA_Variant_setScalar(&led_value_attr.value, &led_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
 
-  relay_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", (char *)display_name);
-  relay_value_attr.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
-  relay_value_attr.accessLevel =
+  led_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", (char *)display_name);
+  led_value_attr.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
+  led_value_attr.accessLevel =
     UA_ACCESSLEVELMASK_READ |
     UA_ACCESSLEVELMASK_WRITE | UA_ACCESSLEVELMASK_STATUSWRITE |
     UA_ACCESSLEVELMASK_TIMESTAMPWRITE; /* Status and timestamp write access necessary for opcua-client. */
@@ -78,7 +78,7 @@ Led::SharedPtr Led::create(UA_Server *server,
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                  UA_QUALIFIEDNAME(1, "Value"),
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
-                                 relay_value_attr,
+                                 led_value_attr,
                                  NULL,
                                  &node_id);
   if (UA_StatusCode_isBad(rc))
@@ -102,7 +102,7 @@ Led::SharedPtr Led::create(UA_Server *server,
 
   UA_ValueCallback callback;
   callback.onRead = NULL;
-  callback.onWrite = relay_on_write_request;
+  callback.onWrite = led_on_write_request;
   rc = UA_Server_setVariableNode_valueCallback(server, node_id, callback);
   if (UA_StatusCode_isBad(rc))
   {
