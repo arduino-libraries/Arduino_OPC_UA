@@ -241,7 +241,9 @@ void setup()
       arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 4", [](bool const value) { pinMode(RELAY4, OUTPUT); digitalWrite(RELAY4, value); pinMode(LED_D3, OUTPUT); digitalWrite(LED_D3, value);});
 
       /* Add the various LED outputs. */
-      arduino_opta_opcua->led_mgr()->add_led_output(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
+      if (opta_type == opcua::ArduinoOptaVariant::Type::WiFi) {
+        arduino_opta_opcua->led_mgr()->add_led_output(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
+      }
 
       /* Print some threading related message. */
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
