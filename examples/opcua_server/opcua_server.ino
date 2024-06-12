@@ -197,7 +197,13 @@ void setup()
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
                   "Arduino Opta IP: %s", Ethernet.localIP().toString().c_str());
 
-      UA_StatusCode rc = UA_STATUSCODE_GOOD;
+      /* Determine the Arduino OPC/UA hardware variant. */
+      opcua::ArduinoOptaVariant::Type opta_type;
+      if (!opcua::ArduinoOptaVariant::get_opta_variant(opta_type)) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::ArduinoOptaVariant::get_opta_variant(...) failed");
+        return;
+      }
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Arduino Opta Variant: %s", opcua::ArduinoOptaVariant::toString(opta_type).c_str());
 
       /* Define the Arduino Opta as a OPC/UA object. */
       arduino_opta_opcua = opcua::ArduinoOpta::create(opc_ua_server);
@@ -233,6 +239,11 @@ void setup()
       arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 2", [](bool const value) { pinMode(RELAY2, OUTPUT); digitalWrite(RELAY2, value); pinMode(LED_D1, OUTPUT); digitalWrite(LED_D1, value);});
       arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 3", [](bool const value) { pinMode(RELAY3, OUTPUT); digitalWrite(RELAY3, value); pinMode(LED_D2, OUTPUT); digitalWrite(LED_D2, value);});
       arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 4", [](bool const value) { pinMode(RELAY4, OUTPUT); digitalWrite(RELAY4, value); pinMode(LED_D3, OUTPUT); digitalWrite(LED_D3, value);});
+
+      /* Add the various LED outputs. */
+      if (opta_type == opcua::ArduinoOptaVariant::Type::WiFi) {
+        arduino_opta_opcua->led_mgr()->add_led_output(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
+      }
 
       /* Print some threading related message. */
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,

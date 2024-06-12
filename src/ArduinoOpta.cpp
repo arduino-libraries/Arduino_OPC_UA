@@ -46,6 +46,11 @@ ArduinoOpta::ArduinoOpta(UA_Server * server, UA_NodeId const & node_id)
   if (!_relay_mgr) {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: RelayManager::create(...) failed.");
   }
+
+  _led_mgr = opcua::LedManager::create(server, _node_id);
+  if (!_led_mgr) {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: LedManager::create(...) failed.");
+  }
 }
 
 /**************************************************************************************

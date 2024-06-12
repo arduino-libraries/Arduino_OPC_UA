@@ -15,10 +15,9 @@
 
 #include "open62541.h"
 #include "o1heap/o1heap.h"
-#include "Relay.h"
+
 #include "ArduinoOpta.h"
-#include "AnalogInputManager.h"
-#include "DigitalInputManager.h"
+#include "ArduinoOptaVariant.h"
 
 /**************************************************************************************
  * DEFINES

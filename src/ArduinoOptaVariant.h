@@ -13,10 +13,7 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "open62541.h"
-
-#include <memory>
-#include <functional>
+#include <string>
 
 /**************************************************************************************
  * NAMESPACE
@@ -29,25 +26,17 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class Relay
+class ArduinoOptaVariant
 {
 public:
-  typedef std::shared_ptr<Relay> SharedPtr;
-  typedef std::function<void(bool const)> OnSetRelayStateFunc;
+  ArduinoOptaVariant() = delete;
+  ArduinoOptaVariant(ArduinoOptaVariant const &) = delete;
 
-  static SharedPtr create(UA_Server *server,
-                          UA_NodeId const &parent_node_id,
-                          const char *display_name,
-                          OnSetRelayStateFunc const on_set_relay_state);
+  enum class Type { Lite, RS485, WiFi };
 
-  Relay(UA_NodeId const &node_id, OnSetRelayStateFunc const on_set_relay_state);
+  static bool get_opta_variant(Type & type);
 
-  void onWriteRequest(UA_Server * server, UA_NodeId const * node_id, bool const value);
-
-
-private:
-  UA_NodeId _node_id;
-  OnSetRelayStateFunc const _on_set_relay_state;
+  static std::string toString(Type const type);
 };
 
 /**************************************************************************************

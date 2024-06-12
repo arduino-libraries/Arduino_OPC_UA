@@ -17,6 +17,7 @@
 
 #include <memory>
 
+#include "LedManager.h"
 #include "RelayManager.h"
 #include "AnalogInputManager.h"
 #include "DigitalInputManager.h"
@@ -45,6 +46,7 @@ public:
   inline AnalogInputManager::SharedPtr analog_input_mgr() const { return _analog_input_mgr; }
   inline DigitalInputManager::SharedPtr digital_input_mgr() const { return _digital_input_mgr; }
   inline RelayManager::SharedPtr relay_mgr() const { return _relay_mgr; }
+  inline LedManager::SharedPtr led_mgr() const { return _led_mgr; }
 
 
 private:
@@ -53,6 +55,7 @@ private:
   AnalogInputManager::SharedPtr _analog_input_mgr;
   DigitalInputManager::SharedPtr _digital_input_mgr;
   RelayManager::SharedPtr _relay_mgr;
+  LedManager::SharedPtr _led_mgr;
 };
 
 /**************************************************************************************

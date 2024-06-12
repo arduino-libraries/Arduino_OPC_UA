@@ -15,8 +15,10 @@
 
 #include "open62541.h"
 
+#include <list>
 #include <memory>
-#include <functional>
+
+#include "Led.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -29,25 +31,21 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class Relay
+class LedManager
 {
 public:
-  typedef std::shared_ptr<Relay> SharedPtr;
-  typedef std::function<void(bool const)> OnSetRelayStateFunc;
+  typedef std::shared_ptr<LedManager> SharedPtr;
 
-  static SharedPtr create(UA_Server *server,
-                          UA_NodeId const &parent_node_id,
-                          const char *display_name,
-                          OnSetRelayStateFunc const on_set_relay_state);
+  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id);
 
-  Relay(UA_NodeId const &node_id, OnSetRelayStateFunc const on_set_relay_state);
+  LedManager(UA_NodeId const & node_id);
 
-  void onWriteRequest(UA_Server * server, UA_NodeId const * node_id, bool const value);
+  void add_led_output(UA_Server * server, const char * display_name, Led::OnSetLedStateFunc const on_set_led_state);
 
 
 private:
   UA_NodeId _node_id;
-  OnSetRelayStateFunc const _on_set_relay_state;
+  std::list<Led::SharedPtr> _led_list;
 };
 
 /**************************************************************************************
