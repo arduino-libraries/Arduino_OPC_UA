@@ -16,7 +16,7 @@
 #if __has_include("opta_info.h")
 # include <cstdint>
 # include "opta_info.h"
-extern "C" OptaBoardInfo * boardInfo();
+OptaBoardInfo * boardInfo();
 #else
 # error "Can not find include file \"opta_info.h\""
 #endif
