@@ -234,6 +234,9 @@ void setup()
       arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 3", [](bool const value) { pinMode(RELAY3, OUTPUT); digitalWrite(RELAY3, value); pinMode(LED_D2, OUTPUT); digitalWrite(LED_D2, value);});
       arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 4", [](bool const value) { pinMode(RELAY4, OUTPUT); digitalWrite(RELAY4, value); pinMode(LED_D3, OUTPUT); digitalWrite(LED_D3, value);});
 
+      /* Add the various LED outputs. */
+      arduino_opta_opcua->led_mgr()->add_led_output(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
+
       /* Print some threading related message. */
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
                   "stack: size = %d | free = %d | used = %d | max = %d",

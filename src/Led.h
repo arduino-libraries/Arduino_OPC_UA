@@ -29,25 +29,25 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class Relay
+class Led
 {
 public:
-  typedef std::shared_ptr<Relay> SharedPtr;
-  typedef std::function<void(bool const)> OnSetRelayStateFunc;
+  typedef std::shared_ptr<Led> SharedPtr;
+  typedef std::function<void(bool const)> OnSetLedStateFunc;
 
   static SharedPtr create(UA_Server *server,
                           UA_NodeId const &parent_node_id,
                           const char *display_name,
-                          OnSetRelayStateFunc const on_set_relay_state);
+                          OnSetLedStateFunc const on_set_led_state);
 
-  Relay(UA_NodeId const &node_id, OnSetRelayStateFunc const on_set_relay_state);
+  Led(UA_NodeId const &node_id, OnSetLedStateFunc const on_set_led_state);
 
   void onWriteRequest(UA_Server * server, UA_NodeId const * node_id, bool const value);
 
 
 private:
   UA_NodeId _node_id;
-  OnSetRelayStateFunc const _on_set_relay_state;
+  OnSetLedStateFunc const _on_set_led_state;
 };
 
 /**************************************************************************************
