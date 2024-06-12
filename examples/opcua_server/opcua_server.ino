@@ -197,6 +197,14 @@ void setup()
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
                   "Arduino Opta IP: %s", Ethernet.localIP().toString().c_str());
 
+      /* Determine the Arduino OPC/UA hardware variant. */
+      opcua::ArduinoOptaVariant::Type opta_type;
+      if (!opcua::ArduinoOptaVariant::get_opta_variant(opta_type)) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::ArduinoOptaVariant::get_opta_variant(...) failed");
+        return;
+      }
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Arduino Opta Variant: %s", opcua::ArduinoOptaVariant::toString(opta_type).c_str());
+
       /* Define the Arduino Opta as a OPC/UA object. */
       arduino_opta_opcua = opcua::ArduinoOpta::create(opc_ua_server);
       if (!arduino_opta_opcua) {
