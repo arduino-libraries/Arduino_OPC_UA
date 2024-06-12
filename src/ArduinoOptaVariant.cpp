@@ -51,6 +51,17 @@ bool ArduinoOptaVariant::get_opta_variant(Type & type)
   return true;
 }
 
+std::string ArduinoOptaVariant::toString(Type const type)
+{
+  switch(type)
+  {
+    case ArduinoOptaVariant::Type::WiFi:  return std::string("Arduino Opta WiFi");  break;
+    case ArduinoOptaVariant::Type::RS485: return std::string("Arduino Opta RS485"); break;
+    case ArduinoOptaVariant::Type::Lite:  return std::string("Arduino Opta Lite");  break;
+    default: __builtin_unreachable(); break;
+  }
+}
+
 /**************************************************************************************
  * NAMESPACE
  **************************************************************************************/
