@@ -197,8 +197,6 @@ void setup()
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
                   "Arduino Opta IP: %s", Ethernet.localIP().toString().c_str());
 
-      UA_StatusCode rc = UA_STATUSCODE_GOOD;
-
       /* Define the Arduino Opta as a OPC/UA object. */
       arduino_opta_opcua = opcua::ArduinoOpta::create(opc_ua_server);
       if (!arduino_opta_opcua) {
