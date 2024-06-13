@@ -25,32 +25,16 @@ namespace opcua
  **************************************************************************************/
 
 ArduinoOpta::ArduinoOpta(UA_Server * server, UA_NodeId const & node_id)
-: _node_id{node_id}
+: _server{server}
+, _node_id{node_id}
+, _analog_input_mgr{nullptr}
+, _digital_input_mgr{nullptr}
+, _relay_mgr{nullptr}
+, _led_mgr{nullptr}
 {
-  _usr_button = opcua::UserButton::create(server, _node_id);
-  if (!_usr_button) {
+  _usr_button = opcua::UserButton::create(_server, _node_id);
+  if (!_usr_button)
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: UserButton::create(...) failed.");
-  }
-
-  _analog_input_mgr = opcua::AnalogInputManager::create(server, _node_id);
-  if (!_analog_input_mgr) {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: AnalogInputManager::create(...) failed.");
-  }
-
-  _digital_input_mgr = opcua::DigitalInputManager::create(server, _node_id);
-  if (!_digital_input_mgr) {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: DigitalInputManager::create(...) failed.");
-  }
-
-  _relay_mgr = opcua::RelayManager::create(server, _node_id);
-  if (!_relay_mgr) {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: RelayManager::create(...) failed.");
-  }
-
-  _led_mgr = opcua::LedManager::create(server, _node_id);
-  if (!_led_mgr) {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::Ctor: LedManager::create(...) failed.");
-  }
 }
 
 /**************************************************************************************
@@ -146,6 +130,54 @@ ArduinoOpta::SharedPtr ArduinoOpta::create(UA_Server * server, ArduinoOptaVarian
 
   auto const instance_ptr = std::make_shared<ArduinoOpta>(server, node_id);
   return instance_ptr;
+}
+
+AnalogInputManager::SharedPtr ArduinoOpta::analog_input_mgr()
+{
+  if (!_analog_input_mgr)
+  {
+    _analog_input_mgr = opcua::AnalogInputManager::create(_server, _node_id);
+    if (!_analog_input_mgr)
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::analog_input_mgr: AnalogInputManager::create(...) failed.");
+  }
+
+  return _analog_input_mgr;
+}
+
+DigitalInputManager::SharedPtr ArduinoOpta::digital_input_mgr()
+{
+  if (!_digital_input_mgr)
+  {
+    _digital_input_mgr = opcua::DigitalInputManager::create(_server, _node_id);
+    if (!_digital_input_mgr)
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::digital_input_mgr: DigitalInputManager::create(...) failed.");
+  }
+
+  return _digital_input_mgr;
+}
+
+RelayManager::SharedPtr ArduinoOpta::relay_mgr()
+{
+  if (!_relay_mgr)
+  {
+    _relay_mgr = opcua::RelayManager::create(_server, _node_id);
+    if (!_relay_mgr)
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::relay_mgr: RelayManager::create(...) failed.");
+  }
+
+  return _relay_mgr;
+}
+
+LedManager::SharedPtr ArduinoOpta::led_mgr()
+{
+  if (!_led_mgr)
+  {
+    _led_mgr = opcua::LedManager::create(_server, _node_id);
+    if (!_led_mgr)
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOpta::led_mgr: LedManager::create(...) failed.");
+  }
+
+  return _led_mgr;
 }
 
 /**************************************************************************************
