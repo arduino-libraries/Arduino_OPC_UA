@@ -206,7 +206,7 @@ void setup()
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Arduino Opta Variant: %s", opcua::ArduinoOptaVariant::toString(opta_type).c_str());
 
       /* Define the Arduino Opta as a OPC/UA object. */
-      arduino_opta_opcua = opcua::ArduinoOpta::create(opc_ua_server);
+      arduino_opta_opcua = opcua::ArduinoOpta::create(opc_ua_server, opta_type);
       if (!arduino_opta_opcua) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::ArduinoOpta::create(...) failed");
         return;

@@ -22,6 +22,7 @@
 #include "AnalogInputManager.h"
 #include "DigitalInputManager.h"
 #include "UserButton.h"
+#include "ArduinoOptaVariant.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -39,7 +40,7 @@ class ArduinoOpta
 public:
   typedef std::shared_ptr<ArduinoOpta> SharedPtr;
 
-  static SharedPtr create(UA_Server * server);
+  static SharedPtr create(UA_Server * server, ArduinoOptaVariant::Type const opta_type);
 
   ArduinoOpta(UA_Server * server, UA_NodeId const & node_id);
 

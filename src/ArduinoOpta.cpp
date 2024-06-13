@@ -57,7 +57,7 @@ ArduinoOpta::ArduinoOpta(UA_Server * server, UA_NodeId const & node_id)
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-ArduinoOpta::SharedPtr ArduinoOpta::create(UA_Server * server)
+ArduinoOpta::SharedPtr ArduinoOpta::create(UA_Server * server, ArduinoOptaVariant::Type const opta_type)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -103,7 +103,7 @@ ArduinoOpta::SharedPtr ArduinoOpta::create(UA_Server * server)
   }
 
   UA_VariableAttributes modelAttr = UA_VariableAttributes_default;
-  UA_String modelName = UA_STRING("Arduino Opta WiFi");
+  UA_String modelName = UA_STRING((char *)ArduinoOptaVariant::toString(opta_type).c_str());
   UA_Variant_setScalar(&modelAttr.value, &modelName, &UA_TYPES[UA_TYPES_STRING]);
   modelAttr.displayName = UA_LOCALIZEDTEXT("en-US", "ModelName");
   rc = UA_Server_addVariableNode(server,
