@@ -44,14 +44,16 @@ public:
 
   ArduinoOpta(UA_Server * server, UA_NodeId const & node_id);
 
-  inline AnalogInputManager::SharedPtr analog_input_mgr() const { return _analog_input_mgr; }
-  inline DigitalInputManager::SharedPtr digital_input_mgr() const { return _digital_input_mgr; }
-  inline RelayManager::SharedPtr relay_mgr() const { return _relay_mgr; }
-  inline LedManager::SharedPtr led_mgr() const { return _led_mgr; }
+  AnalogInputManager::SharedPtr  analog_input_mgr();
+  DigitalInputManager::SharedPtr digital_input_mgr();
+  RelayManager::SharedPtr        relay_mgr();
+  LedManager::SharedPtr          led_mgr();
 
 
 private:
+  UA_Server * _server;
   UA_NodeId _node_id;
+
   UserButton::SharedPtr _usr_button;
   AnalogInputManager::SharedPtr _analog_input_mgr;
   DigitalInputManager::SharedPtr _digital_input_mgr;
