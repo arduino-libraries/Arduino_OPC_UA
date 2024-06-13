@@ -153,10 +153,22 @@ static float arduino_opta_analog_read(pin_size_t const pin)
   static float const RESOLUTION  = 4096.0;   // 12-bit resolution
   static float const DIVIDER     = 0.3034;   // Voltage divider
 
+  /* Read the actual analog value from the pin. */
   int const pin_value = analogRead(pin);
+  /* Convert the raw ADC value into an actual voltage. */
   float const pin_voltage = pin_value * (VOLTAGE_MAX / RESOLUTION) / DIVIDER;
 
   return pin_voltage;
+}
+
+static PinStatus arduino_opta_digital_read(pin_size_t const pin)
+{
+  float const pin_voltage = arduino_opta_analog_read(pin);
+
+  if (pin_voltage > 5.f) /* Half of the full range as measurable by the ADC. */
+    return HIGH;
+  else
+    return LOW;
 }
 
 /**************************************************************************************
@@ -205,6 +217,13 @@ void setup()
       }
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Arduino Opta Variant: %s", opcua::ArduinoOptaVariant::toString(opta_type).c_str());
 
+      /* Read all analog inputs at least once to have them pre-configured as ADCs. */
+      std::list<pin_size_t> const ADC_PIN_LIST = { A0, A1, A2, A3, A4, A5, A6, A7 };
+      for (auto const adc_pin : ADC_PIN_LIST)
+        arduino_opta_analog_read(adc_pin);
+      /* Configure analog solution to 12-Bit. */
+      analogReadResolution(12);
+
       /* Define the Arduino Opta as a OPC/UA object. */
       arduino_opta_opcua = opcua::ArduinoOpta::create(opc_ua_server, opta_type);
       if (!arduino_opta_opcua) {
@@ -212,8 +231,6 @@ void setup()
         return;
       }
 
-      /* Configure analog solution to 12-Bit. */
-      analogReadResolution(12);
       /* Add the various digital input pins. */
       arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 1", []() { return arduino_opta_analog_read(A0); });
       arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 2", []() { return arduino_opta_analog_read(A1); });
@@ -225,14 +242,14 @@ void setup()
       arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 8", []() { return arduino_opta_analog_read(A7); });
 
       /* Add the various digital input pins. */
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 1", []() { pinMode(A0, INPUT); return digitalRead(A0); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 2", []() { pinMode(A1, INPUT); return digitalRead(A1); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 3", []() { pinMode(A2, INPUT); return digitalRead(A2); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 4", []() { pinMode(A3, INPUT); return digitalRead(A3); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 5", []() { pinMode(A4, INPUT); return digitalRead(A4); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 6", []() { pinMode(A5, INPUT); return digitalRead(A5); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 7", []() { pinMode(A6, INPUT); return digitalRead(A6); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 8", []() { pinMode(A7, INPUT); return digitalRead(A7); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 1", []() { return arduino_opta_digital_read(A0); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 2", []() { return arduino_opta_digital_read(A1); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 3", []() { return arduino_opta_digital_read(A2); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 4", []() { return arduino_opta_digital_read(A3); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 5", []() { return arduino_opta_digital_read(A4); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 6", []() { return arduino_opta_digital_read(A5); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 7", []() { return arduino_opta_digital_read(A6); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 8", []() { return arduino_opta_digital_read(A7); });
 
       /* Add the various relay outputs. */
       arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 1", [](bool const value) { pinMode(RELAY1, OUTPUT); digitalWrite(RELAY1, value); pinMode(LED_D0, OUTPUT); digitalWrite(LED_D0, value); });
