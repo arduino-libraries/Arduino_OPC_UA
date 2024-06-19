@@ -48,8 +48,22 @@ extern "C"
         char str[8];
         return itoa(err, str, 10);
     }
-    inline void shutdown(UA_SOCKET s, uint8_t flag) {
-        delete (Socket*)s;
+    inline void shutdown(UA_SOCKET s, uint8_t flag)
+    {
+      /* There is nothing to do here.
+       *
+       * When an incoming connection is accepted by TCPSocket::accept()
+       * a new TCPSocket is generated and allocated on the heap. At the
+       * same time a TCPSocket internal flag called "_factory_allocated"
+       * is set which causes the dynamically allocated memory to be
+       * deallocated when calling TCPSocket::close().
+       *
+       * As a consequence there is no need to deallocate or close any
+       * TCPSocket object in here, as this is done when calling UA_close
+       * (= mbed_close). Calling close already here would cause a crash
+       * as the object would have been deallocated by the time the
+       * OPCUA stack would invoke UA_close.
+       */
     }
 }
 
