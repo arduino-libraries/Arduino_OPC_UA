@@ -15,6 +15,7 @@
 
 #include "open62541.h"
 #include "o1heap/o1heap.h"
+#include "NTPUtils.h"
 
 #include "ArduinoOpta.h"
 #include "ArduinoOptaVariant.h"
