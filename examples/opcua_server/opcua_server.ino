@@ -188,6 +188,15 @@ void setup()
     for (;;) { }
   }
 
+  /* Try and obtain the current time via NTP and configure the Arduino
+   * Opta's onboard RTC accordingly. The RTC is then used inside the
+   * open62541 Arduino wrapper to obtain the correct timestamps for
+   * the OPC/UA server.
+   */
+  EthernetUDP udp_client;
+  auto const epoch = opcua::NTPUtils::getTime(udp_client);
+  Serial.print("epoch = "); Serial.println(epoch);
+
   /* Initialize heap memory. */
   o1heap_ins = o1heapInit(OPC_UA_SERVER_THREAD_HEAP.data(), OPC_UA_SERVER_THREAD_HEAP.size());
   if (o1heap_ins == nullptr) {

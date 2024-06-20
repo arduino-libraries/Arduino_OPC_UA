@@ -22,6 +22,13 @@
 #include <Udp.h>
 
 /**************************************************************************************
+ * NAMESPACE
+ **************************************************************************************/
+
+namespace opcua
+{
+
+/**************************************************************************************
  * CLASS DECLARATION
  **************************************************************************************/
 
@@ -29,16 +36,22 @@ class NTPUtils
 {
 public:
 
-  static unsigned long getTime(UDP & udp);
+  static unsigned long getTime(UDP &udp);
 
 private:
 
-  static size_t        const NTP_PACKET_SIZE      = 48;
-  static int           const NTP_TIME_SERVER_PORT = 123;
-  static int           const NTP_LOCAL_PORT       = 8888;
+  static size_t const NTP_PACKET_SIZE = 48;
+  static int const NTP_TIME_SERVER_PORT = 123;
+  static int const NTP_LOCAL_PORT = 8888;
 
-  static unsigned long const NTP_TIMEOUT_MS       = 1000;
-  static constexpr const char * NTP_TIME_SERVER   = "time.arduino.cc";
+  static unsigned long const NTP_TIMEOUT_MS = 1000;
+  static constexpr const char *NTP_TIME_SERVER = "time.arduino.cc";
 
-  static void sendNTPpacket(UDP & udp);
+  static void sendNTPpacket(UDP &udp);
 };
+
+/**************************************************************************************
+ * NAMESPACE
+ **************************************************************************************/
+
+} /* opcua */
