@@ -198,6 +198,8 @@ void setup()
   auto const epoch = opcua::NTPUtils::getTime(udp_client);
   if (epoch > 0) {
     set_time(epoch); /* Directly set RTC of Arduino Opta. */
+  } else {
+    set_time(opcua::cvt_time(__DATE__)); /* Configure Arduino Opta with time at compile time as last time of defense. */
   }
 
   /* Initialize heap memory. */
