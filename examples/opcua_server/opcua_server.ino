@@ -4,6 +4,7 @@
 
 #include "PortentaEthernet.h"
 #include "Arduino_open62541.h"
+#include <mbed_rtc_time.h>
 
 #ifndef ARDUINO_OPEN62541_O1HEAP_DEBUG
 # define ARDUINO_OPEN62541_O1HEAP_DEBUG (0) /* Change to (1) if you want to see debug messages on Serial concerning o1heap memory calls. */
@@ -195,7 +196,9 @@ void setup()
    */
   EthernetUDP udp_client;
   auto const epoch = opcua::NTPUtils::getTime(udp_client);
-  Serial.print("epoch = "); Serial.println(epoch);
+  if (epoch > 0) {
+    set_time(epoch); /* Directly set RTC of Arduino Opta. */
+  }
 
   /* Initialize heap memory. */
   o1heap_ins = o1heapInit(OPC_UA_SERVER_THREAD_HEAP.data(), OPC_UA_SERVER_THREAD_HEAP.size());

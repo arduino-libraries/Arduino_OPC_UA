@@ -18,8 +18,11 @@ extern "C" {
 
 int clock_gettime(clockid_t clk_id, struct timespec *tp)
 {
-  tp->tv_sec = millis() / 1000;
-  tp->tv_nsec = (millis() % 1000) * 1000000;
+  /* Obtain time from RTC. */
+  time_t const epoch = time(NULL);
+  /* No nanosecond resolution. */
+  tp->tv_sec = epoch;
+  tp->tv_nsec = 0;
   return 0;
 }
 
