@@ -13,6 +13,30 @@
 #include "mbed_mem_trace.h"
 #endif
 
+#ifndef USE_MODBUS_SENSOR_MD02
+# define USE_MODBUS_SENSOR_MD02 (1)
+#endif
+
+#if USE_MODBUS_SENSOR_MD02
+# include <ArduinoRS485.h>
+# include <ArduinoModbus.h>
+#endif
+
+/**************************************************************************************
+ * CONSTANTS
+ **************************************************************************************/
+
+#if USE_MODBUS_SENSOR_MD02
+static unsigned int const MODBUS_BAUDRATE      = 9600;
+static float        const MODBUS_BIT_DURATION  = 1.f / MODBUS_BAUDRATE;
+static float        const MODBUS_PRE_DELAY_BR  = MODBUS_BIT_DURATION * 9.6f * 3.5f * 1e6;
+static float        const MODBUS_POST_DELAY_BR = MODBUS_BIT_DURATION * 9.6f * 3.5f * 1e6;
+
+static int          const MODBUS_DEVICE_ID                   = 1;
+static int          const MODBUS_DEVICE_TEMPERATURE_REGISTER = 0x0001;
+static int          const MODBUS_DEVICE_HUMIDITY_REGISTER    = 0x0002;
+#endif
+
 /**************************************************************************************
  * GLUE CODE
  **************************************************************************************/
@@ -186,6 +210,16 @@ void setup()
   //for (; !Serial && (millis() - start) < 1000; ) { }
   while (!Serial) { }
 
+#if USE_MODBUS_SENSOR_MD02
+  RS485.setDelays(MODBUS_PRE_DELAY_BR, MODBUS_POST_DELAY_BR);
+  if (!ModbusRTUClient.begin(MODBUS_BAUDRATE, SERIAL_8N1))
+  {
+    Serial.println("Failed to start Modbus RTU Client!");
+    for (;;) { }
+  }
+  ModbusRTUClient.setTimeout(2 * 1000UL); /* 2 seconds. */
+#endif
+
   /* Initialize Ethernet interface and print obtained IP to Serial. */
   if (!Ethernet.begin()) {
     Serial.println("\"Ethernet.begin()\" failed.");
@@ -314,4 +348,30 @@ void loop()
 {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   delay(500);
+
+#if USE_MODBUS_SENSOR_MD02
+  if (!ModbusRTUClient.requestFrom(MODBUS_DEVICE_ID, INPUT_REGISTERS, MODBUS_DEVICE_TEMPERATURE_REGISTER, 1)) {
+    Serial.print("failed to read temperature register! ");
+    Serial.println(ModbusRTUClient.lastError());
+    return;
+  }
+  if (ModbusRTUClient.available())
+  {
+    int16_t const temperature_raw = ModbusRTUClient.read();
+    float const temperature_deg = temperature_raw / 100.f;
+    Serial.println(temperature_deg);
+  }
+
+  if (!ModbusRTUClient.requestFrom(MODBUS_DEVICE_ID, INPUT_REGISTERS, MODBUS_DEVICE_HUMIDITY_REGISTER, 1)) {
+    Serial.print("failed to read humidity register! ");
+    Serial.println(ModbusRTUClient.lastError());
+    return;
+  }
+  if (ModbusRTUClient.available())
+  {
+    int16_t const humidity_raw = ModbusRTUClient.read();
+    float const humidity_per_cent = humidity_raw / 100.f;
+    Serial.println(humidity_per_cent);
+  }
+#endif
 }
