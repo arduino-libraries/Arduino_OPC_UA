@@ -38,3 +38,18 @@ git clone https://github.com/FreeOpcUa/opcua-client-gui && cd opcua-client-gui
 python3 -m pip install --upgrade pyopenssl
 python3 -m pip install --upgrade .
 ```
+
+### How-to-enable detailed heap/stack memory debugging information
+* Edit [`variants/OPTA/conf/mbed_app.json`](https://github.com/arduino/ArduinoCore-mbed/blob/main/variants/OPTA/conf/mbed_app.json)
+```diff
+"target.macros_add": [
+  ...
++  "MBED_HEAP_STATS_ENABLED=1",
++  "MBED_STACK_STATS_ENABLED=1",
++  "MBED_MEM_TRACING_ENABLED=1"
+```
+* Recompile `libmbed.a`
+```bash
+cd ArduinoCore-mbed
+./mbed-os-to-arduino -a -g OPTA:OPTA
+```

@@ -9,6 +9,10 @@
 # define ARDUINO_OPEN62541_O1HEAP_DEBUG (0) /* Change to (1) if you want to see debug messages on Serial concerning o1heap memory calls. */
 #endif
 
+#if MBED_HEAP_STATS_ENABLED && MBED_MEM_TRACING_ENABLED && MBED_STACK_STATS_ENABLED
+#include "mbed_mem_trace.h"
+#endif
+
 /**************************************************************************************
  * GLUE CODE
  **************************************************************************************/
@@ -276,6 +280,28 @@ void setup()
                   o1heapGetDiagnostics(o1heap_ins).capacity,
                   o1heapGetDiagnostics(o1heap_ins).allocated,
                   o1heapGetDiagnostics(o1heap_ins).peak_allocated);
+
+#if MBED_HEAP_STATS_ENABLED && MBED_MEM_TRACING_ENABLED && MBED_STACK_STATS_ENABLED
+      /* Print stack/heap memory information. For information how to enable it
+       * see https://os.mbed.com/blog/entry/Tracking-memory-usage-with-Mbed-OS/
+       */
+      size_t const num_thds = osThreadGetCount();
+      mbed_stats_stack_t *stack_stats = (mbed_stats_stack_t *) malloc(num_thds * sizeof(mbed_stats_stack_t));
+      mbed_stats_stack_get_each(stack_stats, num_thds);
+
+      mbed_stats_thread_t * thd_stats = (mbed_stats_thread_t *) malloc(num_thds * sizeof(mbed_stats_thread_t));
+      mbed_stats_thread_get_each(thd_stats, num_thds);
+
+      for (int i = 0; i < num_thds; i++)
+        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Thread: 0x%lX (\"%s\"), Stack size: %lu / %lu",
+                    stack_stats[i].thread_id, thd_stats[i].name, stack_stats[i].max_size, stack_stats[i].reserved_size);
+      free(stack_stats);
+      free(thd_stats);
+
+      mbed_stats_heap_t heap_stats;
+      mbed_stats_heap_get(&heap_stats);
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Heap size: %lu / %lu bytes", heap_stats.current_size, heap_stats.reserved_size);
+#endif
 
       /* Run the server (until ctrl-c interrupt) */
       UA_StatusCode const status = UA_Server_runUntilInterrupt(opc_ua_server);
