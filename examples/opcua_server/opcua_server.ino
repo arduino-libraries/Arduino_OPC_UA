@@ -13,6 +13,26 @@
 #include "mbed_mem_trace.h"
 #endif
 
+#if USE_MODBUS_SENSOR_MD02
+# include <ArduinoRS485.h>
+# include <ArduinoModbus.h>
+#endif
+
+/**************************************************************************************
+ * CONSTANTS
+ **************************************************************************************/
+
+#if USE_MODBUS_SENSOR_MD02
+static unsigned int const MODBUS_BAUDRATE      = 9600;
+static float        const MODBUS_BIT_DURATION  = 1.f / MODBUS_BAUDRATE;
+static float        const MODBUS_PRE_DELAY_BR  = MODBUS_BIT_DURATION * 9.6f * 3.5f * 1e6;
+static float        const MODBUS_POST_DELAY_BR = MODBUS_BIT_DURATION * 9.6f * 3.5f * 1e6;
+
+static int          const MODBUS_DEVICE_ID                   = 1;
+static int          const MODBUS_DEVICE_TEMPERATURE_REGISTER = 0x0001;
+static int          const MODBUS_DEVICE_HUMIDITY_REGISTER    = 0x0002;
+#endif
+
 /**************************************************************************************
  * GLUE CODE
  **************************************************************************************/
@@ -77,6 +97,9 @@ O1HeapInstance * o1heap_ins = nullptr;
 rtos::Thread opc_ua_server_thread(osPriorityNormal, OPC_UA_SERVER_THREAD_STACK.size(), OPC_UA_SERVER_THREAD_STACK.data());
 
 opcua::ArduinoOpta::SharedPtr arduino_opta_opcua;
+#if USE_MODBUS_SENSOR_MD02
+UA_NodeId modbus_md02_temperature_node_id;
+#endif
 
 /**************************************************************************************
  * DEFINES
@@ -186,6 +209,16 @@ void setup()
   //for (; !Serial && (millis() - start) < 1000; ) { }
   while (!Serial) { }
 
+#if USE_MODBUS_SENSOR_MD02
+  RS485.setDelays(MODBUS_PRE_DELAY_BR, MODBUS_POST_DELAY_BR);
+  if (!ModbusRTUClient.begin(MODBUS_BAUDRATE, SERIAL_8N1))
+  {
+    Serial.println("Failed to start Modbus RTU Client!");
+    for (;;) { }
+  }
+  ModbusRTUClient.setTimeout(2 * 1000UL); /* 2 seconds. */
+#endif
+
   /* Initialize Ethernet interface and print obtained IP to Serial. */
   if (!Ethernet.begin()) {
     Serial.println("\"Ethernet.begin()\" failed.");
@@ -266,6 +299,54 @@ void setup()
         arduino_opta_opcua->led_mgr()->add_led_output(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
       }
 
+#if USE_MODBUS_SENSOR_MD02
+      {
+        UA_StatusCode rc = UA_STATUSCODE_GOOD;
+        UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
+        oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Modbus RS485 MD02 Sensor");
+        UA_NodeId modbus_md02_node_id;
+        rc = UA_Server_addObjectNode(opc_ua_server,
+                                     UA_NODEID_NULL,
+                                     arduino_opta_opcua->node_id(),
+                                     UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
+                                     UA_QUALIFIEDNAME(1, "ModbusRs485Md02"),
+                                     UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
+                                     oAttr,
+                                     NULL,
+                                     &modbus_md02_node_id);
+        if (UA_StatusCode_isBad(rc)) {
+          UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Modbus MD02 Sensor: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+          return;
+        }
+
+        UA_VariableAttributes temperature_value_attr = UA_VariableAttributes_default;
+
+        /* Obtain the current value of the input pin. */
+        UA_Float temperature_value = 0.f;
+        UA_Variant_setScalar(&temperature_value_attr.value, &temperature_value, &UA_TYPES[UA_TYPES_FLOAT]);
+
+        temperature_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", "Temperature / °C");
+        temperature_value_attr.dataType = UA_TYPES[UA_TYPES_FLOAT].typeId;
+        temperature_value_attr.accessLevel = UA_ACCESSLEVELMASK_READ;
+
+        /* Add the variable node. */
+        rc = UA_Server_addVariableNode(opc_ua_server,
+                                       UA_NODEID_NULL,
+                                       modbus_md02_node_id,
+                                       UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
+                                       UA_QUALIFIEDNAME(1, "md02_temperature_deg"),
+                                       UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
+                                       temperature_value_attr,
+                                       NULL,
+                                       &modbus_md02_temperature_node_id);
+        if (UA_StatusCode_isBad(rc))
+        {
+          UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Modbus MD02 Sensor: UA_Server_addVariableNode(...) failed with %s", UA_StatusCode_name(rc));
+          return;
+        }
+      }
+#endif
+
       /* Print some threading related message. */
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
                   "stack: size = %d | free = %d | used = %d | max = %d",
@@ -314,4 +395,24 @@ void loop()
 {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   delay(500);
+
+#if USE_MODBUS_SENSOR_MD02
+  if (!ModbusRTUClient.requestFrom(MODBUS_DEVICE_ID, INPUT_REGISTERS, MODBUS_DEVICE_TEMPERATURE_REGISTER, 1)) {
+    Serial.print("failed to read temperature register! ");
+    Serial.println(ModbusRTUClient.lastError());
+    return;
+  }
+  if (ModbusRTUClient.available())
+  {
+    int16_t const temperature_raw = ModbusRTUClient.read();
+    float const temperature_deg = temperature_raw / 100.f;
+    Serial.println(temperature_deg);
+
+    UA_Float temperature_deg_opcua_value = temperature_deg;
+    UA_Variant temperature_deg_opcua_variant;
+    UA_Variant_init(&temperature_deg_opcua_variant);
+    UA_Variant_setScalar(&temperature_deg_opcua_variant, &temperature_deg_opcua_value, &UA_TYPES[UA_TYPES_FLOAT]);
+    UA_Server_writeValue(opc_ua_server, modbus_md02_temperature_node_id, temperature_deg_opcua_variant);
+  }
+#endif
 }

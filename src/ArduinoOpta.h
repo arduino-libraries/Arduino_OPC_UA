@@ -49,6 +49,7 @@ public:
   RelayManager::SharedPtr        relay_mgr();
   LedManager::SharedPtr          led_mgr();
 
+  [[nodiscard]] UA_NodeId node_id() const { return _node_id; }
 
 private:
   UA_Server * _server;
