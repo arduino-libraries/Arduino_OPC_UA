@@ -13,10 +13,6 @@
 #include "mbed_mem_trace.h"
 #endif
 
-#ifndef USE_MODBUS_SENSOR_MD02
-# define USE_MODBUS_SENSOR_MD02 (1)
-#endif
-
 #if USE_MODBUS_SENSOR_MD02
 # include <ArduinoRS485.h>
 # include <ArduinoModbus.h>
