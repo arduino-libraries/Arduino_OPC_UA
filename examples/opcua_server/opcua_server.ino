@@ -4,6 +4,7 @@
 
 #include "PortentaEthernet.h"
 #include "Arduino_open62541.h"
+#include <mbed_rtc_time.h>
 
 #ifndef ARDUINO_OPEN62541_O1HEAP_DEBUG
 # define ARDUINO_OPEN62541_O1HEAP_DEBUG (0) /* Change to (1) if you want to see debug messages on Serial concerning o1heap memory calls. */
@@ -223,6 +224,19 @@ void setup()
   if (!Ethernet.begin()) {
     Serial.println("\"Ethernet.begin()\" failed.");
     for (;;) { }
+  }
+
+  /* Try and obtain the current time via NTP and configure the Arduino
+   * Opta's onboard RTC accordingly. The RTC is then used inside the
+   * open62541 Arduino wrapper to obtain the correct timestamps for
+   * the OPC/UA server.
+   */
+  EthernetUDP udp_client;
+  auto const epoch = opcua::NTPUtils::getTime(udp_client);
+  if (epoch > 0) {
+    set_time(epoch); /* Directly set RTC of Arduino Opta. */
+  } else {
+    set_time(opcua::cvt_time(__DATE__)); /* Configure Arduino Opta with time at compile time as last time of defense. */
   }
 
   /* Initialize heap memory. */
