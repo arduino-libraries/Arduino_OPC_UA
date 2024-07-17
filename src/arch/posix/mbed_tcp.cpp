@@ -86,37 +86,53 @@ int mbed_getnameinfo(struct sockaddr* fd, size_t sa_sz, char* name, size_t host_
 
 int mbed_addrinfo(const char* hostname, const char* portstr, struct addrinfo* hints, struct addrinfo** info)
 {
+  static struct sockaddr ai_addr;
+  static struct addrinfo res;
+  bool is_localhost = false;
+
   if (hostname == NULL)
   {
     static const char * localhost = "localhost";
     hostname = localhost;
+    is_localhost = true;
   }
 
   SocketAddress mbed_hints(hostname, atoi(portstr));
   mbed_hints.set_ip_address(Ethernet.localIP().toString().c_str());
   SocketAddress * mbed_res;
 
-//  /* rc either holds the number of results uncovered or a negative error code. */
-//  auto rc = NetworkInterface::get_default_instance()->getaddrinfo(hostname, &mbed_hints, &mbed_res);
-//  if (rc < 0)
-//  {
-//    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "NetworkInterface::get_default_instance()->getaddrinfo(...) failed with %d", rc);
-//    return UA_STATUSCODE_BAD;
-//  }
-//
-//  int const addr_cnt = rc;
-//  if (addr_cnt == 0)
-//  {
-//    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "NetworkInterface::get_default_instance()->getaddrinfo(...) found no addresses");
-//    return UA_STATUSCODE_BAD;
-//  }
+  /* Bypass faulty DNS lookup on localhost. */
+  if (is_localhost)
+  {
+    ai_addr.ai = mbed_hints;
+
+    memcpy(&res, hints, sizeof(struct addrinfo));
+
+    res.ai_addr = &ai_addr;
+    res.ai_next = NULL;
+    info[0] = &res;
+
+    return UA_STATUSCODE_GOOD;
+  }
+
+  /* rc either holds the number of results uncovered or a negative error code. */
+  auto rc = NetworkInterface::get_default_instance()->getaddrinfo(hostname, &mbed_hints, &mbed_res);
+  if (rc < 0)
+  {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "NetworkInterface::get_default_instance()->getaddrinfo(...) failed with %d", rc);
+    return UA_STATUSCODE_BAD;
+  }
+
+  int const addr_cnt = rc;
+  if (addr_cnt == 0)
+  {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "NetworkInterface::get_default_instance()->getaddrinfo(...) found no addresses");
+    return UA_STATUSCODE_BAD;
+  }
 
   /* Note: we currently support only a single address result. */
-  static struct sockaddr ai_addr;
-  //ai_addr.ai = mbed_res[0];
-  ai_addr.ai = mbed_hints;
+  ai_addr.ai = mbed_res[0];
 
-  static struct addrinfo res;
   memcpy(&res, hints, sizeof(struct addrinfo));
 
   res.ai_addr = &ai_addr;
