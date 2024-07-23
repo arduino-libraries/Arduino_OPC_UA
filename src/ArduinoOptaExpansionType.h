@@ -13,17 +13,9 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "open62541.h"
+#include <string>
 
-#include <memory>
-
-#include "LedManager.h"
-#include "RelayManager.h"
-#include "AnalogInputManager.h"
-#include "DigitalInputManager.h"
-#include "UserButton.h"
-#include "ArduinoOptaVariant.h"
-#include "ArduinoOptaExpansionType.h"
+#include "OptaBlue.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -36,35 +28,31 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class ArduinoOpta
+class ArduinoOptaExpansionType
 {
 public:
-  typedef std::shared_ptr<ArduinoOpta> SharedPtr;
+  ArduinoOptaExpansionType() = delete;
+  ArduinoOptaExpansionType(ArduinoOptaExpansionType const &) = delete;
 
-  static SharedPtr create(UA_Server * server, ArduinoOptaVariant::Type const opta_type);
-
-  ArduinoOpta(UA_Server * server, UA_NodeId const & node_id);
-
-  AnalogInputManager::SharedPtr  analog_input_mgr();
-  DigitalInputManager::SharedPtr digital_input_mgr();
-  RelayManager::SharedPtr        relay_mgr();
-  LedManager::SharedPtr          led_mgr();
-
-  [[nodiscard]] UA_NodeId node_id() const { return _node_id; }
-
-private:
-  UA_Server * _server;
-  UA_NodeId _node_id;
-
-  UserButton::SharedPtr _usr_button;
-  AnalogInputManager::SharedPtr _analog_input_mgr;
-  DigitalInputManager::SharedPtr _digital_input_mgr;
-  RelayManager::SharedPtr _relay_mgr;
-  LedManager::SharedPtr _led_mgr;
+  static std::string toStr(ExpansionType_t const type)
+  {
+    if(type == EXPANSION_NOT_VALID)
+      return std::string("Invalid");
+    else if(type == EXPANSION_OPTA_DIGITAL_MEC)
+      return std::string("Digital [Mech.]");
+    else if(type == EXPANSION_OPTA_DIGITAL_STS)
+      return std::string("Digital [Solid]");
+    else if(type == EXPANSION_DIGITAL_INVALID)
+      return std::string("Digital [Inva.]");
+    else if(type == EXPANSION_OPTA_ANALOG)
+      return std::string("Analog");
+    else
+      return std::string("Unknown");
+  }
 };
 
 /**************************************************************************************
  * NAMESPACE
  **************************************************************************************/
 
-} /* opcua */
+}
