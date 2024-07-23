@@ -4,6 +4,7 @@
 
 #include "PortentaEthernet.h"
 #include "Arduino_open62541.h"
+#include <OptaBlue.h> /* Arduino_Opta_Blueprint */
 #include <mbed_rtc_time.h>
 
 #ifndef ARDUINO_OPEN62541_O1HEAP_DEBUG
@@ -239,6 +240,10 @@ void setup()
     set_time(opcua::cvt_time(__DATE__)); /* Configure Arduino Opta with time at compile time as last time of defense. */
   }
 
+  /* Initialize Opta Expansion module controller. */
+  OptaController.begin();
+  OptaController.update();
+
   /* Initialize heap memory. */
   o1heap_ins = o1heapInit(OPC_UA_SERVER_THREAD_HEAP.data(), OPC_UA_SERVER_THREAD_HEAP.size());
   if (o1heap_ins == nullptr) {
@@ -312,6 +317,10 @@ void setup()
       if (opta_type == opcua::ArduinoOptaVariant::Type::WiFi) {
         arduino_opta_opcua->led_mgr()->add_led_output(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
       }
+
+      /* Check availability of expansion modules. */
+      uint8_t const opta_expansion_num = OptaController.getExpansionNum();
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "OptaController %d expansion modules detected.", opta_expansion_num);
 
 #if USE_MODBUS_SENSOR_MD02
       {
@@ -407,6 +416,9 @@ void setup()
 
 void loop()
 {
+  /* Always call update as fast as possible */
+  OptaController.update();
+
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   delay(500);
 
