@@ -321,6 +321,8 @@ void setup()
       /* Check availability of expansion modules. */
       uint8_t const opta_expansion_num = OptaController.getExpansionNum();
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "OptaController %d expansion modules detected.", opta_expansion_num);
+      for(uint8_t i = 0; i < opta_expansion_num; i++)
+        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Expansion %d: type = %d, I2C address= 0x%02X", i, OptaController.getExpansionType(i), OptaController.getExpansionI2Caddress(i));
 
 #if USE_MODBUS_SENSOR_MD02
       {
