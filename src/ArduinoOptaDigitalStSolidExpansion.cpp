@@ -11,7 +11,7 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "ArduinoOptaDigitalMechExpansion.h"
+#include "ArduinoOptaDigitalStSolidExpansion.h"
 
 #include <Arduino.h>
 
@@ -26,15 +26,15 @@ namespace opcua
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-ArduinoOptaDigitalMechExpansion::SharedPtr ArduinoOptaDigitalMechExpansion::create(UA_Server * server, UA_NodeId const parent_node_id, uint8_t const exp_num)
+ArduinoOptaDigitalStSolidExpansion::SharedPtr ArduinoOptaDigitalStSolidExpansion::create(UA_Server * server, UA_NodeId const parent_node_id, uint8_t const exp_num)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
   char display_name[32] = {0};
-  snprintf(display_name, sizeof(display_name), "Expansion %d: Digital (Mechanical)", exp_num);
+  snprintf(display_name, sizeof(display_name), "Expansion %d: Digital (Solid State)", exp_num);
 
   char node_name[32] = {0};
-  snprintf(node_name, sizeof(node_name), "DigExpMech_%d", exp_num);
+  snprintf(node_name, sizeof(node_name), "DigExpSoli_%d", exp_num);
 
   UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
   oAttr.displayName = UA_LOCALIZEDTEXT("en-US", display_name);
@@ -51,11 +51,11 @@ ArduinoOptaDigitalMechExpansion::SharedPtr ArduinoOptaDigitalMechExpansion::crea
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "ArduinoOptaDigitalMechExpansion::create: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "ArduinoOptaDigitalStSolidExpansion::create: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
     return nullptr;
   }
 
-  auto const instance_ptr = std::make_shared<ArduinoOptaDigitalMechExpansion>(server, node_id);
+  auto const instance_ptr = std::make_shared<ArduinoOptaDigitalStSolidExpansion>(server, node_id);
   return instance_ptr;
 }
 
@@ -63,13 +63,13 @@ ArduinoOptaDigitalMechExpansion::SharedPtr ArduinoOptaDigitalMechExpansion::crea
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-RelayManager::SharedPtr ArduinoOptaDigitalMechExpansion::relay_mgr()
+RelayManager::SharedPtr ArduinoOptaDigitalStSolidExpansion::relay_mgr()
 {
   if (!_relay_mgr)
   {
     _relay_mgr = opcua::RelayManager::create(_server, _node_id);
     if (!_relay_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOptaDigitalMechExpansion::relay_mgr: RelayManager::create(...) failed.");
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOptaDigitalStSolidExpansion::relay_mgr: RelayManager::create(...) failed.");
   }
 
   return _relay_mgr;

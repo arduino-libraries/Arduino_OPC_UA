@@ -180,11 +180,18 @@ LedManager::SharedPtr ArduinoOpta::led_mgr()
   return _led_mgr;
 }
 
-ArduinoOptaDigitalMechExpansion::SharedPtr ArduinoOpta::create_digital_mech_expansion(uint8_t const exp_num)
+ArduinoOptaDigitalMechExpansion::SharedPtr ArduinoOpta::create_digital_mechanical_expansion(uint8_t const exp_num)
 {
   auto const exp_mech_opcua = opcua::ArduinoOptaDigitalMechExpansion::create(_server, _node_id, exp_num);
   _dig_mech_exp_list.push_back(exp_mech_opcua);
   return exp_mech_opcua;
+}
+
+ArduinoOptaDigitalStSolidExpansion::SharedPtr ArduinoOpta::create_digital_solid_state_expansion(uint8_t const exp_num)
+{
+  auto const exp_solid_state_opcua = opcua::ArduinoOptaDigitalStSolidExpansion::create(_server, _node_id, exp_num);
+  _dig_solid_state_exp_list.push_back(exp_solid_state_opcua);
+  return exp_solid_state_opcua;
 }
 
 /**************************************************************************************

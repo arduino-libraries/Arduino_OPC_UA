@@ -25,6 +25,7 @@
 #include "ArduinoOptaVariant.h"
 #include "ArduinoOptaExpansionType.h"
 #include "ArduinoOptaDigitalMechExpansion.h"
+#include "ArduinoOptaDigitalStSolidExpansion.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -53,8 +54,8 @@ public:
 
   [[nodiscard]] UA_NodeId node_id() const { return _node_id; }
 
-  ArduinoOptaDigitalMechExpansion::SharedPtr create_digital_mech_expansion(uint8_t const exp_num);
-
+  ArduinoOptaDigitalMechExpansion::SharedPtr create_digital_mechanical_expansion(uint8_t const exp_num);
+  ArduinoOptaDigitalStSolidExpansion::SharedPtr create_digital_solid_state_expansion(uint8_t const exp_num);
 
 private:
   UA_Server * _server;
@@ -67,6 +68,7 @@ private:
   LedManager::SharedPtr _led_mgr;
 
   std::list<ArduinoOptaDigitalMechExpansion::SharedPtr> _dig_mech_exp_list;
+  std::list<ArduinoOptaDigitalStSolidExpansion::SharedPtr> _dig_solid_state_exp_list;
 };
 
 /**************************************************************************************

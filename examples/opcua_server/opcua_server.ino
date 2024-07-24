@@ -331,7 +331,7 @@ void setup()
         ExpansionType_t const exp_type = OptaController.getExpansionType(i);
         if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
         {
-          auto const exp_mech_opcua = arduino_opta_opcua->create_digital_mech_expansion(i);
+          auto const exp_mech_opcua = arduino_opta_opcua->create_digital_mechanical_expansion(i);
           /* Expose mechanical relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
@@ -342,12 +342,13 @@ void setup()
         }
         else if (exp_type == EXPANSION_OPTA_DIGITAL_STS)
         {
-          /* Expose mechanical relays via OPC/UA. */
+          auto const exp_solid_state_opcua = arduino_opta_opcua->create_digital_solid_state_expansion(i);
+          /* Expose solit state relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
-            char solid_state_relay_name[64] = {0};
-            snprintf(solid_state_relay_name, sizeof(solid_state_relay_name), "Dig. Exp. (Soli.) %d Relay %d", i, r + 1);
-            arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, solid_state_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
+            char solid_state_relay_name[32] = {0};
+            snprintf(solid_state_relay_name, sizeof(solid_state_relay_name), "Relay %d", r + 1);
+            exp_solid_state_opcua->relay_mgr()->add_relay_output(opc_ua_server, solid_state_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
           }
         }
       }
