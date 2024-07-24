@@ -331,20 +331,22 @@ void setup()
         ExpansionType_t const exp_type = OptaController.getExpansionType(i);
         if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
         {
-          /* Obtain mechanical expansion controller. */
-          DigitalMechExpansion mech_exp = OptaController.getExpansion(i);
-          if (mech_exp)
+          /* Expose mechanical relays via OPC/UA. */
+          for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
-            /* Expose mechanical relays via OPC/UA. */
-            for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
-            {
-              char mech_relay_name[64] = {0};
-              snprintf(mech_relay_name, sizeof(mech_relay_name), "Dig. Exp. (Mech.) %d Relay %d", i, r + 1);
-              arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
-            }
+            char mech_relay_name[64] = {0};
+            snprintf(mech_relay_name, sizeof(mech_relay_name), "Dig. Exp. (Mech.) %d Relay %d", i, r + 1);
+            arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
           }
-          else {
-            UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "could not obtain expansion controller for expansion %d", i);
+        }
+        else if (exp_type == EXPANSION_OPTA_DIGITAL_STS)
+        {
+          /* Expose mechanical relays via OPC/UA. */
+          for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
+          {
+            char solid_state_relay_name[64] = {0};
+            snprintf(solid_state_relay_name, sizeof(solid_state_relay_name), "Dig. Exp. (Soli.) %d Relay %d", i, r + 1);
+            arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, solid_state_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
           }
         }
       }
@@ -452,10 +454,9 @@ void loop()
   {
     ExpansionType_t const exp_type = OptaController.getExpansionType(i);
     if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
-    {
-      DigitalMechExpansion mech_exp = OptaController.getExpansion(i);
-      mech_exp.updateDigitalOutputs();
-    }
+      reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->updateDigitalOutputs();
+    else if (exp_type == EXPANSION_OPTA_DIGITAL_STS)
+      reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->updateDigitalOutputs();
   }
 
   /* Toggle main LED signalling progress. */
