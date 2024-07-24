@@ -17,14 +17,7 @@
 
 #include <memory>
 
-#include "LedManager.h"
 #include "RelayManager.h"
-#include "AnalogInputManager.h"
-#include "DigitalInputManager.h"
-#include "UserButton.h"
-#include "ArduinoOptaVariant.h"
-#include "ArduinoOptaExpansionType.h"
-#include "ArduinoOptaDigitalMechExpansion.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -37,36 +30,27 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class ArduinoOpta
+class ArduinoOptaDigitalMechExpansion
 {
 public:
-  typedef std::shared_ptr<ArduinoOpta> SharedPtr;
+  typedef std::shared_ptr<ArduinoOptaDigitalMechExpansion> SharedPtr;
 
-  static SharedPtr create(UA_Server * server, ArduinoOptaVariant::Type const opta_type);
+  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id, uint8_t const exp_num);
 
-  ArduinoOpta(UA_Server * server, UA_NodeId const & node_id);
+  ArduinoOptaDigitalMechExpansion(UA_Server * server, UA_NodeId const & node_id)
+  : _server{server}
+  , _node_id{node_id}
+  { }
 
-  AnalogInputManager::SharedPtr  analog_input_mgr();
-  DigitalInputManager::SharedPtr digital_input_mgr();
+
   RelayManager::SharedPtr        relay_mgr();
-  LedManager::SharedPtr          led_mgr();
-
-  [[nodiscard]] UA_NodeId node_id() const { return _node_id; }
-
-  ArduinoOptaDigitalMechExpansion::SharedPtr create_digital_mech_expansion(uint8_t const exp_num);
 
 
 private:
   UA_Server * _server;
-  UA_NodeId _node_id;
+  UA_NodeId const _node_id;
 
-  UserButton::SharedPtr _usr_button;
-  AnalogInputManager::SharedPtr _analog_input_mgr;
-  DigitalInputManager::SharedPtr _digital_input_mgr;
   RelayManager::SharedPtr _relay_mgr;
-  LedManager::SharedPtr _led_mgr;
-
-  std::list<ArduinoOptaDigitalMechExpansion::SharedPtr> _dig_mech_exp_list;
 };
 
 /**************************************************************************************

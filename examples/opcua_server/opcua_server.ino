@@ -331,12 +331,13 @@ void setup()
         ExpansionType_t const exp_type = OptaController.getExpansionType(i);
         if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
         {
+          auto const exp_mech_opcua = arduino_opta_opcua->create_digital_mech_expansion(i);
           /* Expose mechanical relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
-            char mech_relay_name[64] = {0};
-            snprintf(mech_relay_name, sizeof(mech_relay_name), "Dig. Exp. (Mech.) %d Relay %d", i, r + 1);
-            arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
+            char mech_relay_name[32] = {0};
+            snprintf(mech_relay_name, sizeof(mech_relay_name), "Relay %d", r + 1);
+            exp_mech_opcua->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
           }
         }
         else if (exp_type == EXPANSION_OPTA_DIGITAL_STS)
