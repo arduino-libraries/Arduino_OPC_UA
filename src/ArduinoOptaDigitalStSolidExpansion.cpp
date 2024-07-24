@@ -30,7 +30,7 @@ ArduinoOptaDigitalStSolidExpansion::SharedPtr ArduinoOptaDigitalStSolidExpansion
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
-  char display_name[32] = {0};
+  char display_name[64] = {0};
   snprintf(display_name, sizeof(display_name), "Expansion %d: Digital (Solid State)", exp_num);
 
   char node_name[32] = {0};
