@@ -325,6 +325,30 @@ void setup()
         UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Expansion %d: type = %d (\"%16s\"), I2C address= 0x%02X",
                     i, OptaController.getExpansionType(i), opcua::ArduinoOptaExpansionType::toStr(OptaController.getExpansionType(i)).c_str(), OptaController.getExpansionI2Caddress(i));
 
+      /* Expose Arduino Opta expansion module IO via OPC/UA. */
+      for(uint8_t i = 0; i < opta_expansion_num; i++)
+      {
+        ExpansionType_t const exp_type = OptaController.getExpansionType(i);
+        if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
+        {
+          /* Obtain mechanical expansion controller. */
+          DigitalMechExpansion mech_exp = OptaController.getExpansion(i);
+          if (mech_exp)
+          {
+            /* Expose mechanical relays via OPC/UA. */
+            for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
+            {
+              char mech_relay_name[64] = {0};
+              snprintf(mech_relay_name, sizeof(mech_relay_name), "Dig. Exp. (Mech.) %d Relay %d", i, r + 1);
+              arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
+            }
+          }
+          else {
+            UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "could not obtain expansion controller for expansion %d", i);
+          }
+        }
+      }
+
 #if USE_MODBUS_SENSOR_MD02
       {
         UA_StatusCode rc = UA_STATUSCODE_GOOD;
@@ -422,6 +446,19 @@ void loop()
   /* Always call update as fast as possible */
   OptaController.update();
 
+  /* Determine the number of expansion boards available and call update on them. */
+  uint8_t const opta_expansion_num = OptaController.getExpansionNum();
+  for(uint8_t i = 0; i < opta_expansion_num; i++)
+  {
+    ExpansionType_t const exp_type = OptaController.getExpansionType(i);
+    if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
+    {
+      DigitalMechExpansion mech_exp = OptaController.getExpansion(i);
+      mech_exp.updateDigitalOutputs();
+    }
+  }
+
+  /* Toggle main LED signalling progress. */
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   delay(500);
 
