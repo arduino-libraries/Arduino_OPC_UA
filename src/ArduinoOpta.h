@@ -17,9 +17,8 @@
 
 #include <memory>
 
-#include "UserButton.h"
-
 #include "io/led/LedManager.h"
+#include "io/button/UserButton.h"
 #include "io/relay/RelayManager.h"
 #include "io/analog/AnalogInputManager.h"
 #include "io/digital/DigitalInputManager.h"
