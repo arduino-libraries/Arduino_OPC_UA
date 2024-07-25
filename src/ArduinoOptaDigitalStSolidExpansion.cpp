@@ -63,6 +63,18 @@ ArduinoOptaDigitalStSolidExpansion::SharedPtr ArduinoOptaDigitalStSolidExpansion
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
+AnalogInputManager::SharedPtr ArduinoOptaDigitalStSolidExpansion::analog_input_mgr()
+{
+  if (!_analog_input_mgr)
+  {
+    _analog_input_mgr = opcua::AnalogInputManager::create(_server, _node_id);
+    if (!_analog_input_mgr)
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "ArduinoOptaDigitalStSolidExpansion::analog_input_mgr: AnalogInputManager::create(...) failed.");
+  }
+
+  return _analog_input_mgr;
+}
+
 RelayManager::SharedPtr ArduinoOptaDigitalStSolidExpansion::relay_mgr()
 {
   if (!_relay_mgr)

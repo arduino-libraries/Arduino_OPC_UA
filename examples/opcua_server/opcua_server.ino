@@ -332,6 +332,13 @@ void setup()
         if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
         {
           auto const exp_mech_opcua = arduino_opta_opcua->create_digital_mechanical_expansion(i);
+          /* Expose digital/analog pins via OPC/UA. */
+          for (uint8_t d = 0; d < OPTA_DIGITAL_IN_NUM; d++)
+          {
+            char analog_in_name[32] = {0};
+            snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input %d", d + 1);
+            exp_mech_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
+          }
           /* Expose mechanical relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
@@ -343,6 +350,13 @@ void setup()
         else if (exp_type == EXPANSION_OPTA_DIGITAL_STS)
         {
           auto const exp_solid_state_opcua = arduino_opta_opcua->create_digital_solid_state_expansion(i);
+          /* Expose digital/analog pins via OPC/UA. */
+          for (uint8_t d = 0; d < OPTA_DIGITAL_IN_NUM; d++)
+          {
+            char analog_in_name[32] = {0};
+            snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input %d", d + 1);
+            exp_solid_state_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
+          }
           /* Expose solit state relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {

@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "RelayManager.h"
+#include "AnalogInputManager.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -43,6 +44,7 @@ public:
   { }
 
 
+  AnalogInputManager::SharedPtr  analog_input_mgr();
   RelayManager::SharedPtr        relay_mgr();
 
 
@@ -50,6 +52,7 @@ private:
   UA_Server * _server;
   UA_NodeId const _node_id;
 
+  AnalogInputManager::SharedPtr _analog_input_mgr;
   RelayManager::SharedPtr _relay_mgr;
 };
 
