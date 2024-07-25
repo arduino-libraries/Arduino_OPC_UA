@@ -15,8 +15,8 @@
 
 #include "open62541.h"
 #include "o1heap/o1heap.h"
-#include "NTPUtils.h"
-#include "cvt_time.h"
+#include "util/time/cvt_time.h"
+#include "util/time/NTPUtils.h"
 
 #include "ArduinoOpta.h"
 #include "ArduinoOptaVariant.h"
