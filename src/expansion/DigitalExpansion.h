@@ -31,17 +31,16 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class ArduinoOptaDigitalMechExpansion
+class DigitalExpansion
 {
 public:
-  typedef std::shared_ptr<ArduinoOptaDigitalMechExpansion> SharedPtr;
+  typedef std::shared_ptr<DigitalExpansion> SharedPtr;
 
-  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id, uint8_t const exp_num);
 
-  ArduinoOptaDigitalMechExpansion(UA_Server * server, UA_NodeId const & node_id)
-  : _server{server}
-  , _node_id{node_id}
-  { }
+  DigitalExpansion(UA_Server * server,
+                   UA_NodeId const parent_node_id,
+                   char * display_name,
+                   char * node_name);
 
 
   AnalogInputManager::SharedPtr  analog_input_mgr();
@@ -50,7 +49,7 @@ public:
 
 private:
   UA_Server * _server;
-  UA_NodeId const _node_id;
+  UA_NodeId _node_id;
 
   AnalogInputManager::SharedPtr _analog_input_mgr;
   RelayManager::SharedPtr _relay_mgr;

@@ -13,12 +13,7 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "../open62541.h"
-
-#include <memory>
-
-#include "../io/relay/RelayManager.h"
-#include "../io/analog/AnalogInputManager.h"
+#include "DigitalExpansion.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -31,29 +26,31 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class ArduinoOptaDigitalStSolidExpansion
+class DigitalStSolidExpansion : public DigitalExpansion
 {
 public:
-  typedef std::shared_ptr<ArduinoOptaDigitalStSolidExpansion> SharedPtr;
-
-  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id, uint8_t const exp_num);
-
-  ArduinoOptaDigitalStSolidExpansion(UA_Server * server, UA_NodeId const & node_id)
-    : _server{server}
-    , _node_id{node_id}
-  { }
+  typedef std::shared_ptr<DigitalStSolidExpansion> SharedPtr;
 
 
-  AnalogInputManager::SharedPtr  analog_input_mgr();
-  RelayManager::SharedPtr        relay_mgr();
+  static SharedPtr create(UA_Server *server, UA_NodeId const parent_node_id, uint8_t const exp_num)
+  {
+    char display_name[64] = {0};
+    snprintf(display_name, sizeof(display_name), "Expansion %d: Digital (Solid State)", exp_num);
+
+    char node_name[32] = {0};
+    snprintf(node_name, sizeof(node_name), "DigExpSoli_%d", exp_num);
+
+    auto const instance_ptr = std::make_shared<DigitalStSolidExpansion>(server, parent_node_id, display_name, node_name);
+    return instance_ptr;
+  }
 
 
-private:
-  UA_Server * _server;
-  UA_NodeId const _node_id;
-
-  AnalogInputManager::SharedPtr _analog_input_mgr;
-  RelayManager::SharedPtr _relay_mgr;
+  DigitalStSolidExpansion(UA_Server * server,
+                          UA_NodeId const parent_node_id,
+                          char * display_name,
+                          char * node_name)
+    : DigitalExpansion{server, parent_node_id, display_name, node_name}
+  {}
 };
 
 /**************************************************************************************
