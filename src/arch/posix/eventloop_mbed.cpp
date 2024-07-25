@@ -85,7 +85,7 @@ UA_EventLoopPOSIX_deregisterFD(UA_EventLoopPOSIX *el, UA_RegisteredFD *rfd) {
 }
 
 rtos::EventFlags _events;
-#include "../../o1heap/o1heap.h"
+#include "../../util/o1heap/o1heap.h"
 
 UA_StatusCode
 UA_EventLoopPOSIX_pollFDs(UA_EventLoopPOSIX *el, UA_DateTime listenTimeout) {
