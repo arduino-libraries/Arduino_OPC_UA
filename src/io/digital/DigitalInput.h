@@ -13,7 +13,7 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "open62541.h"
+#include "../../open62541.h"
 
 #include <memory>
 #include <functional>

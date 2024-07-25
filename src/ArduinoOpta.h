@@ -17,12 +17,12 @@
 
 #include <memory>
 
-#include "DigitalInputManager.h"
 #include "UserButton.h"
 
 #include "io/led/LedManager.h"
 #include "io/relay/RelayManager.h"
 #include "io/analog/AnalogInputManager.h"
+#include "io/digital/DigitalInputManager.h"
 
 #include "ArduinoOptaVariant.h"
 #include "ArduinoOptaExpansionType.h"
