@@ -17,7 +17,7 @@
 
 #include <memory>
 
-#include "RelayManager.h"
+#include "io/relay/RelayManager.h"
 #include "io/analog/AnalogInputManager.h"
 
 /**************************************************************************************

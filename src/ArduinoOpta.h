@@ -18,10 +18,10 @@
 #include <memory>
 
 #include "LedManager.h"
-#include "RelayManager.h"
 #include "DigitalInputManager.h"
 #include "UserButton.h"
 
+#include "io/relay/RelayManager.h"
 #include "io/analog/AnalogInputManager.h"
 
 #include "ArduinoOptaVariant.h"
