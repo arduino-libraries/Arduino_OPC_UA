@@ -13,12 +13,12 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "open62541.h"
+#include "../open62541.h"
 
 #include <memory>
 
-#include "io/relay/RelayManager.h"
-#include "io/analog/AnalogInputManager.h"
+#include "../io/relay/RelayManager.h"
+#include "../io/analog/AnalogInputManager.h"
 
 /**************************************************************************************
  * NAMESPACE

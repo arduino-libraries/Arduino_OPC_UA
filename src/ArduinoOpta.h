@@ -24,9 +24,9 @@
 #include "io/digital/DigitalInputManager.h"
 
 #include "ArduinoOptaVariant.h"
-#include "ArduinoOptaExpansionType.h"
-#include "ArduinoOptaDigitalMechExpansion.h"
-#include "ArduinoOptaDigitalStSolidExpansion.h"
+#include "expansion/ArduinoOptaExpansionType.h"
+#include "expansion/ArduinoOptaDigitalMechExpansion.h"
+#include "expansion/ArduinoOptaDigitalStSolidExpansion.h"
 
 /**************************************************************************************
  * NAMESPACE
