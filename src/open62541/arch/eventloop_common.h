@@ -9,7 +9,7 @@
 #ifndef UA_EVENTLOOP_COMMON_H_
 #define UA_EVENTLOOP_COMMON_H_
 
-#include "../open62541.h"
+#include "../../open62541.h"
 
 /* Utility definitions to be used in EventLoop implementations.
  * Not part of the public API. */

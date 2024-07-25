@@ -8,7 +8,7 @@
 #ifndef PLUGINS_ARCH_POSIX_UA_ARCHITECTURE_H_
 #define PLUGINS_ARCH_POSIX_UA_ARCHITECTURE_H_
 
-#include "../../open62541.h"
+#include "../../../open62541.h"
 
 #ifdef UA_ARCHITECTURE_POSIX
 

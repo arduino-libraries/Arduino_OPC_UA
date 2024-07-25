@@ -9,7 +9,7 @@
 #ifndef UA_TIMER_H_
 #define UA_TIMER_H_
 
-#include "../../open62541.h"
+#include "../../../open62541.h"
 
 #include "../../deps/ziptree.h"
 

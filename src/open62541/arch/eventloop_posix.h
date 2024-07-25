@@ -9,7 +9,7 @@
 #ifndef UA_EVENTLOOP_POSIX_H_
 #define UA_EVENTLOOP_POSIX_H_
 
-#include "../open62541.h"
+#include "../../open62541.h"
 
 #if defined(UA_ARCHITECTURE_POSIX) || defined(UA_ARCHITECTURE_WIN32)
 

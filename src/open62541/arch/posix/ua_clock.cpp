@@ -6,7 +6,7 @@
  *    Copyright 2017 (c) Thomas Stalder, Blue Time Concept SA
  */
 
-#include "../../open62541.h"
+#include "../../../open62541.h"
 
 #include <time.h>
 

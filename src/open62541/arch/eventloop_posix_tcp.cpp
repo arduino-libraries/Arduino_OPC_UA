@@ -6,7 +6,7 @@
  *    Copyright 2021 (c) Fraunhofer IOSB (Author: Jan Hermes)
  */
 
-#include "../open62541.h"
+#include "../../open62541.h"
 #include "eventloop_posix.h"
 #include "eventloop_common.h"
 
