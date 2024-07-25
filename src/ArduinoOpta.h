@@ -17,10 +17,10 @@
 
 #include <memory>
 
-#include "LedManager.h"
 #include "DigitalInputManager.h"
 #include "UserButton.h"
 
+#include "io/led/LedManager.h"
 #include "io/relay/RelayManager.h"
 #include "io/analog/AnalogInputManager.h"
 
