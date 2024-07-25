@@ -18,7 +18,7 @@
 #include <memory>
 
 #include "RelayManager.h"
-#include "AnalogInputManager.h"
+#include "io/analog/AnalogInputManager.h"
 
 /**************************************************************************************
  * NAMESPACE

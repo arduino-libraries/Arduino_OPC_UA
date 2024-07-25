@@ -19,9 +19,11 @@
 
 #include "LedManager.h"
 #include "RelayManager.h"
-#include "AnalogInputManager.h"
 #include "DigitalInputManager.h"
 #include "UserButton.h"
+
+#include "io/analog/AnalogInputManager.h"
+
 #include "ArduinoOptaVariant.h"
 #include "ArduinoOptaExpansionType.h"
 #include "ArduinoOptaDigitalMechExpansion.h"

@@ -13,12 +13,12 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "open62541.h"
+#include "../../open62541.h"
 
-#include <list>
 #include <memory>
+#include <functional>
 
-#include "AnalogInput.h"
+#include <Arduino.h>
 
 /**************************************************************************************
  * NAMESPACE
@@ -31,23 +31,25 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class AnalogInputManager
+class AnalogInput
 {
 public:
-  typedef std::shared_ptr<AnalogInputManager> SharedPtr;
+  typedef std::shared_ptr<AnalogInput> SharedPtr;
+  typedef std::function<float(void)> OnReadRequestFunc;
 
-  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id);
+  static SharedPtr create(UA_Server * server,
+                          UA_NodeId const & parent_node_id,
+                          const char * display_name,
+                          OnReadRequestFunc const on_read_request);
 
-  AnalogInputManager(UA_NodeId const & node_id);
+  AnalogInput(UA_NodeId const & node_id, OnReadRequestFunc const on_read_request);
 
-  void add_analog_input(UA_Server * server,
-                        const char * display_name,
-                        AnalogInput::OnReadRequestFunc const on_read_request_func);
+  void onReadRequest(UA_Server * server, UA_NodeId const * node_id);
 
 
 private:
   UA_NodeId _node_id;
-  std::list<AnalogInput::SharedPtr> _analog_input_list;
+  OnReadRequestFunc _on_read_request;
 };
 
 /**************************************************************************************
