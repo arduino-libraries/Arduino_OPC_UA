@@ -90,7 +90,7 @@ static size_t const OPC_UA_SERVER_THREAD_STACK_SIZE = 16*1024UL;
 template <size_t SIZE> struct alignas(uint32_t) OPC_UA_STACK final : public std::array<uint8_t, SIZE> {};
 static OPC_UA_STACK<OPC_UA_SERVER_THREAD_STACK_SIZE> OPC_UA_SERVER_THREAD_STACK;
 
-static size_t const OPC_UA_SERVER_THREAD_HEAP_SIZE = 256*1024UL;
+static size_t const OPC_UA_SERVER_THREAD_HEAP_SIZE = (256+128)*1024UL;
 template <size_t SIZE> struct alignas(O1HEAP_ALIGNMENT) OPC_UA_HEAP final : public std::array<uint8_t, SIZE> {};
 static OPC_UA_HEAP<OPC_UA_SERVER_THREAD_HEAP_SIZE> OPC_UA_SERVER_THREAD_HEAP;
 
@@ -338,6 +338,10 @@ void setup()
             char analog_in_name[32] = {0};
             snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input %d", d + 1);
             exp_mech_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
+
+            char digital_in_name[32] = {0};
+            snprintf(digital_in_name, sizeof(digital_in_name), "Digital Input %d", d + 1);
+            exp_mech_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, digital_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true); });
           }
           /* Expose mechanical relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
@@ -356,6 +360,10 @@ void setup()
             char analog_in_name[32] = {0};
             snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input %d", d + 1);
             exp_solid_state_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
+
+            char digital_in_name[32] = {0};
+            snprintf(digital_in_name, sizeof(digital_in_name), "Digital Input %d", d + 1);
+            exp_solid_state_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, digital_in_name, [i, d]() { return reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true); });
           }
           /* Expose solit state relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)

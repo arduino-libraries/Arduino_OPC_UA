@@ -19,6 +19,7 @@
 
 #include "../io/relay/RelayManager.h"
 #include "../io/analog/AnalogInputManager.h"
+#include "../io/digital/DigitalInputManager.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -44,6 +45,7 @@ public:
 
 
   AnalogInputManager::SharedPtr  analog_input_mgr();
+  DigitalInputManager::SharedPtr digital_input_mgr();
   RelayManager::SharedPtr        relay_mgr();
 
 
@@ -52,6 +54,7 @@ private:
   UA_NodeId _node_id;
 
   AnalogInputManager::SharedPtr _analog_input_mgr;
+  DigitalInputManager::SharedPtr _digital_input_mgr;
   RelayManager::SharedPtr _relay_mgr;
 };
 

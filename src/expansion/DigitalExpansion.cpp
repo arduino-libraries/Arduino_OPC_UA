@@ -36,7 +36,6 @@ DigitalExpansion::DigitalExpansion(UA_Server * server,
 
   UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
   oAttr.displayName = UA_LOCALIZEDTEXT("en-US", display_name);
-  UA_NodeId node_id;
   rc = UA_Server_addObjectNode(server,
                                UA_NODEID_NULL,
                                parent_node_id,
@@ -45,7 +44,7 @@ DigitalExpansion::DigitalExpansion(UA_Server * server,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
                                oAttr,
                                NULL,
-                               &node_id);
+                               &_node_id);
 
   if (UA_StatusCode_isBad(rc))
   {
@@ -68,6 +67,18 @@ AnalogInputManager::SharedPtr DigitalExpansion::analog_input_mgr()
   }
 
   return _analog_input_mgr;
+}
+
+DigitalInputManager::SharedPtr DigitalExpansion::digital_input_mgr()
+{
+  if (!_digital_input_mgr)
+  {
+    _digital_input_mgr = opcua::DigitalInputManager::create(_server, _node_id);
+    if (!_digital_input_mgr)
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalExpansion::digital_input_mgr: DigitalInputManager::create(...) failed.");
+  }
+
+  return _digital_input_mgr;
 }
 
 RelayManager::SharedPtr DigitalExpansion::relay_mgr()
