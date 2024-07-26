@@ -13,7 +13,17 @@
  * INCLUDE
  **************************************************************************************/
 
-#include <string>
+#include "open62541.h"
+
+#include <memory>
+
+#include "io/led/LedManager.h"
+#include "io/button/UserButton.h"
+#include "io/relay/RelayManager.h"
+#include "io/analog/AnalogInputManager.h"
+#include "io/digital/DigitalInputManager.h"
+
+#include "OptaVariant.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -26,17 +36,36 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class ArduinoOptaVariant
+class Opta
 {
 public:
-  ArduinoOptaVariant() = delete;
-  ArduinoOptaVariant(ArduinoOptaVariant const &) = delete;
+  typedef std::shared_ptr<Opta> SharedPtr;
 
-  enum class Type { Lite, RS485, WiFi };
 
-  static bool get_opta_variant(Type & type);
+  static SharedPtr create(UA_Server * server, OptaVariant::Type const opta_type);
 
-  static std::string toString(Type const type);
+
+  Opta(UA_Server * server, UA_NodeId const & node_id);
+
+
+  AnalogInputManager::SharedPtr  analog_input_mgr();
+  DigitalInputManager::SharedPtr digital_input_mgr();
+  RelayManager::SharedPtr        relay_mgr();
+  LedManager::SharedPtr          led_mgr();
+
+
+  [[nodiscard]] UA_NodeId node_id() const { return _node_id; }
+
+
+private:
+  UA_Server * _server;
+  UA_NodeId _node_id;
+
+  UserButton::SharedPtr _usr_button;
+  AnalogInputManager::SharedPtr _analog_input_mgr;
+  DigitalInputManager::SharedPtr _digital_input_mgr;
+  RelayManager::SharedPtr _relay_mgr;
+  LedManager::SharedPtr _led_mgr;
 };
 
 /**************************************************************************************

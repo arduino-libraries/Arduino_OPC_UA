@@ -20,9 +20,9 @@
 #include "util/time/NTPUtils.h"
 #include "util/toStr/ExpansionType.h"
 
-#include "ArduinoOpta.h"
-#include "ArduinoOptaVariant.h"
-#include "ExpansionManager.h"
+#include "Opta.h"
+#include "OptaVariant.h"
+#include "OptaExpansionManager.h"
 
 /**************************************************************************************
  * DEFINES

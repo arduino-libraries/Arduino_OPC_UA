@@ -7,11 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#pragma once
+
 /**************************************************************************************
  * INCLUDE
  **************************************************************************************/
 
-#include "ExpansionManager.h"
+#include <string>
 
 /**************************************************************************************
  * NAMESPACE
@@ -21,30 +23,21 @@ namespace opcua
 {
 
 /**************************************************************************************
- * PUBLIC MEMBER FUNCTIONS
+ * CLASS DECLARATION
  **************************************************************************************/
 
-DigitalMechExpansion::SharedPtr ExpansionManager::create_digital_mechanical_expansion(uint8_t const exp_num)
+class OptaVariant
 {
-  auto const exp_mech_opcua = opcua::DigitalMechExpansion::create(
-    _server,
-    UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-    exp_num);
+public:
+  OptaVariant() = delete;
+  OptaVariant(OptaVariant const &) = delete;
 
-  _dig_mech_exp_list.push_back(exp_mech_opcua);
-  return exp_mech_opcua;
-}
+  enum class Type { Lite, RS485, WiFi };
 
-DigitalStSolidExpansion::SharedPtr ExpansionManager::create_digital_solid_state_expansion(uint8_t const exp_num)
-{
-  auto const exp_solid_state_opcua = opcua::DigitalStSolidExpansion::create(
-    _server,
-    UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-    exp_num);
+  static bool get_opta_variant(Type & type);
 
-  _dig_solid_state_exp_list.push_back(exp_solid_state_opcua);
-  return exp_solid_state_opcua;
-}
+  static std::string toString(Type const type);
+};
 
 /**************************************************************************************
  * NAMESPACE

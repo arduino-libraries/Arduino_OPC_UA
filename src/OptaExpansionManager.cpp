@@ -7,18 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#pragma once
-
 /**************************************************************************************
  * INCLUDE
  **************************************************************************************/
 
-#include "open62541.h"
-
-#include <memory>
-
-#include "expansion/DigitalMechExpansion.h"
-#include "expansion/DigitalStSolidExpansion.h"
+#include "OptaExpansionManager.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -28,35 +21,30 @@ namespace opcua
 {
 
 /**************************************************************************************
- * CLASS DECLARATION
+ * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-class ExpansionManager
+DigitalMechExpansion::SharedPtr OptaExpansionManager::create_digital_mechanical_expansion(uint8_t const exp_num)
 {
-public:
-  typedef std::shared_ptr<ExpansionManager> SharedPtr;
+  auto const exp_mech_opcua = opcua::DigitalMechExpansion::create(
+    _server,
+    UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
+    exp_num);
 
+  _dig_mech_exp_list.push_back(exp_mech_opcua);
+  return exp_mech_opcua;
+}
 
-  static SharedPtr create(UA_Server * server) {
-    return std::make_shared<ExpansionManager>(server);
-  }
+DigitalStSolidExpansion::SharedPtr OptaExpansionManager::create_digital_solid_state_expansion(uint8_t const exp_num)
+{
+  auto const exp_solid_state_opcua = opcua::DigitalStSolidExpansion::create(
+    _server,
+    UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
+    exp_num);
 
-
-  ExpansionManager(UA_Server * server)
-  : _server{server}
-  { }
-
-
-  DigitalMechExpansion::SharedPtr create_digital_mechanical_expansion(uint8_t const exp_num);
-  DigitalStSolidExpansion::SharedPtr create_digital_solid_state_expansion(uint8_t const exp_num);
-
-
-private:
-  UA_Server * _server;
-
-  std::list<DigitalMechExpansion::SharedPtr> _dig_mech_exp_list;
-  std::list<DigitalStSolidExpansion::SharedPtr> _dig_solid_state_exp_list;
-};
+  _dig_solid_state_exp_list.push_back(exp_solid_state_opcua);
+  return exp_solid_state_opcua;
+}
 
 /**************************************************************************************
  * NAMESPACE

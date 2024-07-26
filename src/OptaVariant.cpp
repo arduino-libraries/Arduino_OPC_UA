@@ -11,7 +11,7 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "ArduinoOptaVariant.h"
+#include "OptaVariant.h"
 
 #if __has_include("opta_info.h")
 # include <cstdint>
@@ -32,18 +32,18 @@ namespace opcua
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-bool ArduinoOptaVariant::get_opta_variant(Type & type)
+bool OptaVariant::get_opta_variant(Type & type)
 {
   OptaBoardInfo * info = boardInfo();
 
   if (info->_board_functionalities.ethernet && info->_board_functionalities.wifi && info->_board_functionalities.rs485) {
-    type = ArduinoOptaVariant::Type::WiFi;
+    type = OptaVariant::Type::WiFi;
   }
   else if (info->_board_functionalities.ethernet && info->_board_functionalities.rs485) {
-    type = ArduinoOptaVariant::Type::RS485;
+    type = OptaVariant::Type::RS485;
   }
   else if (info->_board_functionalities.ethernet) {
-    type = ArduinoOptaVariant::Type::Lite;
+    type = OptaVariant::Type::Lite;
   }
   else
     return false;
@@ -51,13 +51,13 @@ bool ArduinoOptaVariant::get_opta_variant(Type & type)
   return true;
 }
 
-std::string ArduinoOptaVariant::toString(Type const type)
+std::string OptaVariant::toString(Type const type)
 {
   switch(type)
   {
-    case ArduinoOptaVariant::Type::WiFi:  return std::string("Arduino Opta WiFi");  break;
-    case ArduinoOptaVariant::Type::RS485: return std::string("Arduino Opta RS485"); break;
-    case ArduinoOptaVariant::Type::Lite:  return std::string("Arduino Opta Lite");  break;
+    case OptaVariant::Type::WiFi:  return std::string("Arduino Opta WiFi");  break;
+    case OptaVariant::Type::RS485: return std::string("Arduino Opta RS485"); break;
+    case OptaVariant::Type::Lite:  return std::string("Arduino Opta Lite");  break;
     default: __builtin_unreachable(); break;
   }
 }
