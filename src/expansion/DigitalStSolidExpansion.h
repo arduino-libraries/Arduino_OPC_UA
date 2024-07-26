@@ -35,7 +35,7 @@ public:
   static SharedPtr create(UA_Server *server, UA_NodeId const parent_node_id, uint8_t const exp_num)
   {
     char display_name[64] = {0};
-    snprintf(display_name, sizeof(display_name), "Expansion %d: Digital (Solid State)", exp_num);
+    snprintf(display_name, sizeof(display_name), "Arduino Opta Expansion %d: Digital (Solid State)", exp_num);
 
     char node_name[32] = {0};
     snprintf(node_name, sizeof(node_name), "DigExpSoli_%d", exp_num);
