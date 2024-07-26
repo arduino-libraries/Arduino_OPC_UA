@@ -329,48 +329,32 @@ void setup()
       for(uint8_t i = 0; i < opta_expansion_num; i++)
       {
         ExpansionType_t const exp_type = OptaController.getExpansionType(i);
-        if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
+
+        if (exp_type == EXPANSION_OPTA_DIGITAL_MEC || exp_type == EXPANSION_OPTA_DIGITAL_STS)
         {
-          auto const exp_mech_opcua = arduino_opta_opcua->create_digital_mechanical_expansion(i);
+          opcua::DigitalExpansion::SharedPtr exp_dig = nullptr;
+          if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
+            exp_dig = arduino_opta_opcua->create_digital_mechanical_expansion(i);
+          else
+            exp_dig = arduino_opta_opcua->create_digital_solid_state_expansion(i);
+
           /* Expose digital/analog pins via OPC/UA. */
           for (uint8_t d = 0; d < OPTA_DIGITAL_IN_NUM; d++)
           {
             char analog_in_name[32] = {0};
             snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input %d", d + 1);
-            exp_mech_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
+            exp_dig->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
 
             char digital_in_name[32] = {0};
             snprintf(digital_in_name, sizeof(digital_in_name), "Digital Input %d", d + 1);
-            exp_mech_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, digital_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true); });
+            exp_dig->digital_input_mgr()->add_digital_input(opc_ua_server, digital_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true); });
           }
           /* Expose mechanical relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
             char mech_relay_name[32] = {0};
             snprintf(mech_relay_name, sizeof(mech_relay_name), "Relay %d", r + 1);
-            exp_mech_opcua->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
-          }
-        }
-        else if (exp_type == EXPANSION_OPTA_DIGITAL_STS)
-        {
-          auto const exp_solid_state_opcua = arduino_opta_opcua->create_digital_solid_state_expansion(i);
-          /* Expose digital/analog pins via OPC/UA. */
-          for (uint8_t d = 0; d < OPTA_DIGITAL_IN_NUM; d++)
-          {
-            char analog_in_name[32] = {0};
-            snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input %d", d + 1);
-            exp_solid_state_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
-
-            char digital_in_name[32] = {0};
-            snprintf(digital_in_name, sizeof(digital_in_name), "Digital Input %d", d + 1);
-            exp_solid_state_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, digital_in_name, [i, d]() { return reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true); });
-          }
-          /* Expose solit state relays via OPC/UA. */
-          for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
-          {
-            char solid_state_relay_name[32] = {0};
-            snprintf(solid_state_relay_name, sizeof(solid_state_relay_name), "Relay %d", r + 1);
-            exp_solid_state_opcua->relay_mgr()->add_relay_output(opc_ua_server, solid_state_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
+            exp_dig->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
           }
         }
       }
