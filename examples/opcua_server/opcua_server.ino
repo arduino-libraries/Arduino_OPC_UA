@@ -288,24 +288,24 @@ void setup()
       }
 
       /* Add the various digital input pins. */
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 1", []() { return arduino_opta_analog_read(A0); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 2", []() { return arduino_opta_analog_read(A1); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 3", []() { return arduino_opta_analog_read(A2); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 4", []() { return arduino_opta_analog_read(A3); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 5", []() { return arduino_opta_analog_read(A4); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 6", []() { return arduino_opta_analog_read(A5); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 7", []() { return arduino_opta_analog_read(A6); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 8", []() { return arduino_opta_analog_read(A7); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I1", []() { return arduino_opta_analog_read(A0); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I2", []() { return arduino_opta_analog_read(A1); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I3", []() { return arduino_opta_analog_read(A2); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I4", []() { return arduino_opta_analog_read(A3); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I5", []() { return arduino_opta_analog_read(A4); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I6", []() { return arduino_opta_analog_read(A5); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I7", []() { return arduino_opta_analog_read(A6); });
+      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I8", []() { return arduino_opta_analog_read(A7); });
 
       /* Add the various digital input pins. */
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 1", []() { return arduino_opta_digital_read(A0); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 2", []() { return arduino_opta_digital_read(A1); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 3", []() { return arduino_opta_digital_read(A2); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 4", []() { return arduino_opta_digital_read(A3); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 5", []() { return arduino_opta_digital_read(A4); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 6", []() { return arduino_opta_digital_read(A5); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 7", []() { return arduino_opta_digital_read(A6); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 8", []() { return arduino_opta_digital_read(A7); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I1", []() { return arduino_opta_digital_read(A0); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I2", []() { return arduino_opta_digital_read(A1); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I3", []() { return arduino_opta_digital_read(A2); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I4", []() { return arduino_opta_digital_read(A3); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I5", []() { return arduino_opta_digital_read(A4); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I6", []() { return arduino_opta_digital_read(A5); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I7", []() { return arduino_opta_digital_read(A6); });
+      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I8", []() { return arduino_opta_digital_read(A7); });
 
       /* Add the various relay outputs. */
       arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 1", [](bool const value) { pinMode(RELAY1, OUTPUT); digitalWrite(RELAY1, value); pinMode(LED_D0, OUTPUT); digitalWrite(LED_D0, value); });
@@ -342,18 +342,18 @@ void setup()
           for (uint8_t d = 0; d < OPTA_DIGITAL_IN_NUM; d++)
           {
             char analog_in_name[32] = {0};
-            snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input %d", d + 1);
+            snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", d + 1);
             exp_dig->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
 
             char digital_in_name[32] = {0};
-            snprintf(digital_in_name, sizeof(digital_in_name), "Digital Input %d", d + 1);
+            snprintf(digital_in_name, sizeof(digital_in_name), "Digital Input I%d", d + 1);
             exp_dig->digital_input_mgr()->add_digital_input(opc_ua_server, digital_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true); });
           }
           /* Expose mechanical relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
             char mech_relay_name[32] = {0};
-            snprintf(mech_relay_name, sizeof(mech_relay_name), "Relay %d", r + 1);
+            snprintf(mech_relay_name, sizeof(mech_relay_name), "Relay I%d", r + 1);
             exp_dig->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
           }
         }
