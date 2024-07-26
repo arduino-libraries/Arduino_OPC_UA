@@ -20,6 +20,7 @@
 
 #include "ArduinoOpta.h"
 #include "ArduinoOptaVariant.h"
+#include "ExpansionManager.h"
 
 /**************************************************************************************
  * DEFINES

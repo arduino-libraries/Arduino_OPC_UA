@@ -99,6 +99,7 @@ O1HeapInstance * o1heap_ins = nullptr;
 rtos::Thread opc_ua_server_thread(osPriorityNormal, OPC_UA_SERVER_THREAD_STACK.size(), OPC_UA_SERVER_THREAD_STACK.data());
 
 opcua::ArduinoOpta::SharedPtr arduino_opta_opcua;
+opcua::ExpansionManager::SharedPtr arduino_opta_expansion_manager_opcua;
 #if USE_MODBUS_SENSOR_MD02
 UA_NodeId modbus_md02_temperature_node_id;
 #endif
@@ -323,7 +324,16 @@ void setup()
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "OptaController %d expansion modules detected.", opta_expansion_num);
       for(uint8_t i = 0; i < opta_expansion_num; i++)
         UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Expansion %d: type = %d (\"%16s\"), I2C address= 0x%02X",
-                    i, OptaController.getExpansionType(i), opcua::ArduinoOptaExpansionType::toStr(OptaController.getExpansionType(i)).c_str(), OptaController.getExpansionI2Caddress(i));
+                    i, OptaController.getExpansionType(i), opcua::ExpansionType::toStr(OptaController.getExpansionType(i)).c_str(), OptaController.getExpansionI2Caddress(i));
+
+      /* Create Arduino Opta Expansion Manager (if necessary). */
+      if (opta_expansion_num) {
+        arduino_opta_expansion_manager_opcua = opcua::ExpansionManager::create(opc_ua_server);
+        if (!arduino_opta_expansion_manager_opcua) {
+          UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::ExpansionManager::create(...) failed");
+          return;
+        }
+      }
 
       /* Expose Arduino Opta expansion module IO via OPC/UA. */
       for(uint8_t i = 0; i < opta_expansion_num; i++)
@@ -334,9 +344,9 @@ void setup()
         {
           opcua::DigitalExpansion::SharedPtr exp_dig = nullptr;
           if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
-            exp_dig = arduino_opta_opcua->create_digital_mechanical_expansion(i);
+            exp_dig = arduino_opta_expansion_manager_opcua->create_digital_mechanical_expansion(i);
           else
-            exp_dig = arduino_opta_opcua->create_digital_solid_state_expansion(i);
+            exp_dig = arduino_opta_expansion_manager_opcua->create_digital_solid_state_expansion(i);
 
           /* Expose digital/analog pins via OPC/UA. */
           for (uint8_t d = 0; d < OPTA_DIGITAL_IN_NUM; d++)

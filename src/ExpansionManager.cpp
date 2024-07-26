@@ -7,15 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#pragma once
-
 /**************************************************************************************
  * INCLUDE
  **************************************************************************************/
 
-#include <string>
-
-#include "OptaBlue.h"
+#include "ExpansionManager.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -25,34 +21,33 @@ namespace opcua
 {
 
 /**************************************************************************************
- * CLASS DECLARATION
+ * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-class ArduinoOptaExpansionType
+DigitalMechExpansion::SharedPtr ExpansionManager::create_digital_mechanical_expansion(uint8_t const exp_num)
 {
-public:
-  ArduinoOptaExpansionType() = delete;
-  ArduinoOptaExpansionType(ArduinoOptaExpansionType const &) = delete;
+  auto const exp_mech_opcua = opcua::DigitalMechExpansion::create(
+    _server,
+    UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
+    exp_num);
 
-  static std::string toStr(ExpansionType_t const type)
-  {
-    if(type == EXPANSION_NOT_VALID)
-      return std::string("Invalid");
-    else if(type == EXPANSION_OPTA_DIGITAL_MEC)
-      return std::string("Digital [Mech.]");
-    else if(type == EXPANSION_OPTA_DIGITAL_STS)
-      return std::string("Digital [Solid]");
-    else if(type == EXPANSION_DIGITAL_INVALID)
-      return std::string("Digital [Inva.]");
-    else if(type == EXPANSION_OPTA_ANALOG)
-      return std::string("Analog");
-    else
-      return std::string("Unknown");
-  }
-};
+  _dig_mech_exp_list.push_back(exp_mech_opcua);
+  return exp_mech_opcua;
+}
+
+DigitalStSolidExpansion::SharedPtr ExpansionManager::create_digital_solid_state_expansion(uint8_t const exp_num)
+{
+  auto const exp_solid_state_opcua = opcua::DigitalStSolidExpansion::create(
+    _server,
+    UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
+    exp_num);
+
+  _dig_solid_state_exp_list.push_back(exp_solid_state_opcua);
+  return exp_solid_state_opcua;
+}
 
 /**************************************************************************************
  * NAMESPACE
  **************************************************************************************/
 
-}
+} /* opcua */
