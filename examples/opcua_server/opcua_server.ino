@@ -249,7 +249,7 @@ void setup()
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
             char mech_relay_name[32] = {0};
-            snprintf(mech_relay_name, sizeof(mech_relay_name), "Relay I%d", r + 1);
+            snprintf(mech_relay_name, sizeof(mech_relay_name), "Relay %d", r + 1);
             exp_dig->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
           }
         }
