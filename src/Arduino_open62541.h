@@ -14,9 +14,11 @@
  **************************************************************************************/
 
 #include "open62541.h"
+
 #include "util/o1heap/o1heap.h"
 #include "util/time/cvt_time.h"
 #include "util/time/NTPUtils.h"
+#include "util/toStr/ExpansionType.h"
 
 #include "ArduinoOpta.h"
 #include "ArduinoOptaVariant.h"

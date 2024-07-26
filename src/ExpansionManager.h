@@ -19,7 +19,6 @@
 
 #include "expansion/DigitalMechExpansion.h"
 #include "expansion/DigitalStSolidExpansion.h"
-#include "expansion/ExpansionType.h"
 
 /**************************************************************************************
  * NAMESPACE
