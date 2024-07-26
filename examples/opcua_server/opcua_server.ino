@@ -253,6 +253,10 @@ void setup()
             exp_dig->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
           }
         }
+        else if (exp_type == EXPANSION_OPTA_ANALOG)
+        {
+          auto const exp_analog = opta_expansion_manager_opcua->create_analog_expansion(i);
+        }
       }
 
 #if USE_MODBUS_SENSOR_MD02

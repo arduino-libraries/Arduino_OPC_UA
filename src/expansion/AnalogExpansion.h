@@ -13,13 +13,9 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "open62541.h"
+#include "Expansion.h"
 
 #include <memory>
-
-#include "expansion/AnalogExpansion.h"
-#include "expansion/DigitalMechExpansion.h"
-#include "expansion/DigitalStSolidExpansion.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -32,32 +28,34 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class OptaExpansionManager
+class AnalogExpansion : public Expansion
 {
 public:
-  typedef std::shared_ptr<OptaExpansionManager> SharedPtr;
+  typedef std::shared_ptr<AnalogExpansion> SharedPtr;
 
 
-  static SharedPtr create(UA_Server * server) {
-    return std::make_shared<OptaExpansionManager>(server);
+  static SharedPtr create(UA_Server *server, UA_NodeId const parent_node_id, uint8_t const exp_num)
+  {
+    char display_name[64] = {0};
+    snprintf(display_name, sizeof(display_name), "Expansion %d: Analog", exp_num);
+
+    char node_name[32] = {0};
+    snprintf(node_name, sizeof(node_name), "AnaExp_%d", exp_num);
+
+    char model_name[] = {"AFX00007"};
+
+    auto const instance_ptr = std::make_shared<AnalogExpansion>(server, parent_node_id, display_name, node_name, model_name);
+    return instance_ptr;
   }
 
 
-  OptaExpansionManager(UA_Server * server)
-  : _server{server}
+  AnalogExpansion(UA_Server * server,
+                   UA_NodeId const parent_node_id,
+                   char * display_name,
+                   char * node_name,
+                   char * model_name)
+    : Expansion(server, parent_node_id, display_name, node_name, model_name)
   { }
-
-
-  DigitalMechExpansion::SharedPtr create_digital_mechanical_expansion(uint8_t const exp_num);
-  DigitalStSolidExpansion::SharedPtr create_digital_solid_state_expansion(uint8_t const exp_num);
-  AnalogExpansion::SharedPtr create_analog_expansion(uint8_t const exp_num);
-
-private:
-  UA_Server * _server;
-
-  std::list<DigitalMechExpansion::SharedPtr> _dig_mech_exp_list;
-  std::list<DigitalStSolidExpansion::SharedPtr> _dig_solid_state_exp_list;
-  std::list<AnalogExpansion::SharedPtr> _analog_exp_list;
 };
 
 /**************************************************************************************

@@ -46,6 +46,17 @@ DigitalStSolidExpansion::SharedPtr OptaExpansionManager::create_digital_solid_st
   return exp_solid_state_opcua;
 }
 
+AnalogExpansion::SharedPtr OptaExpansionManager::create_analog_expansion(uint8_t const exp_num)
+{
+  auto const exp_analog_opcua = opcua::AnalogExpansion::create(
+    _server,
+    UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
+    exp_num);
+
+  _analog_exp_list.push_back(exp_analog_opcua);
+  return exp_analog_opcua;
+}
+
 /**************************************************************************************
  * NAMESPACE
  **************************************************************************************/

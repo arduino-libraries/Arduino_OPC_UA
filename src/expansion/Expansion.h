@@ -13,13 +13,9 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "open62541.h"
+#include "../open62541.h"
 
 #include <memory>
-
-#include "expansion/AnalogExpansion.h"
-#include "expansion/DigitalMechExpansion.h"
-#include "expansion/DigitalStSolidExpansion.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -32,32 +28,22 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class OptaExpansionManager
+class Expansion
 {
 public:
-  typedef std::shared_ptr<OptaExpansionManager> SharedPtr;
+  typedef std::shared_ptr<Expansion> SharedPtr;
 
 
-  static SharedPtr create(UA_Server * server) {
-    return std::make_shared<OptaExpansionManager>(server);
-  }
+  Expansion(UA_Server * server,
+            UA_NodeId const parent_node_id,
+            char * display_name,
+            char * node_name,
+            char * model_name);
 
 
-  OptaExpansionManager(UA_Server * server)
-  : _server{server}
-  { }
-
-
-  DigitalMechExpansion::SharedPtr create_digital_mechanical_expansion(uint8_t const exp_num);
-  DigitalStSolidExpansion::SharedPtr create_digital_solid_state_expansion(uint8_t const exp_num);
-  AnalogExpansion::SharedPtr create_analog_expansion(uint8_t const exp_num);
-
-private:
+protected:
   UA_Server * _server;
-
-  std::list<DigitalMechExpansion::SharedPtr> _dig_mech_exp_list;
-  std::list<DigitalStSolidExpansion::SharedPtr> _dig_solid_state_exp_list;
-  std::list<AnalogExpansion::SharedPtr> _analog_exp_list;
+  UA_NodeId _node_id;
 };
 
 /**************************************************************************************

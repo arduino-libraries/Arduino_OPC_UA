@@ -13,7 +13,7 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "../open62541.h"
+#include "Expansion.h"
 
 #include <memory>
 
@@ -32,7 +32,7 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class DigitalExpansion
+class DigitalExpansion : public Expansion
 {
 public:
   typedef std::shared_ptr<DigitalExpansion> SharedPtr;
@@ -42,7 +42,9 @@ public:
                    UA_NodeId const parent_node_id,
                    char * display_name,
                    char * node_name,
-                   char * model_name);
+                   char * model_name)
+  : Expansion(server, parent_node_id, display_name, node_name, model_name)
+  { }
 
 
   AnalogInputManager::SharedPtr  analog_input_mgr();
@@ -51,9 +53,6 @@ public:
 
 
 private:
-  UA_Server * _server;
-  UA_NodeId _node_id;
-
   AnalogInputManager::SharedPtr _analog_input_mgr;
   DigitalInputManager::SharedPtr _digital_input_mgr;
   RelayManager::SharedPtr _relay_mgr;
