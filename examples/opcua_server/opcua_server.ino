@@ -239,18 +239,20 @@ void setup()
           {
             char analog_in_name[32] = {0};
             snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", d + 1);
-            exp_dig->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
+            exp_dig->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
 
             char digital_in_name[32] = {0};
             snprintf(digital_in_name, sizeof(digital_in_name), "Digital Input I%d", d + 1);
-            exp_dig->digital_input_mgr()->add_digital_input(opc_ua_server, digital_in_name, [i, d]() { return reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true); });
+            exp_dig->digital_input_mgr()->add_digital_input(opc_ua_server,
+                                                            digital_in_name,
+                                                            [i, d]() { return reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true); });
           }
           /* Expose mechanical relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
             char mech_relay_name[32] = {0};
             snprintf(mech_relay_name, sizeof(mech_relay_name), "Relay %d", r + 1);
-            exp_dig->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
+            exp_dig->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
           }
         }
         else if (exp_type == EXPANSION_OPTA_ANALOG)
