@@ -46,7 +46,7 @@ Opta::SharedPtr Opta::create(UA_Server * server, OptaVariant::Type const opta_ty
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
   UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
-  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Arduino Opta");
+  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", (char *)OptaVariant::toString(opta_type).c_str());
   UA_NodeId node_id;
   rc = UA_Server_addObjectNode(server,
                                UA_NODEID_NULL,
@@ -87,7 +87,7 @@ Opta::SharedPtr Opta::create(UA_Server * server, OptaVariant::Type const opta_ty
   }
 
   UA_VariableAttributes modelAttr = UA_VariableAttributes_default;
-  UA_String modelName = UA_STRING((char *)OptaVariant::toString(opta_type).c_str());
+  UA_String modelName = UA_STRING((char *)OptaVariant::toSKUString(opta_type).c_str());
   UA_Variant_setScalar(&modelAttr.value, &modelName, &UA_TYPES[UA_TYPES_STRING]);
   modelAttr.displayName = UA_LOCALIZEDTEXT("en-US", "ModelName");
   rc = UA_Server_addVariableNode(server,

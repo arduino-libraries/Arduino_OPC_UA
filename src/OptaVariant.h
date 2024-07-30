@@ -37,6 +37,7 @@ public:
   static bool get_opta_variant(Type & type);
 
   static std::string toString(Type const type);
+  static std::string toSKUString(Type const type);
 };
 
 /**************************************************************************************

@@ -62,6 +62,17 @@ std::string OptaVariant::toString(Type const type)
   }
 }
 
+std::string OptaVariant::toSKUString(Type const type)
+{
+  switch(type)
+  {
+    case OptaVariant::Type::WiFi:  return std::string("AFX00002");  break;
+    case OptaVariant::Type::RS485: return std::string("AFX00001"); break;
+    case OptaVariant::Type::Lite:  return std::string("AFX00003");  break;
+    default: __builtin_unreachable(); break;
+  }
+}
+
 /**************************************************************************************
  * NAMESPACE
  **************************************************************************************/
