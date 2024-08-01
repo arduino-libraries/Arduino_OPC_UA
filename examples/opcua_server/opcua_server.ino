@@ -2,13 +2,10 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "PortentaEthernet.h"
-#include "Arduino_open62541.h"
+#include <Arduino_open62541.h>
+#include <PortentaEthernet.h>
+#include <OptaBlue.h> /* Arduino_Opta_Blueprint */
 #include <mbed_rtc_time.h>
-
-#ifndef ARDUINO_OPEN62541_O1HEAP_DEBUG
-# define ARDUINO_OPEN62541_O1HEAP_DEBUG (0) /* Change to (1) if you want to see debug messages on Serial concerning o1heap memory calls. */
-#endif
 
 #if MBED_HEAP_STATS_ENABLED && MBED_MEM_TRACING_ENABLED && MBED_STACK_STATS_ENABLED
 #include "mbed_mem_trace.h"
@@ -35,53 +32,6 @@ static int          const MODBUS_DEVICE_HUMIDITY_REGISTER    = 0x0002;
 #endif
 
 /**************************************************************************************
- * GLUE CODE
- **************************************************************************************/
-
-extern "C"
-{
-  int gethostname(char *str, size_t len) {
-    String ip = Ethernet.localIP().toString();
-    memset(str, 0, len);
-    memcpy(str, ip.c_str(), ip.length());
-    return 0;
-  }
-
-  UA_StatusCode registerFakeInterrupt(UA_InterruptManager *im, uintptr_t interruptHandle, const UA_KeyValueMap *params,  UA_InterruptCallback callback, void *interruptContext) {
-    return UA_STATUSCODE_GOOD;
-  }
-  void deregisterFakeInterrupt(UA_InterruptManager *im, uintptr_t interruptHandle) {
-    return;
-  }
-  UA_StatusCode startFakeInterruptManager(UA_EventSource *es) {
-    return UA_STATUSCODE_GOOD;
-  }
-  void stopFakeInterruptManager(UA_EventSource *es) {
-    return;
-  }
-  UA_StatusCode freeFakeInterruptManager(UA_EventSource *es) {
-    return UA_STATUSCODE_GOOD;
-  }
-
-  UA_InterruptManager *UA_InterruptManager_new_POSIX(const UA_String eventSourceName) {
-    static UA_InterruptManager im;
-    static UA_String name = UA_String_fromChars("fakeES");
-    im.eventSource.eventSourceType = UA_EVENTSOURCETYPE_INTERRUPTMANAGER;
-    UA_String_copy(&eventSourceName, &name);
-    im.eventSource.start = startFakeInterruptManager;
-    im.eventSource.stop = stopFakeInterruptManager;
-    im.eventSource.free = freeFakeInterruptManager;
-    im.registerInterrupt = registerFakeInterrupt;
-    im.deregisterInterrupt = deregisterFakeInterrupt;
-    return &im;
-  }
-
-  UA_ConnectionManager *UA_ConnectionManager_new_POSIX_UDP(const UA_String eventSourceName) {
-    return nullptr;
-  }
-}
-
-/**************************************************************************************
  * GLOBAL VARIABLES
  **************************************************************************************/
 
@@ -89,7 +39,7 @@ static size_t const OPC_UA_SERVER_THREAD_STACK_SIZE = 16*1024UL;
 template <size_t SIZE> struct alignas(uint32_t) OPC_UA_STACK final : public std::array<uint8_t, SIZE> {};
 static OPC_UA_STACK<OPC_UA_SERVER_THREAD_STACK_SIZE> OPC_UA_SERVER_THREAD_STACK;
 
-static size_t const OPC_UA_SERVER_THREAD_HEAP_SIZE = 256*1024UL;
+static size_t const OPC_UA_SERVER_THREAD_HEAP_SIZE = (256+128)*1024UL;
 template <size_t SIZE> struct alignas(O1HEAP_ALIGNMENT) OPC_UA_HEAP final : public std::array<uint8_t, SIZE> {};
 static OPC_UA_HEAP<OPC_UA_SERVER_THREAD_HEAP_SIZE> OPC_UA_SERVER_THREAD_HEAP;
 
@@ -97,9 +47,10 @@ UA_Server * opc_ua_server = nullptr;
 O1HeapInstance * o1heap_ins = nullptr;
 rtos::Thread opc_ua_server_thread(osPriorityNormal, OPC_UA_SERVER_THREAD_STACK.size(), OPC_UA_SERVER_THREAD_STACK.data());
 
-opcua::ArduinoOpta::SharedPtr arduino_opta_opcua;
+opcua::Opta::SharedPtr opta_opcua;
+opcua::OptaExpansionManager::SharedPtr opta_expansion_manager_opcua;
 #if USE_MODBUS_SENSOR_MD02
-UA_NodeId modbus_md02_temperature_node_id;
+UA_NodeId modbus_md02_temperature_node_id;s
 #endif
 
 /**************************************************************************************
@@ -111,69 +62,6 @@ REDIRECT_STDOUT_TO(Serial)
 /**************************************************************************************
  * LOCAL FUNCTIONS
  **************************************************************************************/
-
-extern "C" void * o1heap_malloc(size_t size)
-{
-#if ARDUINO_OPEN62541_O1HEAP_DEBUG
-  if (!o1heapDoInvariantsHold(o1heap_ins))
-    Serial.println("malloc error");
-#endif
-
-  void * new_ptr = o1heapAllocate(o1heap_ins, size);
-
-#if ARDUINO_OPEN62541_O1HEAP_DEBUG
-  char msg[64];
-  snprintf(msg, sizeof(msg), "malloc: %d (%X)", size, new_ptr);
-  Serial.println(msg);
-#endif
-
-  return new_ptr;
-}
-
-extern "C" void o1heap_free(void * ptr)
-{
-#if ARDUINO_OPEN62541_O1HEAP_DEBUG
-  if (!o1heapDoInvariantsHold(o1heap_ins))
-    Serial.println("free error");
-
-  char msg[64];
-  snprintf(msg, sizeof(msg), "free: (%X)", ptr);
-  Serial.println(msg);
-#endif
-  o1heapFree(o1heap_ins, ptr);
-}
-
-extern "C" void * o1heap_calloc(size_t nelem, size_t elsize)
-{
-#if ARDUINO_OPEN62541_O1HEAP_DEBUG
-  if (!o1heapDoInvariantsHold(o1heap_ins))
-    Serial.println("calloc error");
-
-  char msg[64];
-  snprintf(msg, sizeof(msg), "calloc: nelem = %d, elsize = %d", nelem, elsize);
-  Serial.println(msg);
-#endif
-
-  void * ptr = o1heap_malloc(nelem * elsize);
-  memset(ptr, 0, nelem * elsize);
-  return ptr;
-}
-
-extern "C" void * o1heap_realloc(void * old_ptr, size_t size)
-{
-#if ARDUINO_OPEN62541_O1HEAP_DEBUG
-  if (!o1heapDoInvariantsHold(o1heap_ins))
-    Serial.println("realloc error");
-
-  char msg[64];
-  snprintf(msg, sizeof(msg), "realloc: old_ptr = %X, size = %d", old_ptr, size);
-  Serial.println(msg);
-#endif
-  void * new_ptr = o1heap_malloc(size);
-  memcpy(new_ptr, old_ptr, size);
-  o1heap_free(old_ptr);
-  return new_ptr;
-}
 
 static float arduino_opta_analog_read(pin_size_t const pin)
 {
@@ -239,6 +127,10 @@ void setup()
     set_time(opcua::cvt_time(__DATE__)); /* Configure Arduino Opta with time at compile time as last time of defense. */
   }
 
+  /* Initialize Opta Expansion module controller. */
+  OptaController.begin();
+  OptaController.update();
+
   /* Initialize heap memory. */
   o1heap_ins = o1heapInit(OPC_UA_SERVER_THREAD_HEAP.data(), OPC_UA_SERVER_THREAD_HEAP.size());
   if (o1heap_ins == nullptr) {
@@ -261,12 +153,12 @@ void setup()
                   "Arduino Opta IP: %s", Ethernet.localIP().toString().c_str());
 
       /* Determine the Arduino OPC/UA hardware variant. */
-      opcua::ArduinoOptaVariant::Type opta_type;
-      if (!opcua::ArduinoOptaVariant::get_opta_variant(opta_type)) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::ArduinoOptaVariant::get_opta_variant(...) failed");
+      opcua::OptaVariant::Type opta_type;
+      if (!opcua::OptaVariant::get_opta_variant(opta_type)) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::OptaVariant::get_opta_variant(...) failed");
         return;
       }
-      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Arduino Opta Variant: %s", opcua::ArduinoOptaVariant::toString(opta_type).c_str());
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Arduino Opta Variant: %s", opcua::OptaVariant::toString(opta_type).c_str());
 
       /* Read all analog inputs at least once to have them pre-configured as ADCs. */
       std::list<pin_size_t> const ADC_PIN_LIST = { A0, A1, A2, A3, A4, A5, A6, A7 };
@@ -276,41 +168,97 @@ void setup()
       analogReadResolution(12);
 
       /* Define the Arduino Opta as a OPC/UA object. */
-      arduino_opta_opcua = opcua::ArduinoOpta::create(opc_ua_server, opta_type);
-      if (!arduino_opta_opcua) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::ArduinoOpta::create(...) failed");
+      opta_opcua = opcua::Opta::create(opc_ua_server, opta_type);
+      if (!opta_opcua) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::Opta::create(...) failed");
         return;
       }
 
       /* Add the various digital input pins. */
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 1", []() { return arduino_opta_analog_read(A0); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 2", []() { return arduino_opta_analog_read(A1); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 3", []() { return arduino_opta_analog_read(A2); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 4", []() { return arduino_opta_analog_read(A3); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 5", []() { return arduino_opta_analog_read(A4); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 6", []() { return arduino_opta_analog_read(A5); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 7", []() { return arduino_opta_analog_read(A6); });
-      arduino_opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input 8", []() { return arduino_opta_analog_read(A7); });
+      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I1", []() { return arduino_opta_analog_read(A0); });
+      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I2", []() { return arduino_opta_analog_read(A1); });
+      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I3", []() { return arduino_opta_analog_read(A2); });
+      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I4", []() { return arduino_opta_analog_read(A3); });
+      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I5", []() { return arduino_opta_analog_read(A4); });
+      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I6", []() { return arduino_opta_analog_read(A5); });
+      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I7", []() { return arduino_opta_analog_read(A6); });
+      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I8", []() { return arduino_opta_analog_read(A7); });
 
       /* Add the various digital input pins. */
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 1", []() { return arduino_opta_digital_read(A0); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 2", []() { return arduino_opta_digital_read(A1); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 3", []() { return arduino_opta_digital_read(A2); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 4", []() { return arduino_opta_digital_read(A3); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 5", []() { return arduino_opta_digital_read(A4); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 6", []() { return arduino_opta_digital_read(A5); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 7", []() { return arduino_opta_digital_read(A6); });
-      arduino_opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input 8", []() { return arduino_opta_digital_read(A7); });
+      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I1", []() { return arduino_opta_digital_read(A0); });
+      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I2", []() { return arduino_opta_digital_read(A1); });
+      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I3", []() { return arduino_opta_digital_read(A2); });
+      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I4", []() { return arduino_opta_digital_read(A3); });
+      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I5", []() { return arduino_opta_digital_read(A4); });
+      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I6", []() { return arduino_opta_digital_read(A5); });
+      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I7", []() { return arduino_opta_digital_read(A6); });
+      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I8", []() { return arduino_opta_digital_read(A7); });
 
       /* Add the various relay outputs. */
-      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 1", [](bool const value) { pinMode(RELAY1, OUTPUT); digitalWrite(RELAY1, value); pinMode(LED_D0, OUTPUT); digitalWrite(LED_D0, value); });
-      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 2", [](bool const value) { pinMode(RELAY2, OUTPUT); digitalWrite(RELAY2, value); pinMode(LED_D1, OUTPUT); digitalWrite(LED_D1, value);});
-      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 3", [](bool const value) { pinMode(RELAY3, OUTPUT); digitalWrite(RELAY3, value); pinMode(LED_D2, OUTPUT); digitalWrite(LED_D2, value);});
-      arduino_opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 4", [](bool const value) { pinMode(RELAY4, OUTPUT); digitalWrite(RELAY4, value); pinMode(LED_D3, OUTPUT); digitalWrite(LED_D3, value);});
+      opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 1", [](bool const value) { pinMode(RELAY1, OUTPUT); digitalWrite(RELAY1, value); pinMode(LED_D0, OUTPUT); digitalWrite(LED_D0, value); });
+      opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 2", [](bool const value) { pinMode(RELAY2, OUTPUT); digitalWrite(RELAY2, value); pinMode(LED_D1, OUTPUT); digitalWrite(LED_D1, value);});
+      opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 3", [](bool const value) { pinMode(RELAY3, OUTPUT); digitalWrite(RELAY3, value); pinMode(LED_D2, OUTPUT); digitalWrite(LED_D2, value);});
+      opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 4", [](bool const value) { pinMode(RELAY4, OUTPUT); digitalWrite(RELAY4, value); pinMode(LED_D3, OUTPUT); digitalWrite(LED_D3, value);});
 
       /* Add the various LED outputs. */
-      if (opta_type == opcua::ArduinoOptaVariant::Type::WiFi) {
-        arduino_opta_opcua->led_mgr()->add_led_output(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
+      if (opta_type == opcua::OptaVariant::Type::WiFi) {
+        opta_opcua->led_mgr()->add_led_output(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
+      }
+
+      /* Check availability of expansion modules. */
+      uint8_t const opta_expansion_num = OptaController.getExpansionNum();
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "OptaController %d expansion modules detected.", opta_expansion_num);
+      for(uint8_t i = 0; i < opta_expansion_num; i++)
+        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Expansion %d: type = %d (\"%16s\"), I2C address= 0x%02X",
+                    i, OptaController.getExpansionType(i), opcua::ExpansionType::toStr(OptaController.getExpansionType(i)).c_str(), OptaController.getExpansionI2Caddress(i));
+
+      /* Create Arduino Opta Expansion Manager (if necessary). */
+      if (opta_expansion_num) {
+        opta_expansion_manager_opcua = opcua::OptaExpansionManager::create(opc_ua_server);
+        if (!opta_expansion_manager_opcua) {
+          UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::OptaExpansionManager::create(...) failed");
+          return;
+        }
+      }
+
+      /* Expose Arduino Opta expansion module IO via OPC/UA. */
+      for(uint8_t i = 0; i < opta_expansion_num; i++)
+      {
+        ExpansionType_t const exp_type = OptaController.getExpansionType(i);
+
+        if (exp_type == EXPANSION_OPTA_DIGITAL_MEC || exp_type == EXPANSION_OPTA_DIGITAL_STS)
+        {
+          opcua::DigitalExpansion::SharedPtr exp_dig = nullptr;
+          if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
+            exp_dig = opta_expansion_manager_opcua->create_digital_mechanical_expansion(i);
+          else
+            exp_dig = opta_expansion_manager_opcua->create_digital_solid_state_expansion(i);
+
+          /* Expose digital/analog pins via OPC/UA. */
+          for (uint8_t d = 0; d < OPTA_DIGITAL_IN_NUM; d++)
+          {
+            char analog_in_name[32] = {0};
+            snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", d + 1);
+            exp_dig->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
+
+            char digital_in_name[32] = {0};
+            snprintf(digital_in_name, sizeof(digital_in_name), "Digital Input I%d", d + 1);
+            exp_dig->digital_input_mgr()->add_digital_input(opc_ua_server,
+                                                            digital_in_name,
+                                                            [i, d]() { return reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true); });
+          }
+          /* Expose mechanical relays via OPC/UA. */
+          for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
+          {
+            char mech_relay_name[32] = {0};
+            snprintf(mech_relay_name, sizeof(mech_relay_name), "Relay %d", r + 1);
+            exp_dig->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
+          }
+        }
+        else if (exp_type == EXPANSION_OPTA_ANALOG)
+        {
+          auto const exp_analog = opta_expansion_manager_opcua->create_analog_expansion(i);
+        }
       }
 
 #if USE_MODBUS_SENSOR_MD02
@@ -321,7 +269,7 @@ void setup()
         UA_NodeId modbus_md02_node_id;
         rc = UA_Server_addObjectNode(opc_ua_server,
                                      UA_NODEID_NULL,
-                                     arduino_opta_opcua->node_id(),
+                                     opta_opcua->node_id(),
                                      UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
                                      UA_QUALIFIEDNAME(1, "ModbusRs485Md02"),
                                      UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
@@ -407,6 +355,21 @@ void setup()
 
 void loop()
 {
+  /* Always call update as fast as possible */
+  OptaController.update();
+
+  /* Determine the number of expansion boards available and call update on them. */
+  uint8_t const opta_expansion_num = OptaController.getExpansionNum();
+  for(uint8_t i = 0; i < opta_expansion_num; i++)
+  {
+    ExpansionType_t const exp_type = OptaController.getExpansionType(i);
+    if (exp_type == EXPANSION_OPTA_DIGITAL_MEC)
+      reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->updateDigitalOutputs();
+    else if (exp_type == EXPANSION_OPTA_DIGITAL_STS)
+      reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->updateDigitalOutputs();
+  }
+
+  /* Toggle main LED signalling progress. */
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   delay(500);
 

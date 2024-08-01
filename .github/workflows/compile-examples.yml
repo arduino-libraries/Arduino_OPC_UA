@@ -25,6 +25,11 @@ jobs:
         with:
           fqbn: ${{ matrix.board.fqbn }}
           platforms: ${{ matrix.board.platforms }}
+          libraries: |
+            - source-path: ./
+            - name: Arduino_Opta_Blueprint
+            - name: Arduino_SerialUpdater
+            - name: Arduino_DebugUtils
           enable-deltas-report: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sketches-report-path: ${{ env.SKETCHES_REPORTS_PATH }}

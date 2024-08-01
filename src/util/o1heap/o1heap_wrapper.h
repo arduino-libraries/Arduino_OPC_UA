@@ -13,22 +13,21 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "open62541.h"
-
-#include "util/o1heap/o1heap.h"
-#include "util/o1heap/o1heap_wrapper.h"
-#include "util/time/cvt_time.h"
-#include "util/time/NTPUtils.h"
-#include "util/toStr/ExpansionType.h"
-
-#include "Opta.h"
-#include "OptaVariant.h"
-#include "OptaExpansionManager.h"
+#include <stdlib.h>
 
 /**************************************************************************************
- * DEFINES
+ * FUNCTION DECLARATION
  **************************************************************************************/
 
-#if !defined(ARDUINO_OPTA)
-# error "This library does only support Arduino Opta"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void * o1heap_malloc(size_t size);
+void o1heap_free(void * ptr);
+void * o1heap_calloc(size_t nelem, size_t elsize);
+void * o1heap_realloc(void * old_ptr, size_t size);
+
+#ifdef __cplusplus
+}
 #endif
