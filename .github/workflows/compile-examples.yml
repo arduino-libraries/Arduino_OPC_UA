@@ -33,6 +33,9 @@ jobs:
           enable-deltas-report: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sketches-report-path: ${{ env.SKETCHES_REPORTS_PATH }}
+          cli-compile-flags: |
+            - --build-property
+            - compiler.cpp.extra_flags=-DUSE_MODBUS_SENSOR_MD02=1
 
       # This step is needed to pass the size data to the report job.
       - name: Upload sketches report to workflow artifact
