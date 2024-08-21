@@ -50,7 +50,7 @@ rtos::Thread opc_ua_server_thread(osPriorityNormal, OPC_UA_SERVER_THREAD_STACK.s
 opcua::Opta::SharedPtr opta_opcua;
 opcua::OptaExpansionManager::SharedPtr opta_expansion_manager_opcua;
 #if USE_MODBUS_SENSOR_MD02
-UA_NodeId modbus_md02_temperature_node_id;s
+UA_NodeId modbus_md02_temperature_node_id;
 #endif
 
 /**************************************************************************************
