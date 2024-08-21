@@ -30,6 +30,8 @@ jobs:
             - name: Arduino_Opta_Blueprint
             - name: Arduino_SerialUpdater
             - name: Arduino_DebugUtils
+            - name: ArduinoRS485
+            - name: ArduinoModbus
           enable-deltas-report: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sketches-report-path: ${{ env.SKETCHES_REPORTS_PATH }}
