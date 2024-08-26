@@ -20,6 +20,8 @@
  * CONSTANTS
  **************************************************************************************/
 
+static uint8_t const OPCUA_MAX_OPTA_EXPANSION_NUM = 2;
+
 #if USE_MODBUS_SENSOR_MD02
 static unsigned int const MODBUS_BAUDRATE      = 9600;
 static float        const MODBUS_BIT_DURATION  = 1.f / MODBUS_BAUDRATE;
@@ -206,7 +208,7 @@ void setup()
       }
 
       /* Check availability of expansion modules. */
-      uint8_t const opta_expansion_num = OptaController.getExpansionNum();
+      uint8_t opta_expansion_num = OptaController.getExpansionNum();
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "OptaController %d expansion modules detected.", opta_expansion_num);
       for(uint8_t i = 0; i < opta_expansion_num; i++)
         UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Expansion %d: type = %d (\"%16s\"), I2C address= 0x%02X",
@@ -219,6 +221,16 @@ void setup()
           UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::OptaExpansionManager::create(...) failed");
           return;
         }
+      }
+
+      /* Limit the maximum amount of concurrently supported OPC UA expansion
+       * modules, as exposing expansion modules via OPC UA is a RAM hungry affair,
+       * and we are fairly limited in terms of available RAM.
+       */
+      if (opta_expansion_num > OPCUA_MAX_OPTA_EXPANSION_NUM)
+      {
+        UA_LOG_WARNING(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Enabling only %d expansion modules (RAM constraints).", OPCUA_MAX_OPTA_EXPANSION_NUM);
+        opta_expansion_num = OPCUA_MAX_OPTA_EXPANSION_NUM;
       }
 
       /* Expose Arduino Opta expansion module IO via OPC/UA. */
