@@ -286,6 +286,23 @@ void setup()
             snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", a + 1);
             exp_analog->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, a]() { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a); });
           }
+
+          /* Configure controllable LEDs of analog expansion module. */
+          for (int l = 0; l < OA_LED_NUM; l++)
+          {
+            char led_name[32] = {0};
+            snprintf(led_name, sizeof(led_name), "LED%d", l + 1);
+            exp_analog->led_mgr()->add_led_output(opc_ua_server,
+                                                  led_name,
+                                                  [i, l](bool const value)
+                                                  {
+                                                    AnalogExpansion * ana_exp_ptr = reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i));
+                                                    if (value)
+                                                      ana_exp_ptr->switchLedOn(l);
+                                                    else
+                                                      ana_exp_ptr->switchLedOff(l);
+                                                  });
+          }
         }
       }
 

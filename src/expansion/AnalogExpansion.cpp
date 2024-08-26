@@ -36,6 +36,18 @@ AnalogInputManager::SharedPtr AnalogExpansion::analog_input_mgr()
   return _analog_input_mgr;
 }
 
+LedManager::SharedPtr AnalogExpansion::led_mgr()
+{
+  if (!_led_mgr)
+  {
+    _led_mgr = opcua::LedManager::create(_server, _node_id);
+    if (!_led_mgr)
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "AnalogExpansion::led_mgr: LedManager::create(...) failed.");
+  }
+
+  return _led_mgr;
+}
+
 /**************************************************************************************
  * NAMESPACE
  **************************************************************************************/

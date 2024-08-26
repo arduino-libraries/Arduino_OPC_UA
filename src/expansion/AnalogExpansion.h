@@ -17,6 +17,7 @@
 
 #include <memory>
 
+#include "../io/led/LedManager.h"
 #include "../io/analog/AnalogInputManager.h"
 
 /**************************************************************************************
@@ -61,10 +62,13 @@ public:
 
 
   AnalogInputManager::SharedPtr analog_input_mgr();
+  LedManager::SharedPtr         led_mgr();
+
 
 
 private:
   AnalogInputManager::SharedPtr _analog_input_mgr;
+  LedManager::SharedPtr _led_mgr;
 };
 
 /**************************************************************************************
