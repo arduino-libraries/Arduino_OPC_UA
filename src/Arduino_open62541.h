@@ -33,4 +33,8 @@
 # error "This library does only support Arduino Opta"
 #endif
 
+/* Note: exposing properties via OPC UA is extremely
+ * RAM hungry. We therefore need to limit the number
+ * of supported Opta expansion modules via OPC UA.
+ */
 #define OPCUA_MAX_OPTA_EXPANSION_NUM (2u)
