@@ -39,7 +39,7 @@ static size_t const OPC_UA_SERVER_THREAD_STACK_SIZE = 16*1024UL;
 template <size_t SIZE> struct alignas(uint32_t) OPC_UA_STACK final : public std::array<uint8_t, SIZE> {};
 static OPC_UA_STACK<OPC_UA_SERVER_THREAD_STACK_SIZE> OPC_UA_SERVER_THREAD_STACK;
 
-static size_t const OPC_UA_SERVER_THREAD_HEAP_SIZE = (256+128)*1024UL;
+static size_t const OPC_UA_SERVER_THREAD_HEAP_SIZE = 320*1024UL;
 template <size_t SIZE> struct alignas(O1HEAP_ALIGNMENT) OPC_UA_HEAP final : public std::array<uint8_t, SIZE> {};
 static OPC_UA_HEAP<OPC_UA_SERVER_THREAD_HEAP_SIZE> OPC_UA_SERVER_THREAD_HEAP;
 
