@@ -284,7 +284,7 @@ void setup()
             /* Expose analog inputs as readable OPC UA properties. */
             char analog_in_name[32] = {0};
             snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", a + 1);
-            exp_analog->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, a]() { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->analogRead(a); });
+            exp_analog->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, a]() { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a); });
           }
         }
       }
@@ -398,8 +398,6 @@ void loop()
       reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->updateDigitalOutputs();
     else if (exp_type == EXPANSION_OPTA_DIGITAL_STS)
       reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->updateDigitalOutputs();
-    else if (exp_type == EXPANSION_OPTA_ANALOG)
-      reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->updateAnalogInputs();
   }
 
   /* Toggle main LED signalling progress. */
