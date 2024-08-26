@@ -258,6 +258,24 @@ void setup()
         else if (exp_type == EXPANSION_OPTA_ANALOG)
         {
           auto const exp_analog = opta_expansion_manager_opcua->create_analog_expansion(i);
+
+          for(int a = 0; a < OA_AN_CHANNELS_NUM; a++)
+          {
+            /* Configure analog expansion module analog channels as analog inputs. */
+            AnalogExpansion::beginChannelAsAdc(OptaController,
+                                               i, /* expansion module number */
+                                               a, /* analog channel of expansion module */
+                                               OA_VOLTAGE_ADC, /* ADC type */
+                                               true, /* enable pull down */
+                                               false, /* disable rejection */
+                                               false, /* disable diagnostic */
+                                               0); /* disable averaging */
+
+            /* Expose analog inputs as readable OPC UA properties. */
+            char analog_in_name[32] = {0};
+            snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", a + 1);
+            exp_analog->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, a]() { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->analogRead(a); });
+          }
         }
       }
 

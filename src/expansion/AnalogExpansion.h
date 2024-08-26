@@ -17,6 +17,8 @@
 
 #include <memory>
 
+#include "../io/analog/AnalogInputManager.h"
+
 /**************************************************************************************
  * NAMESPACE
  **************************************************************************************/
@@ -56,6 +58,13 @@ public:
                    char * model_name)
     : Expansion(server, parent_node_id, display_name, node_name, model_name)
   { }
+
+
+  AnalogInputManager::SharedPtr analog_input_mgr();
+
+
+private:
+  AnalogInputManager::SharedPtr _analog_input_mgr;
 };
 
 /**************************************************************************************
