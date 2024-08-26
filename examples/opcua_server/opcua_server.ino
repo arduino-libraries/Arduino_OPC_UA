@@ -395,6 +395,8 @@ void loop()
       reinterpret_cast<DigitalMechExpansion *>(OptaController.getExpansionPtr(i))->updateDigitalOutputs();
     else if (exp_type == EXPANSION_OPTA_DIGITAL_STS)
       reinterpret_cast<DigitalStSolidExpansion *>(OptaController.getExpansionPtr(i))->updateDigitalOutputs();
+    else if (exp_type == EXPANSION_OPTA_ANALOG)
+      reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->updateAnalogInputs();
   }
 
   /* Toggle main LED signalling progress. */
