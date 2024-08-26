@@ -387,7 +387,10 @@ void loop()
   OptaController.update();
 
   /* Determine the number of expansion boards available and call update on them. */
-  uint8_t const opta_expansion_num = OptaController.getExpansionNum();
+  uint8_t opta_expansion_num = OptaController.getExpansionNum();
+  if (opta_expansion_num > OPCUA_MAX_OPTA_EXPANSION_NUM)
+    opta_expansion_num = OPCUA_MAX_OPTA_EXPANSION_NUM;
+  /* Periodically call their respective update methods. */
   for(uint8_t i = 0; i < opta_expansion_num; i++)
   {
     ExpansionType_t const exp_type = OptaController.getExpansionType(i);
