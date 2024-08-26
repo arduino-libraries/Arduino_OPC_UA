@@ -32,3 +32,5 @@
 #if !defined(ARDUINO_OPTA)
 # error "This library does only support Arduino Opta"
 #endif
+
+#define OPCUA_MAX_OPTA_EXPANSION_NUM (2u)

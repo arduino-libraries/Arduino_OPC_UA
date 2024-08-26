@@ -20,8 +20,6 @@
  * CONSTANTS
  **************************************************************************************/
 
-static uint8_t const OPCUA_MAX_OPTA_EXPANSION_NUM = 2;
-
 #if USE_MODBUS_SENSOR_MD02
 static unsigned int const MODBUS_BAUDRATE      = 9600;
 static float        const MODBUS_BIT_DURATION  = 1.f / MODBUS_BAUDRATE;
