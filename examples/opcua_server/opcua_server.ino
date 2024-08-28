@@ -300,7 +300,7 @@ void setup()
 
             /* Expose analog inputs as readable OPC UA properties. */
             char analog_out_name[32] = {0};
-            snprintf(analog_out_name, sizeof(analog_out_name), "Analog Output I%d", a + 1);
+            snprintf(analog_out_name, sizeof(analog_out_name), "Analog Output O%d", a - OA_CH_6 + 1);
             exp_analog->analog_output_mgr()->add_analog_output(opc_ua_server, analog_out_name, [i, a](float const voltage) { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a, voltage); });
           }
 
