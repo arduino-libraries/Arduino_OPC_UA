@@ -33,7 +33,7 @@ static void analog_output_on_write_request(UA_Server *server,
                                            const UA_DataValue *data)
 {
   AnalogOutput * this_ptr = reinterpret_cast<AnalogOutput *>(nodeContext);
-  bool const voltage = *(UA_Float *)(data->value.data);
+  float const voltage = *(UA_Float *)(data->value.data);
   this_ptr->onWriteRequest(server, nodeid, voltage);
 }
 
