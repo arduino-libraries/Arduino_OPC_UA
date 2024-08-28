@@ -269,7 +269,7 @@ void setup()
         {
           auto const exp_analog = opta_expansion_manager_opcua->create_analog_expansion(i);
 
-          for(int a = 0; a < OA_AN_CHANNELS_NUM; a++)
+          for(int a = OA_CH_0; a <= OA_CH_5; a++)
           {
             /* Configure analog expansion module analog channels as analog inputs. */
             AnalogExpansion::beginChannelAsAdc(OptaController,
@@ -285,6 +285,23 @@ void setup()
             char analog_in_name[32] = {0};
             snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", a + 1);
             exp_analog->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, a]() { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a); });
+          }
+
+          for(int a = OA_CH_6; a <= OA_CH_7; a++)
+          {
+            /* Configure analog expansion module analog channels as analog outputs. */
+            AnalogExpansion::beginChannelAsDac(OptaController,
+                                               i, /* expansion module number */
+                                               a, /* analog channel of expansion module */
+                                               OA_VOLTAGE_DAC, /* DAC type */
+                                               true, /* limit current */
+                                               false, /* disable slew rate */
+                                               OA_SLEW_RATE_0);
+
+            /* Expose analog inputs as readable OPC UA properties. */
+            char analog_out_name[32] = {0};
+            snprintf(analog_out_name, sizeof(analog_out_name), "Analog Output I%d", a + 1);
+            exp_analog->analog_output_mgr()->add_analog_output(opc_ua_server, analog_out_name, [i, a](float const voltage) { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a, voltage); });
           }
 
           /* Configure controllable LEDs of analog expansion module. */

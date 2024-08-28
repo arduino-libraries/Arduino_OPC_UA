@@ -19,6 +19,7 @@
 
 #include "../io/led/LedManager.h"
 #include "../io/analog/AnalogInputManager.h"
+#include "../io/analog/AnalogOutputManager.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -61,13 +62,15 @@ public:
   { }
 
 
-  AnalogInputManager::SharedPtr analog_input_mgr();
-  LedManager::SharedPtr         led_mgr();
+  AnalogInputManager::SharedPtr  analog_input_mgr();
+  AnalogOutputManager::SharedPtr analog_output_mgr();
+  LedManager::SharedPtr          led_mgr();
 
 
 
 private:
   AnalogInputManager::SharedPtr _analog_input_mgr;
+  AnalogOutputManager::SharedPtr _analog_output_mgr;
   LedManager::SharedPtr _led_mgr;
 };
 

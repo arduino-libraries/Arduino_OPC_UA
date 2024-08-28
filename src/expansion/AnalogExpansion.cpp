@@ -36,6 +36,18 @@ AnalogInputManager::SharedPtr AnalogExpansion::analog_input_mgr()
   return _analog_input_mgr;
 }
 
+AnalogOutputManager::SharedPtr AnalogExpansion::analog_output_mgr()
+{
+  if (!_analog_output_mgr)
+  {
+    _analog_output_mgr = opcua::AnalogOutputManager::create(_server, _node_id);
+    if (!_analog_output_mgr)
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "AnalogExpansion::analog_output_mgr: AnalogOutputManager::create(...) failed.");
+  }
+
+  return _analog_output_mgr;
+}
+
 LedManager::SharedPtr AnalogExpansion::led_mgr()
 {
   if (!_led_mgr)
