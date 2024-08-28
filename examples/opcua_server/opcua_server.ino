@@ -269,7 +269,10 @@ void setup()
         {
           auto const exp_analog = opta_expansion_manager_opcua->create_analog_expansion(i);
 
-          for(int a = OA_CH_0; a <= OA_CH_5; a++)
+          std::list<int> ANALOG_EXPANSION_MODULE_ANALOG_INPUT_LIST = {OA_CH_0, OA_CH_1, OA_CH_2, OA_CH_3, OA_CH_5, OA_CH_6};
+
+          int input_num = 1;
+          for (int const a : ANALOG_EXPANSION_MODULE_ANALOG_INPUT_LIST)
           {
             /* Configure analog expansion module analog channels as analog inputs. */
             AnalogExpansion::beginChannelAsAdc(OptaController,
@@ -283,11 +286,15 @@ void setup()
 
             /* Expose analog inputs as readable OPC UA properties. */
             char analog_in_name[32] = {0};
-            snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", a + 1);
+            snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", input_num);
             exp_analog->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, a]() { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a); });
+            input_num++;
           }
 
-          for(int a = OA_CH_6; a <= OA_CH_7; a++)
+          std::list<int> ANALOG_EXPANSION_MODULE_ANALOG_OUTPUT_LIST = {OA_CH_4, OA_CH_7};
+
+          int output_num = 1;
+          for (int const a : ANALOG_EXPANSION_MODULE_ANALOG_OUTPUT_LIST)
           {
             /* Configure analog expansion module analog channels as analog outputs. */
             AnalogExpansion::beginChannelAsDac(OptaController,
@@ -300,8 +307,9 @@ void setup()
 
             /* Expose analog inputs as readable OPC UA properties. */
             char analog_out_name[32] = {0};
-            snprintf(analog_out_name, sizeof(analog_out_name), "Analog Output O%d", a - OA_CH_6 + 1);
+            snprintf(analog_out_name, sizeof(analog_out_name), "Analog Output O%d", output_num);
             exp_analog->analog_output_mgr()->add_analog_output(opc_ua_server, analog_out_name, [i, a](float const voltage) { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a, voltage); });
+            output_num++;
           }
 
           /* Configure controllable LEDs of analog expansion module. */
