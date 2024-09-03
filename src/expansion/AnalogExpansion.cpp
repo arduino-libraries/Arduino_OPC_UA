@@ -24,6 +24,24 @@ namespace opcua
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
+AnalogExpansion::SharedPtr
+AnalogExpansion::create(
+  UA_Server *server,
+  UA_NodeId const parent_node_id,
+  uint8_t const exp_num)
+{
+  char display_name[64] = {0};
+  snprintf(display_name, sizeof(display_name), "Arduino Opta Expansion %d: Analog", exp_num);
+
+  char node_name[32] = {0};
+  snprintf(node_name, sizeof(node_name), "AnaExp_%d", exp_num);
+
+  char model_name[] = {"AFX00007"};
+
+  auto const instance_ptr = std::make_shared<AnalogExpansion>(server, parent_node_id, display_name, node_name, model_name);
+  return instance_ptr;
+}
+
 AnalogInputManager::SharedPtr
 AnalogExpansion::analog_input_mgr()
 {
