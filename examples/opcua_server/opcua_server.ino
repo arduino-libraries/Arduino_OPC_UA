@@ -312,6 +312,21 @@ void setup()
             output_num++;
           }
 
+          /* Configure PWM outputs. */
+          int pwm_output_num = 1;
+          for (int p = OA_PWM_CH_FIRST; p <= OA_PWM_CH_LAST; p++)
+          {
+            char pwm_out_name[32] = {0};
+            snprintf(pwm_out_name, sizeof(pwm_out_name), "PWM%d", pwm_output_num);
+            exp_analog->pwm_output_mgr()->add_pwm_output(opc_ua_server,
+                                                         pwm_out_name,
+                                                         [i, p](uint32_t const pwm_period_ms, uint32_t const pwm_pulse_width_ms)
+                                                         {
+                                                           reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->setPwm(p, pwm_period_ms, pwm_pulse_width_ms);
+                                                         });
+            pwm_output_num++;
+          }
+
           /* Configure controllable LEDs of analog expansion module. */
           for (int l = 0; l < OA_LED_NUM; l++)
           {

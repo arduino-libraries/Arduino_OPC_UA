@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "../io/led/LedManager.h"
+#include "../io/pwm/PwmOutputManager.h"
 #include "../io/analog/AnalogInputManager.h"
 #include "../io/analog/AnalogOutputManager.h"
 
@@ -38,7 +39,11 @@ public:
   typedef std::shared_ptr<AnalogExpansion> SharedPtr;
 
 
-  static SharedPtr create(UA_Server *server, UA_NodeId const parent_node_id, uint8_t const exp_num)
+  static SharedPtr
+  create(
+    UA_Server *server,
+    UA_NodeId const parent_node_id,
+    uint8_t const exp_num)
   {
     char display_name[64] = {0};
     snprintf(display_name, sizeof(display_name), "Arduino Opta Expansion %d: Analog", exp_num);
@@ -53,17 +58,19 @@ public:
   }
 
 
-  AnalogExpansion(UA_Server * server,
-                   UA_NodeId const parent_node_id,
-                   char * display_name,
-                   char * node_name,
-                   char * model_name)
+  AnalogExpansion(
+    UA_Server * server,
+    UA_NodeId const parent_node_id,
+    char * display_name,
+    char * node_name,
+    char * model_name)
     : Expansion(server, parent_node_id, display_name, node_name, model_name)
   { }
 
 
   AnalogInputManager::SharedPtr  analog_input_mgr();
   AnalogOutputManager::SharedPtr analog_output_mgr();
+  PwmOutputManager::SharedPtr    pwm_output_mgr();
   LedManager::SharedPtr          led_mgr();
 
 
@@ -71,6 +78,7 @@ public:
 private:
   AnalogInputManager::SharedPtr _analog_input_mgr;
   AnalogOutputManager::SharedPtr _analog_output_mgr;
+  PwmOutputManager::SharedPtr _pwm_output_mgr;
   LedManager::SharedPtr _led_mgr;
 };
 
