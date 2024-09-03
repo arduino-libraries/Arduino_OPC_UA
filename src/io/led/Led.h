@@ -35,14 +35,24 @@ public:
   typedef std::shared_ptr<Led> SharedPtr;
   typedef std::function<void(bool const)> OnSetLedStateFunc;
 
-  static SharedPtr create(UA_Server *server,
-                          UA_NodeId const &parent_node_id,
-                          const char *display_name,
-                          OnSetLedStateFunc const on_set_led_state);
 
-  Led(UA_NodeId const &node_id, OnSetLedStateFunc const on_set_led_state);
+  static SharedPtr
+  create(
+    UA_Server *server,
+    UA_NodeId const &parent_node_id,
+    const char *display_name,
+    OnSetLedStateFunc const on_set_led_state);
 
-  void onWriteRequest(UA_Server * server, UA_NodeId const * node_id, bool const value);
+
+  Led(
+    UA_NodeId const &node_id,
+    OnSetLedStateFunc const on_set_led_state);
+
+
+  void onWriteRequest(
+    UA_Server * server,
+    UA_NodeId const * node_id,
+    bool const value);
 
 
 private:

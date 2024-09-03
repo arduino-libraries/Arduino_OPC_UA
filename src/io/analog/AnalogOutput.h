@@ -37,14 +37,24 @@ public:
   typedef std::shared_ptr<AnalogOutput> SharedPtr;
   typedef std::function<void(float)> OnWriteRequestFunc;
 
-  static SharedPtr create(UA_Server * server,
-                          UA_NodeId const & parent_node_id,
-                          const char * display_name,
-                          OnWriteRequestFunc const on_write_request);
 
-  AnalogOutput(UA_NodeId const & node_id, OnWriteRequestFunc const on_write_request);
+  static SharedPtr
+  create(
+    UA_Server * server,
+    UA_NodeId const & parent_node_id,
+    const char * display_name,
+    OnWriteRequestFunc const on_write_request);
 
-  void onWriteRequest(UA_Server * server, UA_NodeId const * node_id, float const voltage);
+
+  AnalogOutput(
+    UA_NodeId const & node_id,
+    OnWriteRequestFunc const on_write_request);
+
+
+  void onWriteRequest(
+    UA_Server * server,
+    UA_NodeId const * node_id,
+    float const voltage);
 
 
 private:

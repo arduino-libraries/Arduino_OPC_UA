@@ -21,6 +21,32 @@ namespace opcua
 {
 
 /**************************************************************************************
+ * CTOR/DTOR
+ **************************************************************************************/
+
+AnalogExpansion::AnalogExpansion(
+  UA_Server * server,
+  UA_NodeId const parent_node_id,
+  char * display_name,
+  char * node_name,
+  char * model_name)
+  : Expansion(server, parent_node_id, display_name, node_name, model_name)
+  , _analog_input_mgr{opcua::AnalogInputManager::create(_server, _node_id)}
+  , _analog_output_mgr{opcua::AnalogOutputManager::create(_server, _node_id)}
+  , _pwm_output_mgr{opcua::PwmOutputManager::create(_server, _node_id)}
+  , _led_mgr{opcua::LedManager::create(_server, _node_id)}
+{
+  if (!_analog_input_mgr)
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: AnalogInputManager::create(...) failed.", __PRETTY_FUNCTION__);
+  if (!_analog_output_mgr)
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: AnalogOutputManager::create(...) failed.", __PRETTY_FUNCTION__);
+  if (!_pwm_output_mgr)
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: PwmOutputManager::create(...) failed.", __PRETTY_FUNCTION__);
+  if (!_led_mgr)
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: LedManager::create(...) failed.", __PRETTY_FUNCTION__);
+}
+
+/**************************************************************************************
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
@@ -42,58 +68,40 @@ AnalogExpansion::create(
   return instance_ptr;
 }
 
-AnalogInputManager::SharedPtr
-AnalogExpansion::analog_input_mgr()
+void
+AnalogExpansion::add_analog_input(
+  UA_Server * server,
+  const char * display_name,
+  AnalogInput::OnReadRequestFunc const on_read_request_func)
 {
-  if (!_analog_input_mgr)
-  {
-    _analog_input_mgr = opcua::AnalogInputManager::create(_server, _node_id);
-    if (!_analog_input_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                   "%s: AnalogInputManager::create(...) failed.", __PRETTY_FUNCTION__);
-  }
-
-  return _analog_input_mgr;
+  _analog_input_mgr->add_analog_input(server, display_name, on_read_request_func);
 }
 
-AnalogOutputManager::SharedPtr
-AnalogExpansion::analog_output_mgr()
+void
+AnalogExpansion::add_analog_output(
+  UA_Server * server,
+  const char * display_name,
+  AnalogOutput::OnWriteRequestFunc const on_write_request_func)
 {
-  if (!_analog_output_mgr)
-  {
-    _analog_output_mgr = opcua::AnalogOutputManager::create(_server, _node_id);
-    if (!_analog_output_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: AnalogOutputManager::create(...) failed.", __PRETTY_FUNCTION__);
-  }
-
-  return _analog_output_mgr;
+  _analog_output_mgr->add_analog_output(server, display_name, on_write_request_func);
 }
 
-PwmOutputManager::SharedPtr
-AnalogExpansion::pwm_output_mgr()
+void
+AnalogExpansion::add_pwm_output(
+  UA_Server * server,
+  const char * display_name,
+  PwmOutput::SetPwmFunc const set_pwm_func)
 {
-  if (!_pwm_output_mgr)
-  {
-    _pwm_output_mgr = opcua::PwmOutputManager::create(_server, _node_id);
-    if (!_pwm_output_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: PwmOutputManager::create(...) failed.", __PRETTY_FUNCTION__);
-  }
-
-  return _pwm_output_mgr;
+  _pwm_output_mgr->add_pwm_output(server, display_name, set_pwm_func);
 }
 
-LedManager::SharedPtr
-AnalogExpansion::led_mgr()
+void
+AnalogExpansion::add_led_output(
+  UA_Server * server,
+  const char * display_name,
+  Led::OnSetLedStateFunc const on_set_led_state)
 {
-  if (!_led_mgr)
-  {
-    _led_mgr = opcua::LedManager::create(_server, _node_id);
-    if (!_led_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                   "%s: LedManager::create(...) failed.", __PRETTY_FUNCTION__);
-  }
-
-  return _led_mgr;
+  _led_mgr->add_led_output(server, display_name, on_set_led_state);
 }
 
 /**************************************************************************************

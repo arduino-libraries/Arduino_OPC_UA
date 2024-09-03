@@ -36,13 +36,22 @@ class AnalogOutputManager
 public:
   typedef std::shared_ptr<AnalogOutputManager> SharedPtr;
 
-  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id);
 
-  AnalogOutputManager(UA_NodeId const & node_id);
+  static SharedPtr
+  create(
+    UA_Server * server,
+    UA_NodeId const parent_node_id);
 
-  void add_analog_output(UA_Server * server,
-                         const char * display_name,
-                         AnalogOutput::OnWriteRequestFunc const on_write_request_func);
+
+  AnalogOutputManager(
+    UA_NodeId const & node_id);
+
+
+  void
+  add_analog_output(
+    UA_Server * server,
+    const char * display_name,
+    AnalogOutput::OnWriteRequestFunc const on_write_request_func);
 
 
 private:

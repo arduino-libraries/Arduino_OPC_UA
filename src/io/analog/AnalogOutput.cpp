@@ -24,13 +24,15 @@ namespace opcua
  * FUNCTION DEFINITION
  **************************************************************************************/
 
-static void analog_output_on_write_request(UA_Server *server,
-                                           const UA_NodeId *sessionId,
-                                           void *sessionContext,
-                                           const UA_NodeId *nodeid,
-                                           void *nodeContext,
-                                           const UA_NumericRange *range,
-                                           const UA_DataValue *data)
+static void
+analog_output_on_write_request(
+  UA_Server *server,
+  const UA_NodeId *sessionId,
+  void *sessionContext,
+  const UA_NodeId *nodeid,
+  void *nodeContext,
+  const UA_NumericRange *range,
+  const UA_DataValue *data)
 {
   AnalogOutput * this_ptr = reinterpret_cast<AnalogOutput *>(nodeContext);
   float const voltage = *(UA_Float *)(data->value.data);
@@ -41,7 +43,9 @@ static void analog_output_on_write_request(UA_Server *server,
  * CTOR/DTOR
  **************************************************************************************/
 
-AnalogOutput::AnalogOutput(UA_NodeId const & node_id, OnWriteRequestFunc const on_write_request)
+AnalogOutput::AnalogOutput(
+  UA_NodeId const & node_id,
+  OnWriteRequestFunc const on_write_request)
 : _node_id{node_id}
 , _on_write_request{on_write_request}
 {
@@ -52,16 +56,18 @@ AnalogOutput::AnalogOutput(UA_NodeId const & node_id, OnWriteRequestFunc const o
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-AnalogOutput::SharedPtr AnalogOutput::create(UA_Server * server,
-                                             UA_NodeId const & parent_node_id,
-                                             const char * display_name,
-                                             OnWriteRequestFunc const on_write_request)
+AnalogOutput::SharedPtr
+AnalogOutput::create(
+  UA_Server * server,
+  UA_NodeId const & parent_node_id,
+  const char * display_name,
+  OnWriteRequestFunc const on_write_request)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
   UA_VariableAttributes analog_output_value_attr = UA_VariableAttributes_default;
 
-  UA_Boolean analog_output_value = 0.;
+  UA_Float analog_output_value = 0.;
   UA_Variant_setScalar(&analog_output_value_attr.value, &analog_output_value, &UA_TYPES[UA_TYPES_FLOAT]);
 
   analog_output_value_attr.displayName = UA_LOCALIZEDTEXT("en-US", (char *)display_name);
@@ -84,7 +90,7 @@ AnalogOutput::SharedPtr AnalogOutput::create(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "AnalogOutput::create: UA_Server_addVariableNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "%s: UA_Server_addVariableNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -95,8 +101,7 @@ AnalogOutput::SharedPtr AnalogOutput::create(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "AnalogOutput::create: UA_Server_setNodeContext(...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_setNodeContext(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -107,18 +112,20 @@ AnalogOutput::SharedPtr AnalogOutput::create(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "AnalogOutput::create: UA_Server_setVariableNode_valueCallback(...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_setVariableNode_valueCallback(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
   return instance_ptr;
 }
 
-void AnalogOutput::onWriteRequest(UA_Server * server, UA_NodeId const * node_id, float const voltage)
+void
+AnalogOutput::onWriteRequest(
+  UA_Server * server,
+  UA_NodeId const * node_id,
+  float const voltage)
 {
-  /* Some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "AnalogOutput::onWriteRequest: voltage = %0.2f", voltage);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: voltage = %0.2f", __PRETTY_FUNCTION__, voltage);
   _on_write_request(voltage);
 }
 

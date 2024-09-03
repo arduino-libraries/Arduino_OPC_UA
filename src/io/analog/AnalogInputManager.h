@@ -36,13 +36,21 @@ class AnalogInputManager
 public:
   typedef std::shared_ptr<AnalogInputManager> SharedPtr;
 
-  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id);
 
-  AnalogInputManager(UA_NodeId const & node_id);
+  static SharedPtr
+  create(
+    UA_Server * server,
+    UA_NodeId const parent_node_id);
 
-  void add_analog_input(UA_Server * server,
-                        const char * display_name,
-                        AnalogInput::OnReadRequestFunc const on_read_request_func);
+
+  AnalogInputManager(
+    UA_NodeId const & node_id);
+
+  void
+  add_analog_input(
+    UA_Server * server,
+    const char * display_name,
+    AnalogInput::OnReadRequestFunc const on_read_request_func);
 
 
 private:

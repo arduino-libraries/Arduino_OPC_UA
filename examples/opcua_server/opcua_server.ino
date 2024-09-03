@@ -287,7 +287,13 @@ void setup()
             /* Expose analog inputs as readable OPC UA properties. */
             char analog_in_name[32] = {0};
             snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", input_num);
-            exp_analog->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, a]() { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a); });
+            exp_analog->add_analog_input(
+              opc_ua_server,
+              analog_in_name,
+              [i, a]()
+              {
+                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a);
+              });
             input_num++;
           }
 
@@ -308,7 +314,13 @@ void setup()
             /* Expose analog inputs as readable OPC UA properties. */
             char analog_out_name[32] = {0};
             snprintf(analog_out_name, sizeof(analog_out_name), "Analog Output O%d", output_num);
-            exp_analog->analog_output_mgr()->add_analog_output(opc_ua_server, analog_out_name, [i, a](float const voltage) { return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a, voltage); });
+            exp_analog->add_analog_output(
+              opc_ua_server,
+              analog_out_name,
+              [i, a](float const voltage)
+              {
+                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a, voltage);
+              });
             output_num++;
           }
 
@@ -318,12 +330,13 @@ void setup()
           {
             char pwm_out_name[32] = {0};
             snprintf(pwm_out_name, sizeof(pwm_out_name), "PWM%d", pwm_output_num);
-            exp_analog->pwm_output_mgr()->add_pwm_output(opc_ua_server,
-                                                         pwm_out_name,
-                                                         [i, p](uint32_t const pwm_period_ms, uint32_t const pwm_pulse_width_ms)
-                                                         {
-                                                           reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->setPwm(p, pwm_period_ms, pwm_pulse_width_ms);
-                                                         });
+            exp_analog->add_pwm_output(
+              opc_ua_server,
+              pwm_out_name,
+              [i, p](uint32_t const pwm_period_ms, uint32_t const pwm_pulse_width_ms)
+              {
+                reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->setPwm(p, pwm_period_ms, pwm_pulse_width_ms);
+              });
             pwm_output_num++;
           }
 
@@ -332,16 +345,17 @@ void setup()
           {
             char led_name[32] = {0};
             snprintf(led_name, sizeof(led_name), "LED%d", l + 1);
-            exp_analog->led_mgr()->add_led_output(opc_ua_server,
-                                                  led_name,
-                                                  [i, l](bool const value)
-                                                  {
-                                                    AnalogExpansion * ana_exp_ptr = reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i));
-                                                    if (value)
-                                                      ana_exp_ptr->switchLedOn(l);
-                                                    else
-                                                      ana_exp_ptr->switchLedOff(l);
-                                                  });
+            exp_analog->add_led_output(
+              opc_ua_server,
+              led_name,
+              [i, l](bool const value)
+              {
+                AnalogExpansion * ana_exp_ptr = reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i));
+                  if (value)
+                    ana_exp_ptr->switchLedOn(l);
+                  else
+                    ana_exp_ptr->switchLedOff(l);
+              });
           }
         }
       }

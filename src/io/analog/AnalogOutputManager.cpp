@@ -24,17 +24,21 @@ namespace opcua
  * CTOR/DTOR
  **************************************************************************************/
 
-AnalogOutputManager::AnalogOutputManager(UA_NodeId const & node_id)
+AnalogOutputManager::AnalogOutputManager(
+  UA_NodeId const & node_id)
 : _node_id{node_id}
 {
-  /* Nothing happens here. */
+
 }
 
 /**************************************************************************************
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-AnalogOutputManager::SharedPtr AnalogOutputManager::create(UA_Server * server, UA_NodeId const parent_node_id)
+AnalogOutputManager::SharedPtr
+AnalogOutputManager::create(
+  UA_Server * server,
+  UA_NodeId const parent_node_id)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -53,7 +57,7 @@ AnalogOutputManager::SharedPtr AnalogOutputManager::create(UA_Server * server, U
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "AnalogOutputManager::create: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "%s: UA_Server_addObjectNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -65,13 +69,15 @@ AnalogOutputManager::SharedPtr AnalogOutputManager::create(UA_Server * server, U
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-void AnalogOutputManager::add_analog_output(UA_Server * server,
-                                            const char * display_name,
-                                            AnalogOutput::OnWriteRequestFunc const on_write_request_func)
+void
+AnalogOutputManager::add_analog_output(
+  UA_Server * server,
+  const char * display_name,
+  AnalogOutput::OnWriteRequestFunc const on_write_request_func)
 {
   auto const analog_output = AnalogOutput::create(server, _node_id, display_name, on_write_request_func);
   if (!analog_output) {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "AnalogOutputManager::add_analog_output: AnalogOutput::create(...) failed: returned nullptr");
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: AnalogOutput::create(...) failed: returned nullptr", __PRETTY_FUNCTION__);
     return;
   }
   _analog_output_list.push_back(analog_output);

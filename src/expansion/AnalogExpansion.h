@@ -51,16 +51,32 @@ public:
     UA_NodeId const parent_node_id,
     char * display_name,
     char * node_name,
-    char * model_name)
-    : Expansion(server, parent_node_id, display_name, node_name, model_name)
-  { }
+    char * model_name);
 
 
-  AnalogInputManager::SharedPtr  analog_input_mgr();
-  AnalogOutputManager::SharedPtr analog_output_mgr();
-  PwmOutputManager::SharedPtr    pwm_output_mgr();
-  LedManager::SharedPtr          led_mgr();
+  void
+  add_analog_input(
+    UA_Server * server,
+    const char * display_name,
+    AnalogInput::OnReadRequestFunc const on_read_request_func);
 
+  void
+  add_analog_output(
+    UA_Server * server,
+    const char * display_name,
+    AnalogOutput::OnWriteRequestFunc const on_write_request_func);
+
+  void
+  add_pwm_output(
+    UA_Server * server,
+    const char * display_name,
+    PwmOutput::SetPwmFunc const set_pwm_func);
+
+  void
+  add_led_output(
+    UA_Server * server,
+    const char * display_name,
+    Led::OnSetLedStateFunc const on_set_led_state);
 
 
 private:
