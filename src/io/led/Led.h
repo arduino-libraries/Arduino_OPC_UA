@@ -49,7 +49,8 @@ public:
     OnSetLedStateFunc const on_set_led_state);
 
 
-  void onWriteRequest(
+  void
+  onWriteRequest(
     UA_Server * server,
     UA_NodeId const * node_id,
     bool const value);

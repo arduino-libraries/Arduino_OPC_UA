@@ -45,7 +45,8 @@ public:
   LedManager(UA_NodeId const & node_id);
 
 
-  void add_led_output(
+  void
+  add_led_output(
     UA_Server * server,
     const char * display_name,
     Led::OnSetLedStateFunc const on_set_led_state);
