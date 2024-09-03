@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "render-docs": "github:arduino/render-docs"
+  }
+}
