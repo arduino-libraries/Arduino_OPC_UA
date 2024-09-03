@@ -26,37 +26,40 @@ namespace opcua
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-AnalogInputManager::SharedPtr DigitalExpansion::analog_input_mgr()
+AnalogInputManager::SharedPtr
+DigitalExpansion::analog_input_mgr()
 {
   if (!_analog_input_mgr)
   {
     _analog_input_mgr = opcua::AnalogInputManager::create(_server, _node_id);
     if (!_analog_input_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalExpansion::analog_input_mgr: AnalogInputManager::create(...) failed.");
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: AnalogInputManager::create(...) failed.", __PRETTY_FUNCTION__);
   }
 
   return _analog_input_mgr;
 }
 
-DigitalInputManager::SharedPtr DigitalExpansion::digital_input_mgr()
+DigitalInputManager::SharedPtr
+DigitalExpansion::digital_input_mgr()
 {
   if (!_digital_input_mgr)
   {
     _digital_input_mgr = opcua::DigitalInputManager::create(_server, _node_id);
     if (!_digital_input_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalExpansion::digital_input_mgr: DigitalInputManager::create(...) failed.");
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: DigitalInputManager::create(...) failed.", __PRETTY_FUNCTION__);
   }
 
   return _digital_input_mgr;
 }
 
-RelayManager::SharedPtr DigitalExpansion::relay_mgr()
+RelayManager::SharedPtr
+DigitalExpansion::relay_mgr()
 {
   if (!_relay_mgr)
   {
     _relay_mgr = opcua::RelayManager::create(_server, _node_id);
     if (!_relay_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalExpansion::relay_mgr: RelayManager::create(...) failed.");
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: RelayManager::create(...) failed.", __PRETTY_FUNCTION__);
   }
 
   return _relay_mgr;

@@ -35,14 +35,25 @@ public:
   typedef std::shared_ptr<Relay> SharedPtr;
   typedef std::function<void(bool const)> OnSetRelayStateFunc;
 
-  static SharedPtr create(UA_Server *server,
-                          UA_NodeId const &parent_node_id,
-                          const char *display_name,
-                          OnSetRelayStateFunc const on_set_relay_state);
 
-  Relay(UA_NodeId const &node_id, OnSetRelayStateFunc const on_set_relay_state);
+  static SharedPtr
+  create(
+    UA_Server *server,
+    UA_NodeId const &parent_node_id,
+    const char *display_name,
+    OnSetRelayStateFunc const on_set_relay_state);
 
-  void onWriteRequest(UA_Server * server, UA_NodeId const * node_id, bool const value);
+
+  Relay(
+    UA_NodeId const &node_id,
+    OnSetRelayStateFunc const on_set_relay_state);
+
+
+  void
+  onWriteRequest(
+    UA_Server * server,
+    UA_NodeId const * node_id,
+    bool const value);
 
 
 private:

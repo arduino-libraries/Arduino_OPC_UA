@@ -42,10 +42,15 @@ public:
   typedef std::shared_ptr<Opta> SharedPtr;
 
 
-  static SharedPtr create(UA_Server * server, OptaVariant::Type const opta_type);
+  static SharedPtr
+  create(
+    UA_Server * server,
+    OptaVariant::Type const opta_type);
 
 
-  Opta(UA_Server * server, UA_NodeId const & node_id);
+  Opta(
+    UA_Server * server,
+    UA_NodeId const & node_id);
 
 
   AnalogInputManager::SharedPtr  analog_input_mgr();

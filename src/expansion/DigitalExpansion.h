@@ -38,11 +38,12 @@ public:
   typedef std::shared_ptr<DigitalExpansion> SharedPtr;
 
 
-  DigitalExpansion(UA_Server * server,
-                   UA_NodeId const parent_node_id,
-                   char * display_name,
-                   char * node_name,
-                   char * model_name)
+  DigitalExpansion(
+    UA_Server * server,
+    UA_NodeId const parent_node_id,
+    char * display_name,
+    char * node_name,
+    char * model_name)
   : Expansion(server, parent_node_id, display_name, node_name, model_name)
   { }
 

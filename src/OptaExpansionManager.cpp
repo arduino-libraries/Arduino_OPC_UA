@@ -24,7 +24,9 @@ namespace opcua
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-DigitalMechExpansion::SharedPtr OptaExpansionManager::create_digital_mechanical_expansion(uint8_t const exp_num)
+DigitalMechExpansion::SharedPtr
+OptaExpansionManager::create_digital_mechanical_expansion(
+  uint8_t const exp_num)
 {
   auto const exp_mech_opcua = opcua::DigitalMechExpansion::create(
     _server,
@@ -35,7 +37,9 @@ DigitalMechExpansion::SharedPtr OptaExpansionManager::create_digital_mechanical_
   return exp_mech_opcua;
 }
 
-DigitalStSolidExpansion::SharedPtr OptaExpansionManager::create_digital_solid_state_expansion(uint8_t const exp_num)
+DigitalStSolidExpansion::SharedPtr
+OptaExpansionManager::create_digital_solid_state_expansion(
+  uint8_t const exp_num)
 {
   auto const exp_solid_state_opcua = opcua::DigitalStSolidExpansion::create(
     _server,
@@ -46,7 +50,9 @@ DigitalStSolidExpansion::SharedPtr OptaExpansionManager::create_digital_solid_st
   return exp_solid_state_opcua;
 }
 
-AnalogExpansion::SharedPtr OptaExpansionManager::create_analog_expansion(uint8_t const exp_num)
+AnalogExpansion::SharedPtr
+OptaExpansionManager::create_analog_expansion(
+  uint8_t const exp_num)
 {
   auto const exp_analog_opcua = opcua::AnalogExpansion::create(
     _server,

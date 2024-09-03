@@ -38,12 +38,15 @@ public:
   typedef std::shared_ptr<OptaExpansionManager> SharedPtr;
 
 
-  static SharedPtr create(UA_Server * server) {
+  static SharedPtr
+  create(
+    UA_Server * server) {
     return std::make_shared<OptaExpansionManager>(server);
   }
 
 
-  OptaExpansionManager(UA_Server * server)
+  OptaExpansionManager(
+    UA_Server * server)
   : _server{server}
   { }
 

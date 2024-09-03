@@ -24,7 +24,9 @@ namespace opcua
  * CTOR/DTOR
  **************************************************************************************/
 
-Opta::Opta(UA_Server * server, UA_NodeId const & node_id)
+Opta::Opta(
+  UA_Server * server,
+  UA_NodeId const & node_id)
 : _server{server}
 , _node_id{node_id}
 , _analog_input_mgr{nullptr}
@@ -34,14 +36,17 @@ Opta::Opta(UA_Server * server, UA_NodeId const & node_id)
 {
   _usr_button = opcua::UserButton::create(_server, _node_id);
   if (!_usr_button)
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Opta::Ctor: UserButton::create(...) failed.");
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: UserButton::create(...) failed.", __PRETTY_FUNCTION__);
 }
 
 /**************************************************************************************
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-Opta::SharedPtr Opta::create(UA_Server * server, OptaVariant::Type const opta_type)
+Opta::SharedPtr
+Opta::create(
+  UA_Server * server,
+  OptaVariant::Type const opta_type)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -60,8 +65,7 @@ Opta::SharedPtr Opta::create(UA_Server * server, OptaVariant::Type const opta_ty
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Opta::create: UA_Server_addObjectNode(...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_addObjectNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -81,8 +85,7 @@ Opta::SharedPtr Opta::create(UA_Server * server, OptaVariant::Type const opta_ty
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Opta::create: UA_Server_addVariableNode(..., \"ManufacturerName\", ...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_addVariableNode(..., \"ManufacturerName\", ...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -102,8 +105,7 @@ Opta::SharedPtr Opta::create(UA_Server * server, OptaVariant::Type const opta_ty
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Opta::create: UA_Server_addVariableNode(..., \"ModelName\", ...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_addVariableNode(..., \"ModelName\", ...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -123,8 +125,7 @@ Opta::SharedPtr Opta::create(UA_Server * server, OptaVariant::Type const opta_ty
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Opta::create: UA_Server_addVariableNode(..., \"Status\", ...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_addVariableNode(..., \"Status\", ...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -132,49 +133,53 @@ Opta::SharedPtr Opta::create(UA_Server * server, OptaVariant::Type const opta_ty
   return instance_ptr;
 }
 
-AnalogInputManager::SharedPtr Opta::analog_input_mgr()
+AnalogInputManager::SharedPtr
+Opta::analog_input_mgr()
 {
   if (!_analog_input_mgr)
   {
     _analog_input_mgr = opcua::AnalogInputManager::create(_server, _node_id);
     if (!_analog_input_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Opta::analog_input_mgr: AnalogInputManager::create(...) failed.");
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: AnalogInputManager::create(...) failed.", __PRETTY_FUNCTION__);
   }
 
   return _analog_input_mgr;
 }
 
-DigitalInputManager::SharedPtr Opta::digital_input_mgr()
+DigitalInputManager::SharedPtr
+Opta::digital_input_mgr()
 {
   if (!_digital_input_mgr)
   {
     _digital_input_mgr = opcua::DigitalInputManager::create(_server, _node_id);
     if (!_digital_input_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Opta::digital_input_mgr: DigitalInputManager::create(...) failed.");
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: DigitalInputManager::create(...) failed.", __PRETTY_FUNCTION__);
   }
 
   return _digital_input_mgr;
 }
 
-RelayManager::SharedPtr Opta::relay_mgr()
+RelayManager::SharedPtr
+Opta::relay_mgr()
 {
   if (!_relay_mgr)
   {
     _relay_mgr = opcua::RelayManager::create(_server, _node_id);
     if (!_relay_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Opta::relay_mgr: RelayManager::create(...) failed.");
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: RelayManager::create(...) failed.", __PRETTY_FUNCTION__);
   }
 
   return _relay_mgr;
 }
 
-LedManager::SharedPtr Opta::led_mgr()
+LedManager::SharedPtr
+Opta::led_mgr()
 {
   if (!_led_mgr)
   {
     _led_mgr = opcua::LedManager::create(_server, _node_id);
     if (!_led_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Opta::led_mgr: LedManager::create(...) failed.");
+      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: LedManager::create(...) failed.", __PRETTY_FUNCTION__);
   }
 
   return _led_mgr;

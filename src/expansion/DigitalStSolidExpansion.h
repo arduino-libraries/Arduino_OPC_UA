@@ -32,7 +32,11 @@ public:
   typedef std::shared_ptr<DigitalStSolidExpansion> SharedPtr;
 
 
-  static SharedPtr create(UA_Server *server, UA_NodeId const parent_node_id, uint8_t const exp_num)
+  static SharedPtr
+  create(
+    UA_Server *server,
+    UA_NodeId const parent_node_id,
+    uint8_t const exp_num)
   {
     char display_name[64] = {0};
     snprintf(display_name, sizeof(display_name), "Arduino Opta Expansion %d: Digital (Solid State)", exp_num);
@@ -47,11 +51,12 @@ public:
   }
 
 
-  DigitalStSolidExpansion(UA_Server * server,
-                          UA_NodeId const parent_node_id,
-                          char * display_name,
-                          char * node_name,
-                          char * model_name)
+  DigitalStSolidExpansion(
+    UA_Server * server,
+    UA_NodeId const parent_node_id,
+    char * display_name,
+    char * node_name,
+    char * model_name)
     : DigitalExpansion{server, parent_node_id, display_name, node_name, model_name}
   {}
 };

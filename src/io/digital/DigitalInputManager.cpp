@@ -24,7 +24,8 @@ namespace opcua
  * CTOR/DTOR
  **************************************************************************************/
 
-DigitalInputManager::DigitalInputManager(UA_NodeId const & node_id)
+DigitalInputManager::DigitalInputManager(
+  UA_NodeId const & node_id)
 : _node_id{node_id}
 {
   /* Nothing happens here. */
@@ -34,7 +35,10 @@ DigitalInputManager::DigitalInputManager(UA_NodeId const & node_id)
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-DigitalInputManager::SharedPtr DigitalInputManager::create(UA_Server * server, UA_NodeId const parent_node_id)
+DigitalInputManager::SharedPtr
+DigitalInputManager::create(
+  UA_Server * server,
+  UA_NodeId const parent_node_id)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -53,7 +57,7 @@ DigitalInputManager::SharedPtr DigitalInputManager::create(UA_Server * server, U
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInputManager::create: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "%s: UA_Server_addObjectNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -65,13 +69,15 @@ DigitalInputManager::SharedPtr DigitalInputManager::create(UA_Server * server, U
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-void DigitalInputManager::add_digital_input(UA_Server * server,
-                                            const char * display_name,
-                                            DigitalInput::OnReadRequestFunc const on_read_request_func)
+void
+DigitalInputManager::add_digital_input(
+  UA_Server * server,
+  const char * display_name,
+  DigitalInput::OnReadRequestFunc const on_read_request_func)
 {
   auto const digital_input = DigitalInput::create(server, _node_id, display_name, on_read_request_func);
   if (!digital_input){
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalInputManager::add_digital_input: DigitalInput::create(...) failed: returned nullptr");
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: DigitalInput::create(...) failed: returned nullptr", __PRETTY_FUNCTION__);
     return;
   }
   _digital_input_list.push_back(digital_input);

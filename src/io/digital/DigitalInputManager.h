@@ -36,13 +36,22 @@ class DigitalInputManager
 public:
   typedef std::shared_ptr<DigitalInputManager> SharedPtr;
 
-  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id);
 
-  DigitalInputManager(UA_NodeId const & node_id);
+  static SharedPtr
+  create(
+    UA_Server * server,
+    UA_NodeId const parent_node_id);
 
-  void add_digital_input(UA_Server * server,
-                         const char * display_name,
-                         DigitalInput::OnReadRequestFunc const on_read_request_func);
+
+  DigitalInputManager(
+    UA_NodeId const & node_id);
+
+
+  void
+  add_digital_input(
+    UA_Server * server,
+    const char * display_name,
+    DigitalInput::OnReadRequestFunc const on_read_request_func);
 
 
 private:
