@@ -73,9 +73,10 @@ void
 AnalogOutputManager::add_analog_output(
   UA_Server * server,
   const char * display_name,
+  AnalogOutput::OnReadRequestFunc const on_read_request,
   AnalogOutput::OnWriteRequestFunc const on_write_request_func)
 {
-  auto const analog_output = AnalogOutput::create(server, _node_id, display_name, on_write_request_func);
+  auto const analog_output = AnalogOutput::create(server, _node_id, display_name, on_read_request, on_write_request_func);
   if (!analog_output) {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: AnalogOutput::create(...) failed: returned nullptr", __PRETTY_FUNCTION__);
     return;

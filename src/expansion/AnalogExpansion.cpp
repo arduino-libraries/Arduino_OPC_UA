@@ -81,9 +81,10 @@ void
 AnalogExpansion::add_analog_output(
   UA_Server * server,
   const char * display_name,
+  AnalogOutput::OnReadRequestFunc const on_read_request,
   AnalogOutput::OnWriteRequestFunc const on_write_request_func)
 {
-  _analog_output_mgr->add_analog_output(server, display_name, on_write_request_func);
+  _analog_output_mgr->add_analog_output(server, display_name, on_read_request, on_write_request_func);
 }
 
 void

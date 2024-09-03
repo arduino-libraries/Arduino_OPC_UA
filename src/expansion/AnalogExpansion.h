@@ -64,6 +64,7 @@ public:
   add_analog_output(
     UA_Server * server,
     const char * display_name,
+    AnalogOutput::OnReadRequestFunc const on_read_request,
     AnalogOutput::OnWriteRequestFunc const on_write_request_func);
 
   void

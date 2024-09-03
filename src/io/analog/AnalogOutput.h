@@ -35,6 +35,7 @@ class AnalogOutput
 {
 public:
   typedef std::shared_ptr<AnalogOutput> SharedPtr;
+  typedef std::function<float(void)> OnReadRequestFunc;
   typedef std::function<void(float)> OnWriteRequestFunc;
 
 
@@ -43,15 +44,23 @@ public:
     UA_Server * server,
     UA_NodeId const & parent_node_id,
     const char * display_name,
+    OnReadRequestFunc const on_read_request,
     OnWriteRequestFunc const on_write_request);
 
 
   AnalogOutput(
     UA_NodeId const & node_id,
+    OnReadRequestFunc const on_read_request,
     OnWriteRequestFunc const on_write_request);
 
 
-  void onWriteRequest(
+  void
+  onReadRequest(
+    UA_Server * server,
+    UA_NodeId const * node_id);
+
+  void
+  onWriteRequest(
     UA_Server * server,
     UA_NodeId const * node_id,
     float const voltage);
@@ -59,7 +68,8 @@ public:
 
 private:
   UA_NodeId _node_id;
-  OnWriteRequestFunc _on_write_request;
+  OnReadRequestFunc const _on_read_request;
+  OnWriteRequestFunc const _on_write_request;
 };
 
 /**************************************************************************************

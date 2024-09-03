@@ -334,9 +334,13 @@ void setup()
             exp_analog->add_analog_output(
               opc_ua_server,
               analog_out_name,
+              [i, a]()
+              {
+                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a);
+              },
               [i, a](float const voltage)
               {
-                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a, voltage);
+                reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a, voltage);
               });
             output_num++;
           }
