@@ -25,5 +25,5 @@ jobs:
     with:
       source-path: './src'
       target-path: './docs/api.md'
-      exclude-pattern: '*/open62541/*'
+      exclude-pattern: '*/open62541/* open62541.h'
       commit: ${{ github.event_name != 'pull_request' }} # Only commit changes if not a PR
