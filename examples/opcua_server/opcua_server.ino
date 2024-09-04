@@ -360,7 +360,7 @@ void setup()
               },
               [i, p](void) -> uint32_t
               {
-                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->getPwmPeriod(p);
+                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->getPwmPeriod(p - OA_PWM_CH_FIRST);
               });
             pwm_output_num++;
           }
