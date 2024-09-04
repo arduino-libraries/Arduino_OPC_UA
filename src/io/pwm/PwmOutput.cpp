@@ -244,15 +244,15 @@ PwmOutput::onReadRequestPwmPeriod(
   UA_NodeId const * node_id)
 {
   /* Obtain the value of the analog input pin. */
-  uint32_t const in_x_val = _get_pwm_period_func();
+  _pwm_period_us = _get_pwm_period_func();
   /* Update the variable node. */
-  UA_UInt32 in_x_val_opcua_value = in_x_val;
+  UA_UInt32 in_x_val_opcua_value = _pwm_period_us;
   UA_Variant in_x_val_opcua_variant;
   UA_Variant_init(&in_x_val_opcua_variant);
   UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_UINT32]);
   UA_Server_writeValue(server, *node_id, in_x_val_opcua_variant);
   /* Some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm period = %d us", __PRETTY_FUNCTION__, in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm period = %d us", __PRETTY_FUNCTION__, _pwm_period_us);
 }
 
 void
@@ -272,15 +272,15 @@ PwmOutput::onReadRequestPwmPulseWidth(
   UA_NodeId const * node_id)
 {
   /* Obtain the value of the analog input pin. */
-  uint32_t const in_x_val = _get_pwm_pulse_width_func();
+  _pwm_pulse_width_us = _get_pwm_pulse_width_func();
   /* Update the variable node. */
-  UA_UInt32 in_x_val_opcua_value = in_x_val;
+  UA_UInt32 in_x_val_opcua_value = _pwm_pulse_width_us;
   UA_Variant in_x_val_opcua_variant;
   UA_Variant_init(&in_x_val_opcua_variant);
   UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_UINT32]);
   UA_Server_writeValue(server, *node_id, in_x_val_opcua_variant);
   /* Some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm pulse width = %d us", __PRETTY_FUNCTION__, in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm pulse width = %d us", __PRETTY_FUNCTION__, _pwm_pulse_width_us);
 }
 
 void
