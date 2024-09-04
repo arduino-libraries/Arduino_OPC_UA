@@ -82,6 +82,25 @@ PwmOutput::create(
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
+  UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
+  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", (char *)display_name);
+  UA_NodeId pwm_obj_node_id;
+  rc = UA_Server_addObjectNode(server,
+                               UA_NODEID_NULL,
+                               parent_node_id,
+                               UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
+                               UA_QUALIFIEDNAME(1, (char *)display_name),
+                               UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
+                               oAttr,
+                               NULL,
+                               &pwm_obj_node_id);
+  if (UA_StatusCode_isBad(rc))
+  {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "%s: UA_Server_addObjectNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
+    return nullptr;
+  }
+
   UA_VariableAttributes pwm_out_period_value_attr = UA_VariableAttributes_default;
 
   UA_Boolean pwm_output_period_value = 0;
@@ -97,7 +116,7 @@ PwmOutput::create(
   UA_NodeId node_id;
   rc = UA_Server_addVariableNode(server,
                                  UA_NODEID_NULL,
-                                 parent_node_id,
+                                 pwm_obj_node_id,
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
                                  UA_QUALIFIEDNAME(1, "Value"),
                                  UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE),
