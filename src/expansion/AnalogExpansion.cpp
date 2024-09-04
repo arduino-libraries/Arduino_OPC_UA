@@ -92,9 +92,10 @@ AnalogExpansion::add_pwm_output(
   UA_Server * server,
   const char * display_name,
   PwmOutput::SetPwmFunc const set_pwm_func,
-  PwmOutput::GetPwmPeriodFunc const get_pwm_period_func)
+  PwmOutput::GetPwmPeriodFunc const get_pwm_period_func,
+  PwmOutput::GetPwmPulseWidthFunc const get_pwm_pulse_width_func)
 {
-  _pwm_output_mgr->add_pwm_output(server, display_name, set_pwm_func, get_pwm_period_func);
+  _pwm_output_mgr->add_pwm_output(server, display_name, set_pwm_func, get_pwm_period_func, get_pwm_pulse_width_func);
 }
 
 void

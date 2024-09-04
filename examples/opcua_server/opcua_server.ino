@@ -354,13 +354,17 @@ void setup()
             exp_analog->add_pwm_output(
               opc_ua_server,
               pwm_out_name,
-              [i, p](uint32_t const pwm_period_ms, uint32_t const pwm_pulse_width_ms)
+              [i, p](uint32_t const pwm_period_us, uint32_t const pwm_pulse_width_us)
               {
-                reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->setPwm(p, pwm_period_ms, pwm_pulse_width_ms);
+                reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->setPwm(p, pwm_period_us, pwm_pulse_width_us);
               },
               [i, p](void) -> uint32_t
               {
                 return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->getPwmPeriod(p - OA_PWM_CH_FIRST);
+              },
+              [i, p](void) -> uint32_t
+              {
+                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->getPwmPulse(p - OA_PWM_CH_FIRST);
               });
             pwm_output_num++;
           }
