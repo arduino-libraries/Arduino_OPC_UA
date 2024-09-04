@@ -36,6 +36,7 @@ class PwmOutput
 public:
   typedef std::shared_ptr<PwmOutput> SharedPtr;
   typedef std::function<void(uint32_t const, uint32_t const)> SetPwmFunc;
+  typedef std::function<uint32_t(void)> GetPwmPeriodFunc;
 
 
   static SharedPtr
@@ -43,18 +44,25 @@ public:
     UA_Server * server,
     UA_NodeId const & parent_node_id,
     const char * display_name,
-    SetPwmFunc const set_pwm_func);
+    SetPwmFunc const set_pwm_func,
+    GetPwmPeriodFunc const get_pwm_period_func);
 
 
   PwmOutput(
-    UA_NodeId const & node_id,
-    SetPwmFunc const set_pwm_func);
+    UA_NodeId const & pwm_period_node_id,
+    SetPwmFunc const set_pwm_func,
+    GetPwmPeriodFunc const get_pwm_period_func);
 
+
+  void
+  onReadRequestPwmPeriod(
+    UA_Server * server,
+    UA_NodeId const * node_id);
 
   void
   onWriteRequestPwmPeriod(
     UA_Server * server,
-    UA_NodeId const * node_id,
+    UA_NodeId const * pwm_period_node_id,
     uint32_t const pwm_period_ms);
 
   void
@@ -65,8 +73,9 @@ public:
 
 
 private:
-  UA_NodeId _node_id;
+  UA_NodeId _pwm_period_node_id;
   SetPwmFunc const _set_pwm_func;
+  GetPwmPeriodFunc const _get_pwm_period_func;
   uint32_t _pwm_period_ms, _pwm_pulse_width_ms;
 };
 

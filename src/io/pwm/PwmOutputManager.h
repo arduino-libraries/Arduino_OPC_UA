@@ -50,7 +50,8 @@ public:
   add_pwm_output(
     UA_Server * server,
     const char * display_name,
-    PwmOutput::SetPwmFunc const set_pwm_func);
+    PwmOutput::SetPwmFunc const set_pwm_func,
+    PwmOutput::GetPwmPeriodFunc const get_pwm_period_func);
 
 
 private:

@@ -357,6 +357,10 @@ void setup()
               [i, p](uint32_t const pwm_period_ms, uint32_t const pwm_pulse_width_ms)
               {
                 reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->setPwm(p, pwm_period_ms, pwm_pulse_width_ms);
+              },
+              [i, p](void) -> uint32_t
+              {
+                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->getPwmPeriod(p);
               });
             pwm_output_num++;
           }

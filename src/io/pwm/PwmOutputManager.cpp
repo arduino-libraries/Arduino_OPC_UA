@@ -73,9 +73,10 @@ void
 PwmOutputManager::add_pwm_output(
   UA_Server * server,
   const char * display_name,
-  PwmOutput::SetPwmFunc const set_pwm_func)
+  PwmOutput::SetPwmFunc const set_pwm_func,
+  PwmOutput::GetPwmPeriodFunc const get_pwm_period_func)
 {
-  auto const pwm_output = PwmOutput::create(server, _node_id, display_name, set_pwm_func);
+  auto const pwm_output = PwmOutput::create(server, _node_id, display_name, set_pwm_func, get_pwm_period_func);
   if (!pwm_output)
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
