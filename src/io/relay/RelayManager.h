@@ -36,11 +36,22 @@ class RelayManager
 public:
   typedef std::shared_ptr<RelayManager> SharedPtr;
 
-  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id);
 
-  RelayManager(UA_NodeId const & node_id);
+  static SharedPtr
+  create(
+    UA_Server * server,
+    UA_NodeId const parent_node_id);
 
-  void add_relay_output(UA_Server * server, const char * display_name, Relay::OnSetRelayStateFunc const on_set_relay_state);
+
+  RelayManager(
+    UA_NodeId const & node_id);
+
+
+  void
+  add_relay_output(
+    UA_Server * server,
+    const char * display_name,
+    Relay::OnSetRelayStateFunc const on_set_relay_state);
 
 
 private:

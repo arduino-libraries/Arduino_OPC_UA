@@ -13,7 +13,12 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "DigitalExpansion.h"
+#include "../../open62541.h"
+
+#include <list>
+#include <memory>
+
+#include "PwmOutput.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -26,44 +31,33 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class DigitalStSolidExpansion : public DigitalExpansion
+class PwmOutputManager
 {
 public:
-  typedef std::shared_ptr<DigitalStSolidExpansion> SharedPtr;
+  typedef std::shared_ptr<PwmOutputManager> SharedPtr;
 
 
   static SharedPtr
   create(
-    UA_Server *server,
-    UA_NodeId const parent_node_id,
-    uint8_t const exp_num)
-  {
-    char display_name[64] = {0};
-    snprintf(display_name, sizeof(display_name), "Arduino Opta Expansion %d: Digital (Solid State)", exp_num);
-
-    char node_name[32] = {0};
-    snprintf(node_name, sizeof(node_name), "DigExpSoli_%d", exp_num);
-
-    auto const instance_ptr = std::make_shared<DigitalStSolidExpansion>(server, parent_node_id, display_name, node_name);
-    return instance_ptr;
-  }
-
-
-  DigitalStSolidExpansion(
     UA_Server * server,
-    UA_NodeId const parent_node_id,
-    char * display_name,
-    char * node_name)
-    : DigitalExpansion{server, parent_node_id, display_name, node_name, (char *)toSKUString().c_str()}
-  {}
-  virtual ~DigitalStSolidExpansion() = default;
+    UA_NodeId const parent_node_id);
 
 
-  virtual std::string
-  toSKUString() const override final
-  {
-    return std::string("AFX00006");
-  }
+  PwmOutputManager(UA_NodeId const & node_id);
+
+
+  void
+  add_pwm_output(
+    UA_Server * server,
+    const char * display_name,
+    PwmOutput::SetPwmFunc const set_pwm_func,
+    PwmOutput::GetPwmPeriodFunc const get_pwm_period_func,
+    PwmOutput::GetPwmPulseWidthFunc const get_pwm_pulse_width_func);
+
+
+private:
+  UA_NodeId _node_id;
+  std::list<PwmOutput::SharedPtr> _pwm_output_list;
 };
 
 /**************************************************************************************

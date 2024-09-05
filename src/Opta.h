@@ -42,19 +42,41 @@ public:
   typedef std::shared_ptr<Opta> SharedPtr;
 
 
-  static SharedPtr create(UA_Server * server, OptaVariant::Type const opta_type);
+  static SharedPtr
+  create(
+    UA_Server * server,
+    OptaVariant::Type const opta_type);
 
 
-  Opta(UA_Server * server, UA_NodeId const & node_id);
+  Opta(
+    UA_Server * server,
+    UA_NodeId const & node_id,
+    OptaVariant::Type const opta_type);
 
 
-  AnalogInputManager::SharedPtr  analog_input_mgr();
-  DigitalInputManager::SharedPtr digital_input_mgr();
-  RelayManager::SharedPtr        relay_mgr();
-  LedManager::SharedPtr          led_mgr();
+  void
+  add_analog_input(
+    UA_Server * server,
+    const char * display_name,
+    AnalogInput::OnReadRequestFunc const on_read_request_func);
 
+  void
+  add_digital_input(
+    UA_Server * server,
+    const char * display_name,
+    DigitalInput::OnReadRequestFunc const on_read_request_func);
 
-  [[nodiscard]] UA_NodeId node_id() const { return _node_id; }
+  void
+  add_relay_output(
+    UA_Server * server,
+    const char * display_name,
+    Relay::OnSetRelayStateFunc const on_set_relay_state);
+
+  void
+  add_led_output(
+    UA_Server * server,
+    const char * display_name,
+    Led::OnSetLedStateFunc const on_set_led_state);
 
 
 private:

@@ -39,7 +39,7 @@ static size_t const OPC_UA_SERVER_THREAD_STACK_SIZE = 16*1024UL;
 template <size_t SIZE> struct alignas(uint32_t) OPC_UA_STACK final : public std::array<uint8_t, SIZE> {};
 static OPC_UA_STACK<OPC_UA_SERVER_THREAD_STACK_SIZE> OPC_UA_SERVER_THREAD_STACK;
 
-static size_t const OPC_UA_SERVER_THREAD_HEAP_SIZE = (256+128)*1024UL;
+static size_t const OPC_UA_SERVER_THREAD_HEAP_SIZE = 320*1024UL;
 template <size_t SIZE> struct alignas(O1HEAP_ALIGNMENT) OPC_UA_HEAP final : public std::array<uint8_t, SIZE> {};
 static OPC_UA_HEAP<OPC_UA_SERVER_THREAD_HEAP_SIZE> OPC_UA_SERVER_THREAD_HEAP;
 
@@ -175,38 +175,38 @@ void setup()
       }
 
       /* Add the various digital input pins. */
-      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I1", []() { return arduino_opta_analog_read(A0); });
-      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I2", []() { return arduino_opta_analog_read(A1); });
-      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I3", []() { return arduino_opta_analog_read(A2); });
-      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I4", []() { return arduino_opta_analog_read(A3); });
-      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I5", []() { return arduino_opta_analog_read(A4); });
-      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I6", []() { return arduino_opta_analog_read(A5); });
-      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I7", []() { return arduino_opta_analog_read(A6); });
-      opta_opcua->analog_input_mgr()->add_analog_input(opc_ua_server, "Analog Input I8", []() { return arduino_opta_analog_read(A7); });
+      opta_opcua->add_analog_input(opc_ua_server, "Analog Input I1", []() { return arduino_opta_analog_read(A0); });
+      opta_opcua->add_analog_input(opc_ua_server, "Analog Input I2", []() { return arduino_opta_analog_read(A1); });
+      opta_opcua->add_analog_input(opc_ua_server, "Analog Input I3", []() { return arduino_opta_analog_read(A2); });
+      opta_opcua->add_analog_input(opc_ua_server, "Analog Input I4", []() { return arduino_opta_analog_read(A3); });
+      opta_opcua->add_analog_input(opc_ua_server, "Analog Input I5", []() { return arduino_opta_analog_read(A4); });
+      opta_opcua->add_analog_input(opc_ua_server, "Analog Input I6", []() { return arduino_opta_analog_read(A5); });
+      opta_opcua->add_analog_input(opc_ua_server, "Analog Input I7", []() { return arduino_opta_analog_read(A6); });
+      opta_opcua->add_analog_input(opc_ua_server, "Analog Input I8", []() { return arduino_opta_analog_read(A7); });
 
       /* Add the various digital input pins. */
-      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I1", []() { return arduino_opta_digital_read(A0); });
-      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I2", []() { return arduino_opta_digital_read(A1); });
-      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I3", []() { return arduino_opta_digital_read(A2); });
-      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I4", []() { return arduino_opta_digital_read(A3); });
-      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I5", []() { return arduino_opta_digital_read(A4); });
-      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I6", []() { return arduino_opta_digital_read(A5); });
-      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I7", []() { return arduino_opta_digital_read(A6); });
-      opta_opcua->digital_input_mgr()->add_digital_input(opc_ua_server, "Digital Input I8", []() { return arduino_opta_digital_read(A7); });
+      opta_opcua->add_digital_input(opc_ua_server, "Digital Input I1", []() { return arduino_opta_digital_read(A0); });
+      opta_opcua->add_digital_input(opc_ua_server, "Digital Input I2", []() { return arduino_opta_digital_read(A1); });
+      opta_opcua->add_digital_input(opc_ua_server, "Digital Input I3", []() { return arduino_opta_digital_read(A2); });
+      opta_opcua->add_digital_input(opc_ua_server, "Digital Input I4", []() { return arduino_opta_digital_read(A3); });
+      opta_opcua->add_digital_input(opc_ua_server, "Digital Input I5", []() { return arduino_opta_digital_read(A4); });
+      opta_opcua->add_digital_input(opc_ua_server, "Digital Input I6", []() { return arduino_opta_digital_read(A5); });
+      opta_opcua->add_digital_input(opc_ua_server, "Digital Input I7", []() { return arduino_opta_digital_read(A6); });
+      opta_opcua->add_digital_input(opc_ua_server, "Digital Input I8", []() { return arduino_opta_digital_read(A7); });
 
       /* Add the various relay outputs. */
-      opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 1", [](bool const value) { pinMode(RELAY1, OUTPUT); digitalWrite(RELAY1, value); pinMode(LED_D0, OUTPUT); digitalWrite(LED_D0, value); });
-      opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 2", [](bool const value) { pinMode(RELAY2, OUTPUT); digitalWrite(RELAY2, value); pinMode(LED_D1, OUTPUT); digitalWrite(LED_D1, value);});
-      opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 3", [](bool const value) { pinMode(RELAY3, OUTPUT); digitalWrite(RELAY3, value); pinMode(LED_D2, OUTPUT); digitalWrite(LED_D2, value);});
-      opta_opcua->relay_mgr()->add_relay_output(opc_ua_server, "Relay 4", [](bool const value) { pinMode(RELAY4, OUTPUT); digitalWrite(RELAY4, value); pinMode(LED_D3, OUTPUT); digitalWrite(LED_D3, value);});
+      opta_opcua->add_relay_output(opc_ua_server, "Relay 1", [](bool const value) { pinMode(RELAY1, OUTPUT); digitalWrite(RELAY1, value); pinMode(LED_D0, OUTPUT); digitalWrite(LED_D0, value); });
+      opta_opcua->add_relay_output(opc_ua_server, "Relay 2", [](bool const value) { pinMode(RELAY2, OUTPUT); digitalWrite(RELAY2, value); pinMode(LED_D1, OUTPUT); digitalWrite(LED_D1, value);});
+      opta_opcua->add_relay_output(opc_ua_server, "Relay 3", [](bool const value) { pinMode(RELAY3, OUTPUT); digitalWrite(RELAY3, value); pinMode(LED_D2, OUTPUT); digitalWrite(LED_D2, value);});
+      opta_opcua->add_relay_output(opc_ua_server, "Relay 4", [](bool const value) { pinMode(RELAY4, OUTPUT); digitalWrite(RELAY4, value); pinMode(LED_D3, OUTPUT); digitalWrite(LED_D3, value);});
 
       /* Add the various LED outputs. */
       if (opta_type == opcua::OptaVariant::Type::WiFi) {
-        opta_opcua->led_mgr()->add_led_output(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
+        opta_opcua->add_led_output(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
       }
 
       /* Check availability of expansion modules. */
-      uint8_t const opta_expansion_num = OptaController.getExpansionNum();
+      uint8_t opta_expansion_num = OptaController.getExpansionNum();
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "OptaController %d expansion modules detected.", opta_expansion_num);
       for(uint8_t i = 0; i < opta_expansion_num; i++)
         UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Expansion %d: type = %d (\"%16s\"), I2C address= 0x%02X",
@@ -219,6 +219,16 @@ void setup()
           UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::OptaExpansionManager::create(...) failed");
           return;
         }
+      }
+
+      /* Limit the maximum amount of concurrently supported OPC UA expansion
+       * modules, as exposing expansion modules via OPC UA is a RAM hungry affair,
+       * and we are fairly limited in terms of available RAM.
+       */
+      if (opta_expansion_num > OPCUA_MAX_OPTA_EXPANSION_NUM)
+      {
+        UA_LOG_WARNING(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Enabling only %d expansion modules (RAM constraints).", OPCUA_MAX_OPTA_EXPANSION_NUM);
+        opta_expansion_num = OPCUA_MAX_OPTA_EXPANSION_NUM;
       }
 
       /* Expose Arduino Opta expansion module IO via OPC/UA. */
@@ -239,25 +249,143 @@ void setup()
           {
             char analog_in_name[32] = {0};
             snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", d + 1);
-            exp_dig->analog_input_mgr()->add_analog_input(opc_ua_server, analog_in_name, [i, d]() { return reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d); });
+            exp_dig->add_analog_input(
+              opc_ua_server,
+              analog_in_name,
+              [i, d]()
+              {
+                return reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(d);
+              });
 
             char digital_in_name[32] = {0};
             snprintf(digital_in_name, sizeof(digital_in_name), "Digital Input I%d", d + 1);
-            exp_dig->digital_input_mgr()->add_digital_input(opc_ua_server,
-                                                            digital_in_name,
-                                                            [i, d]() { return reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true); });
+            exp_dig->add_digital_input(
+              opc_ua_server,
+              digital_in_name,
+              [i, d]()
+              {
+                return reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->digitalRead(d, true);
+              });
           }
+
           /* Expose mechanical relays via OPC/UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
             char mech_relay_name[32] = {0};
             snprintf(mech_relay_name, sizeof(mech_relay_name), "Relay %d", r + 1);
-            exp_dig->relay_mgr()->add_relay_output(opc_ua_server, mech_relay_name, [i, r](bool const value) { reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW); });
+            exp_dig->add_relay_output(
+              opc_ua_server,
+              mech_relay_name,
+              [i, r](bool const value)
+              {
+                reinterpret_cast<DigitalExpansion *>(OptaController.getExpansionPtr(i))->digitalWrite(r, value ? HIGH : LOW);
+              });
           }
         }
         else if (exp_type == EXPANSION_OPTA_ANALOG)
         {
           auto const exp_analog = opta_expansion_manager_opcua->create_analog_expansion(i);
+
+          std::list<int> ANALOG_EXPANSION_MODULE_ANALOG_INPUT_LIST = {OA_CH_0, OA_CH_1, OA_CH_2, OA_CH_3, OA_CH_5, OA_CH_6};
+
+          int input_num = 1;
+          for (int const a : ANALOG_EXPANSION_MODULE_ANALOG_INPUT_LIST)
+          {
+            /* Configure analog expansion module analog channels as analog inputs. */
+            AnalogExpansion::beginChannelAsAdc(OptaController,
+                                               i, /* expansion module number */
+                                               a, /* analog channel of expansion module */
+                                               OA_VOLTAGE_ADC, /* ADC type */
+                                               true, /* enable pull down */
+                                               false, /* disable rejection */
+                                               false, /* disable diagnostic */
+                                               0); /* disable averaging */
+
+            /* Expose analog inputs as readable OPC UA properties. */
+            char analog_in_name[32] = {0};
+            snprintf(analog_in_name, sizeof(analog_in_name), "Analog Input I%d", input_num);
+            exp_analog->add_analog_input(
+              opc_ua_server,
+              analog_in_name,
+              [i, a]()
+              {
+                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a);
+              });
+            input_num++;
+          }
+
+          std::list<int> ANALOG_EXPANSION_MODULE_ANALOG_OUTPUT_LIST = {OA_CH_4, OA_CH_7};
+
+          int output_num = 1;
+          for (int const a : ANALOG_EXPANSION_MODULE_ANALOG_OUTPUT_LIST)
+          {
+            /* Configure analog expansion module analog channels as analog outputs. */
+            AnalogExpansion::beginChannelAsDac(OptaController,
+                                               i, /* expansion module number */
+                                               a, /* analog channel of expansion module */
+                                               OA_VOLTAGE_DAC, /* DAC type */
+                                               true, /* limit current */
+                                               false, /* disable slew rate */
+                                               OA_SLEW_RATE_0);
+
+            /* Expose analog inputs as readable OPC UA properties. */
+            char analog_out_name[32] = {0};
+            snprintf(analog_out_name, sizeof(analog_out_name), "Analog Output O%d", output_num);
+            exp_analog->add_analog_output(
+              opc_ua_server,
+              analog_out_name,
+              [i, a]()
+              {
+                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a);
+              },
+              [i, a](float const voltage)
+              {
+                reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->pinVoltage(a, voltage);
+              });
+            output_num++;
+          }
+
+          /* Configure PWM outputs. */
+          int pwm_output_num = 1;
+          for (int p = OA_PWM_CH_FIRST; p <= OA_PWM_CH_LAST; p++)
+          {
+            char pwm_out_name[32] = {0};
+            snprintf(pwm_out_name, sizeof(pwm_out_name), "PWM%d", pwm_output_num);
+            exp_analog->add_pwm_output(
+              opc_ua_server,
+              pwm_out_name,
+              [i, p](uint32_t const pwm_period_us, uint32_t const pwm_pulse_width_us)
+              {
+                reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->setPwm(p, pwm_period_us, pwm_pulse_width_us);
+              },
+              [i, p](void) -> uint32_t
+              {
+                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->getPwmPeriod(p - OA_PWM_CH_FIRST);
+              },
+              [i, p](void) -> uint32_t
+              {
+                return reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i))->getPwmPulse(p - OA_PWM_CH_FIRST);
+              });
+            pwm_output_num++;
+          }
+
+          /* Configure controllable LEDs of analog expansion module. */
+          for (int l = 0; l < OA_LED_NUM; l++)
+          {
+            char led_name[32] = {0};
+            snprintf(led_name, sizeof(led_name), "LED%d", l + 1);
+            exp_analog->add_led_output(
+              opc_ua_server,
+              led_name,
+              [i, l](bool const value)
+              {
+                AnalogExpansion * ana_exp_ptr = reinterpret_cast<AnalogExpansion *>(OptaController.getExpansionPtr(i));
+                  if (value)
+                    ana_exp_ptr->switchLedOn(l);
+                  else
+                    ana_exp_ptr->switchLedOff(l);
+              });
+          }
         }
       }
 
@@ -269,7 +397,7 @@ void setup()
         UA_NodeId modbus_md02_node_id;
         rc = UA_Server_addObjectNode(opc_ua_server,
                                      UA_NODEID_NULL,
-                                     opta_opcua->node_id(),
+                                     UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
                                      UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
                                      UA_QUALIFIEDNAME(1, "ModbusRs485Md02"),
                                      UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
@@ -359,7 +487,10 @@ void loop()
   OptaController.update();
 
   /* Determine the number of expansion boards available and call update on them. */
-  uint8_t const opta_expansion_num = OptaController.getExpansionNum();
+  uint8_t opta_expansion_num = OptaController.getExpansionNum();
+  if (opta_expansion_num > OPCUA_MAX_OPTA_EXPANSION_NUM)
+    opta_expansion_num = OPCUA_MAX_OPTA_EXPANSION_NUM;
+  /* Periodically call their respective update methods. */
   for(uint8_t i = 0; i < opta_expansion_num; i++)
   {
     ExpansionType_t const exp_type = OptaController.getExpansionType(i);

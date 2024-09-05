@@ -34,11 +34,16 @@ public:
   typedef std::shared_ptr<Expansion> SharedPtr;
 
 
-  Expansion(UA_Server * server,
-            UA_NodeId const parent_node_id,
-            char * display_name,
-            char * node_name,
-            char * model_name);
+  Expansion(
+    UA_Server * server,
+    UA_NodeId const parent_node_id,
+    char * display_name,
+    char * node_name,
+    char * model_name);
+  virtual ~Expansion() = default;
+
+  virtual std::string
+  toSKUString() const = 0;
 
 
 protected:

@@ -23,43 +23,57 @@ namespace opcua
 {
 
 /**************************************************************************************
+ * CTOR/DTOR
+ **************************************************************************************/
+
+DigitalExpansion::DigitalExpansion(
+  UA_Server * server,
+  UA_NodeId const parent_node_id,
+  char * display_name,
+  char * node_name,
+  char * model_name)
+  : Expansion(server, parent_node_id, display_name, node_name, model_name)
+  , _analog_input_mgr{opcua::AnalogInputManager::create(_server, _node_id)}
+  , _digital_input_mgr{opcua::DigitalInputManager::create(_server, _node_id)}
+  , _relay_mgr{opcua::RelayManager::create(_server, _node_id)}
+{
+  if (!_analog_input_mgr)
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: AnalogInputManager::create(...) failed.", __PRETTY_FUNCTION__);
+  if (!_digital_input_mgr)
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: DigitalInputManager::create(...) failed.", __PRETTY_FUNCTION__);
+  if (!_relay_mgr)
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: RelayManager::create(...) failed.", __PRETTY_FUNCTION__);
+}
+
+/**************************************************************************************
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-AnalogInputManager::SharedPtr DigitalExpansion::analog_input_mgr()
+void
+DigitalExpansion::add_analog_input(
+  UA_Server * server,
+  const char * display_name,
+  AnalogInput::OnReadRequestFunc const on_read_request_func)
 {
-  if (!_analog_input_mgr)
-  {
-    _analog_input_mgr = opcua::AnalogInputManager::create(_server, _node_id);
-    if (!_analog_input_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalExpansion::analog_input_mgr: AnalogInputManager::create(...) failed.");
-  }
-
-  return _analog_input_mgr;
+  _analog_input_mgr->add_analog_input(server, display_name, on_read_request_func);
 }
 
-DigitalInputManager::SharedPtr DigitalExpansion::digital_input_mgr()
+void
+DigitalExpansion::add_digital_input(
+  UA_Server * server,
+  const char * display_name,
+  DigitalInput::OnReadRequestFunc const on_read_request_func)
 {
-  if (!_digital_input_mgr)
-  {
-    _digital_input_mgr = opcua::DigitalInputManager::create(_server, _node_id);
-    if (!_digital_input_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalExpansion::digital_input_mgr: DigitalInputManager::create(...) failed.");
-  }
-
-  return _digital_input_mgr;
+  _digital_input_mgr->add_digital_input(server, display_name, on_read_request_func);
 }
 
-RelayManager::SharedPtr DigitalExpansion::relay_mgr()
+void
+DigitalExpansion::add_relay_output(
+  UA_Server * server,
+  const char * display_name,
+  Relay::OnSetRelayStateFunc const on_set_relay_state)
 {
-  if (!_relay_mgr)
-  {
-    _relay_mgr = opcua::RelayManager::create(_server, _node_id);
-    if (!_relay_mgr)
-      UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalExpansion::relay_mgr: RelayManager::create(...) failed.");
-  }
-
-  return _relay_mgr;
+  _relay_mgr->add_relay_output(server, display_name, on_set_relay_state);
 }
 
 /**************************************************************************************

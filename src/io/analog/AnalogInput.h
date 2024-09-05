@@ -37,14 +37,23 @@ public:
   typedef std::shared_ptr<AnalogInput> SharedPtr;
   typedef std::function<float(void)> OnReadRequestFunc;
 
-  static SharedPtr create(UA_Server * server,
-                          UA_NodeId const & parent_node_id,
-                          const char * display_name,
-                          OnReadRequestFunc const on_read_request);
 
-  AnalogInput(UA_NodeId const & node_id, OnReadRequestFunc const on_read_request);
+  static SharedPtr
+  create(
+    UA_Server * server,
+    UA_NodeId const & parent_node_id,
+    const char * display_name,
+    OnReadRequestFunc const on_read_request);
 
-  void onReadRequest(UA_Server * server, UA_NodeId const * node_id);
+
+  AnalogInput(
+    UA_NodeId const & node_id,
+    OnReadRequestFunc const on_read_request);
+
+
+  void onReadRequest(
+    UA_Server * server,
+    UA_NodeId const * node_id);
 
 
 private:

@@ -24,7 +24,8 @@ namespace opcua
  * CTOR/DTOR
  **************************************************************************************/
 
-RelayManager::RelayManager(UA_NodeId const & node_id)
+RelayManager::RelayManager(
+  UA_NodeId const & node_id)
 : _node_id{node_id}
 {
   /* Nothing happens here. */
@@ -34,7 +35,10 @@ RelayManager::RelayManager(UA_NodeId const & node_id)
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-RelayManager::SharedPtr RelayManager::create(UA_Server * server, UA_NodeId const parent_node_id)
+RelayManager::SharedPtr
+RelayManager::create(
+  UA_Server * server,
+  UA_NodeId const parent_node_id)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -53,7 +57,7 @@ RelayManager::SharedPtr RelayManager::create(UA_Server * server, UA_NodeId const
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "RelayManager::create: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "%s: UA_Server_addObjectNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -65,13 +69,15 @@ RelayManager::SharedPtr RelayManager::create(UA_Server * server, UA_NodeId const
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-void RelayManager::add_relay_output(UA_Server * server,
-                                    const char * display_name,
-                                    Relay::OnSetRelayStateFunc const on_set_relay_state)
+void
+RelayManager::add_relay_output(
+  UA_Server * server,
+  const char * display_name,
+  Relay::OnSetRelayStateFunc const on_set_relay_state)
 {
   auto const relay = Relay::create(server, _node_id, display_name, on_set_relay_state);
   if (!relay) {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "RelayManager::add_relay_output: Relay::create(...) failed: returned nullptr");
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: Relay::create(...) failed: returned nullptr", __PRETTY_FUNCTION__);
     return;
   }
   _relay_list.push_back(relay);

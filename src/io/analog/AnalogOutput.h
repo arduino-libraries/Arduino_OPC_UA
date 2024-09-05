@@ -13,7 +13,12 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "DigitalExpansion.h"
+#include "../../open62541.h"
+
+#include <memory>
+#include <functional>
+
+#include <Arduino.h>
 
 /**************************************************************************************
  * NAMESPACE
@@ -26,44 +31,45 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
-class DigitalStSolidExpansion : public DigitalExpansion
+class AnalogOutput
 {
 public:
-  typedef std::shared_ptr<DigitalStSolidExpansion> SharedPtr;
+  typedef std::shared_ptr<AnalogOutput> SharedPtr;
+  typedef std::function<float(void)> OnReadRequestFunc;
+  typedef std::function<void(float)> OnWriteRequestFunc;
 
 
   static SharedPtr
   create(
-    UA_Server *server,
-    UA_NodeId const parent_node_id,
-    uint8_t const exp_num)
-  {
-    char display_name[64] = {0};
-    snprintf(display_name, sizeof(display_name), "Arduino Opta Expansion %d: Digital (Solid State)", exp_num);
-
-    char node_name[32] = {0};
-    snprintf(node_name, sizeof(node_name), "DigExpSoli_%d", exp_num);
-
-    auto const instance_ptr = std::make_shared<DigitalStSolidExpansion>(server, parent_node_id, display_name, node_name);
-    return instance_ptr;
-  }
-
-
-  DigitalStSolidExpansion(
     UA_Server * server,
-    UA_NodeId const parent_node_id,
-    char * display_name,
-    char * node_name)
-    : DigitalExpansion{server, parent_node_id, display_name, node_name, (char *)toSKUString().c_str()}
-  {}
-  virtual ~DigitalStSolidExpansion() = default;
+    UA_NodeId const & parent_node_id,
+    const char * display_name,
+    OnReadRequestFunc const on_read_request,
+    OnWriteRequestFunc const on_write_request);
 
 
-  virtual std::string
-  toSKUString() const override final
-  {
-    return std::string("AFX00006");
-  }
+  AnalogOutput(
+    UA_NodeId const & node_id,
+    OnReadRequestFunc const on_read_request,
+    OnWriteRequestFunc const on_write_request);
+
+
+  void
+  onReadRequest(
+    UA_Server * server,
+    UA_NodeId const * node_id);
+
+  void
+  onWriteRequest(
+    UA_Server * server,
+    UA_NodeId const * node_id,
+    float const voltage);
+
+
+private:
+  UA_NodeId _node_id;
+  OnReadRequestFunc const _on_read_request;
+  OnWriteRequestFunc const _on_write_request;
 };
 
 /**************************************************************************************

@@ -24,11 +24,12 @@ namespace opcua
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-Expansion::Expansion(UA_Server * server,
-                     UA_NodeId const parent_node_id,
-                     char * display_name,
-                     char * node_name,
-                     char * model_name)
+Expansion::Expansion(
+  UA_Server * server,
+  UA_NodeId const parent_node_id,
+  char * display_name,
+  char * node_name,
+  char * model_name)
   : _server{server}
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
@@ -48,7 +49,7 @@ Expansion::Expansion(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Expansion::Ctor: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "%s: UA_Server_addObjectNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return;
   }
 
@@ -68,8 +69,7 @@ Expansion::Expansion(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Expansion::Ctor: UA_Server_addVariableNode(..., \"ManufacturerName\", ...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_addVariableNode(..., \"ManufacturerName\", ...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return;
   }
 
@@ -89,8 +89,7 @@ Expansion::Expansion(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Expansion::Ctor: UA_Server_addVariableNode(..., \"ModelName\", ...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_addVariableNode(..., \"ModelName\", ...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return;
   }
 
@@ -110,8 +109,7 @@ Expansion::Expansion(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Expansion::Ctor: UA_Server_addVariableNode(..., \"Status\", ...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_addVariableNode(..., \"Status\", ...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return;
   }
 }

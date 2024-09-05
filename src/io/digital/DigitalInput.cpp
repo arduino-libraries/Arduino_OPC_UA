@@ -24,13 +24,15 @@ namespace opcua
  * FUNCTION DEFINITION
  **************************************************************************************/
 
-static void digital_input_on_read_request(UA_Server *server,
-                                          const UA_NodeId *sessionId,
-                                          void *sessionContext,
-                                          const UA_NodeId *nodeid,
-                                          void *nodeContext,
-                                          const UA_NumericRange *range,
-                                          const UA_DataValue *data)
+static void
+digital_input_on_read_request(
+  UA_Server *server,
+  const UA_NodeId *sessionId,
+  void *sessionContext,
+  const UA_NodeId *nodeid,
+  void *nodeContext,
+  const UA_NumericRange *range,
+  const UA_DataValue *data)
 {
   DigitalInput * this_ptr = reinterpret_cast<DigitalInput *>(nodeContext);
   this_ptr->onReadRequest(server, nodeid);
@@ -40,7 +42,9 @@ static void digital_input_on_read_request(UA_Server *server,
  * CTOR/DTOR
  **************************************************************************************/
 
-DigitalInput::DigitalInput(UA_NodeId const & node_id, OnReadRequestFunc const on_read_request)
+DigitalInput::DigitalInput(
+  UA_NodeId const & node_id,
+  OnReadRequestFunc const on_read_request)
 : _node_id{node_id}
 , _on_read_request{on_read_request}
 {
@@ -51,10 +55,12 @@ DigitalInput::DigitalInput(UA_NodeId const & node_id, OnReadRequestFunc const on
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-DigitalInput::SharedPtr DigitalInput::create(UA_Server * server,
-                                             UA_NodeId const & parent_node_id,
-                                             const char * display_name,
-                                             OnReadRequestFunc const on_read_request)
+DigitalInput::SharedPtr
+DigitalInput::create(
+  UA_Server * server,
+  UA_NodeId const & parent_node_id,
+  const char * display_name,
+  OnReadRequestFunc const on_read_request)
 {
   UA_VariableAttributes digital_input_value_attr = UA_VariableAttributes_default;
 
@@ -82,8 +88,7 @@ DigitalInput::SharedPtr DigitalInput::create(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInput::create: UA_Server_addVariableNode(...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_addVariableNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -94,8 +99,7 @@ DigitalInput::SharedPtr DigitalInput::create(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInput::create: UA_Server_setNodeContext(...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_setNodeContext(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -106,15 +110,17 @@ DigitalInput::SharedPtr DigitalInput::create(UA_Server * server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "DigitalInput::create: UA_Server_setVariableNode_valueCallback(...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_setVariableNode_valueCallback(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
   return instance_ptr;
 }
 
-void DigitalInput::onReadRequest(UA_Server * server, UA_NodeId const * node_id)
+void
+DigitalInput::onReadRequest(
+  UA_Server * server,
+  UA_NodeId const * node_id)
 {
   /* Obtain the value of the digital input pin. */
   PinStatus const in_x_val = _on_read_request();
@@ -125,7 +131,7 @@ void DigitalInput::onReadRequest(UA_Server * server, UA_NodeId const * node_id)
   UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
   UA_Server_writeValue(server, *node_id, in_x_val_opcua_variant);
   /* Some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DigitalInput::onReadRequest: value = %d", in_x_val);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: value = %d", __PRETTY_FUNCTION__, in_x_val);
 }
 
 /**************************************************************************************

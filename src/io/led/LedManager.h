@@ -36,11 +36,20 @@ class LedManager
 public:
   typedef std::shared_ptr<LedManager> SharedPtr;
 
-  static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id);
+  static SharedPtr
+  create(
+    UA_Server * server,
+    UA_NodeId const parent_node_id);
+
 
   LedManager(UA_NodeId const & node_id);
 
-  void add_led_output(UA_Server * server, const char * display_name, Led::OnSetLedStateFunc const on_set_led_state);
+
+  void
+  add_led_output(
+    UA_Server * server,
+    const char * display_name,
+    Led::OnSetLedStateFunc const on_set_led_state);
 
 
 private:

@@ -32,7 +32,9 @@ namespace opcua
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-bool OptaVariant::get_opta_variant(Type & type)
+bool
+OptaVariant::get_opta_variant(
+  Type & type)
 {
   OptaBoardInfo * info = boardInfo();
 
@@ -51,7 +53,9 @@ bool OptaVariant::get_opta_variant(Type & type)
   return true;
 }
 
-std::string OptaVariant::toString(Type const type)
+std::string
+OptaVariant::toString(
+  Type const type)
 {
   switch(type)
   {
@@ -62,13 +66,15 @@ std::string OptaVariant::toString(Type const type)
   }
 }
 
-std::string OptaVariant::toSKUString(Type const type)
+std::string
+OptaVariant::toSKUString(
+  Type const type)
 {
   switch(type)
   {
-    case OptaVariant::Type::WiFi:  return std::string("AFX00002");  break;
+    case OptaVariant::Type::WiFi:  return std::string("AFX00002"); break;
     case OptaVariant::Type::RS485: return std::string("AFX00001"); break;
-    case OptaVariant::Type::Lite:  return std::string("AFX00003");  break;
+    case OptaVariant::Type::Lite:  return std::string("AFX00003"); break;
     default: __builtin_unreachable(); break;
   }
 }

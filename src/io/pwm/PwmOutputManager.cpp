@@ -11,7 +11,7 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "DigitalInputManager.h"
+#include "PwmOutputManager.h"
 
 /**************************************************************************************
  * NAMESPACE
@@ -24,32 +24,32 @@ namespace opcua
  * CTOR/DTOR
  **************************************************************************************/
 
-DigitalInputManager::DigitalInputManager(
+PwmOutputManager::PwmOutputManager(
   UA_NodeId const & node_id)
-: _node_id{node_id}
+  : _node_id{node_id}
 {
-  /* Nothing happens here. */
+
 }
 
 /**************************************************************************************
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-DigitalInputManager::SharedPtr
-DigitalInputManager::create(
+PwmOutputManager::SharedPtr
+PwmOutputManager::create(
   UA_Server * server,
   UA_NodeId const parent_node_id)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
   UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
-  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Digital Inputs");
+  oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "PWM Outputs");
   UA_NodeId node_id;
   rc = UA_Server_addObjectNode(server,
                                UA_NODEID_NULL,
                                parent_node_id,
                                UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
-                               UA_QUALIFIEDNAME(1, "DigitalInputs"),
+                               UA_QUALIFIEDNAME(1, "PwmOutputs"),
                                UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
                                oAttr,
                                NULL,
@@ -61,7 +61,7 @@ DigitalInputManager::create(
     return nullptr;
   }
 
-  auto const instance_ptr = std::make_shared<DigitalInputManager>(node_id);
+  auto const instance_ptr = std::make_shared<PwmOutputManager>(node_id);
   return instance_ptr;
 }
 
@@ -70,17 +70,21 @@ DigitalInputManager::create(
  **************************************************************************************/
 
 void
-DigitalInputManager::add_digital_input(
+PwmOutputManager::add_pwm_output(
   UA_Server * server,
   const char * display_name,
-  DigitalInput::OnReadRequestFunc const on_read_request_func)
+  PwmOutput::SetPwmFunc const set_pwm_func,
+  PwmOutput::GetPwmPeriodFunc const get_pwm_period_func,
+  PwmOutput::GetPwmPulseWidthFunc const get_pwm_pulse_width_func)
 {
-  auto const digital_input = DigitalInput::create(server, _node_id, display_name, on_read_request_func);
-  if (!digital_input){
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: DigitalInput::create(...) failed: returned nullptr", __PRETTY_FUNCTION__);
+  auto const pwm_output = PwmOutput::create(server, _node_id, display_name, set_pwm_func, get_pwm_period_func, get_pwm_pulse_width_func);
+  if (!pwm_output)
+  {
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                 "%s: AnalogOutput::create(...) failed: returned nullptr", __PRETTY_FUNCTION__);
     return;
   }
-  _digital_input_list.push_back(digital_input);
+  _pwm_output_list.push_back(pwm_output);
 }
 
 /**************************************************************************************

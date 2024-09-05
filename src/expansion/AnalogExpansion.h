@@ -17,6 +17,11 @@
 
 #include <memory>
 
+#include "../io/led/LedManager.h"
+#include "../io/pwm/PwmOutputManager.h"
+#include "../io/analog/AnalogInputManager.h"
+#include "../io/analog/AnalogOutputManager.h"
+
 /**************************************************************************************
  * NAMESPACE
  **************************************************************************************/
@@ -34,28 +39,60 @@ public:
   typedef std::shared_ptr<AnalogExpansion> SharedPtr;
 
 
-  static SharedPtr create(UA_Server *server, UA_NodeId const parent_node_id, uint8_t const exp_num)
+  static SharedPtr
+  create(
+    UA_Server *server,
+    UA_NodeId const parent_node_id,
+    uint8_t const exp_num);
+
+
+  AnalogExpansion(
+    UA_Server * server,
+    UA_NodeId const parent_node_id,
+    char * display_name,
+    char * node_name);
+  virtual ~AnalogExpansion() = default;
+
+
+  virtual std::string
+  toSKUString() const override final
   {
-    char display_name[64] = {0};
-    snprintf(display_name, sizeof(display_name), "Arduino Opta Expansion %d: Analog", exp_num);
-
-    char node_name[32] = {0};
-    snprintf(node_name, sizeof(node_name), "AnaExp_%d", exp_num);
-
-    char model_name[] = {"AFX00007"};
-
-    auto const instance_ptr = std::make_shared<AnalogExpansion>(server, parent_node_id, display_name, node_name, model_name);
-    return instance_ptr;
+    return std::string("AFX00007");
   }
 
+  void
+  add_analog_input(
+    UA_Server * server,
+    const char * display_name,
+    AnalogInput::OnReadRequestFunc const on_read_request_func);
 
-  AnalogExpansion(UA_Server * server,
-                   UA_NodeId const parent_node_id,
-                   char * display_name,
-                   char * node_name,
-                   char * model_name)
-    : Expansion(server, parent_node_id, display_name, node_name, model_name)
-  { }
+  void
+  add_analog_output(
+    UA_Server * server,
+    const char * display_name,
+    AnalogOutput::OnReadRequestFunc const on_read_request,
+    AnalogOutput::OnWriteRequestFunc const on_write_request_func);
+
+  void
+  add_pwm_output(
+    UA_Server * server,
+    const char * display_name,
+    PwmOutput::SetPwmFunc const set_pwm_func,
+    PwmOutput::GetPwmPeriodFunc const get_pwm_period_func,
+    PwmOutput::GetPwmPulseWidthFunc const get_pwm_pulse_width_func);
+
+  void
+  add_led_output(
+    UA_Server * server,
+    const char * display_name,
+    Led::OnSetLedStateFunc const on_set_led_state);
+
+
+private:
+  AnalogInputManager::SharedPtr _analog_input_mgr;
+  AnalogOutputManager::SharedPtr _analog_output_mgr;
+  PwmOutputManager::SharedPtr _pwm_output_mgr;
+  LedManager::SharedPtr _led_mgr;
 };
 
 /**************************************************************************************

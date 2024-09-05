@@ -35,11 +35,21 @@ class UserButton
 public:
   typedef std::shared_ptr<UserButton> SharedPtr;
 
-  static SharedPtr create(UA_Server * server, UA_NodeId const & parent_node_id);
 
-  UserButton(UA_NodeId const & node_id);
+  static SharedPtr
+  create(
+    UA_Server * server,
+    UA_NodeId const & parent_node_id);
 
-  void onReadRequest(UA_Server * server, UA_NodeId const * node_id);
+
+  UserButton(
+    UA_NodeId const & node_id);
+
+
+  void
+  onReadRequest(
+    UA_Server * server,
+    UA_NodeId const * node_id);
 
 
 private:

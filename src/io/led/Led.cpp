@@ -24,13 +24,15 @@ namespace opcua
  * FUNCTION DEFINITION
  **************************************************************************************/
 
-static void led_on_write_request(UA_Server *server,
-                                 const UA_NodeId *sessionId,
-                                 void *sessionContext,
-                                 const UA_NodeId *nodeid,
-                                 void *nodeContext,
-                                 const UA_NumericRange *range,
-                                 const UA_DataValue *data)
+static void
+led_on_write_request(
+  UA_Server *server,
+  const UA_NodeId *sessionId,
+  void *sessionContext,
+  const UA_NodeId *nodeid,
+  void *nodeContext,
+  const UA_NumericRange *range,
+  const UA_DataValue *data)
 {
   bool const value = *(UA_Boolean *)(data->value.data) == true;
   Led * this_ptr = reinterpret_cast<Led *>(nodeContext);
@@ -41,7 +43,9 @@ static void led_on_write_request(UA_Server *server,
  * CTOR/DTOR
  **************************************************************************************/
 
-Led::Led(UA_NodeId const & node_id, OnSetLedStateFunc const on_set_led_state)
+Led::Led(
+  UA_NodeId const & node_id,
+  OnSetLedStateFunc const on_set_led_state)
   : _node_id{node_id}
   , _on_set_led_state{on_set_led_state}
 {
@@ -52,10 +56,12 @@ Led::Led(UA_NodeId const & node_id, OnSetLedStateFunc const on_set_led_state)
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-Led::SharedPtr Led::create(UA_Server *server,
-                           UA_NodeId const &parent_node_id,
-                           const char *display_name,
-                           OnSetLedStateFunc const on_set_led_state)
+Led::SharedPtr
+Led::create(
+  UA_Server *server,
+  UA_NodeId const &parent_node_id,
+  const char *display_name,
+  OnSetLedStateFunc const on_set_led_state)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -84,7 +90,7 @@ Led::SharedPtr Led::create(UA_Server *server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Led::create: UA_Server_addVariableNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "%s: UA_Server_addVariableNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -95,8 +101,7 @@ Led::SharedPtr Led::create(UA_Server *server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Led::create: UA_Server_setNodeContext(...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_setNodeContext(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -107,18 +112,20 @@ Led::SharedPtr Led::create(UA_Server *server,
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "Led::create: UA_Server_setVariableNode_valueCallback(...) failed with %s",
-                 UA_StatusCode_name(rc));
+                 "%s: UA_Server_setVariableNode_valueCallback(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
   return instance_ptr;
 }
 
-void Led::onWriteRequest(UA_Server * server, UA_NodeId const * node_id, bool const value)
+void
+Led::onWriteRequest(
+  UA_Server * server,
+  UA_NodeId const * node_id,
+  bool const value)
 {
-  /* Some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Led::onWriteRequest: value = %d", value);
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: value = %d", __PRETTY_FUNCTION__, value);
   _on_set_led_state(value);
 }
 

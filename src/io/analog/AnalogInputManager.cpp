@@ -24,17 +24,21 @@ namespace opcua
  * CTOR/DTOR
  **************************************************************************************/
 
-AnalogInputManager::AnalogInputManager(UA_NodeId const & node_id)
+AnalogInputManager::AnalogInputManager(
+  UA_NodeId const & node_id)
 : _node_id{node_id}
 {
-  /* Nothing happens here. */
+
 }
 
 /**************************************************************************************
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-AnalogInputManager::SharedPtr AnalogInputManager::create(UA_Server * server, UA_NodeId const parent_node_id)
+AnalogInputManager::SharedPtr
+AnalogInputManager::create(
+  UA_Server * server,
+  UA_NodeId const parent_node_id)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -53,7 +57,7 @@ AnalogInputManager::SharedPtr AnalogInputManager::create(UA_Server * server, UA_
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "AnalogInputManager::create: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "%s: UA_Server_addObjectNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -65,13 +69,15 @@ AnalogInputManager::SharedPtr AnalogInputManager::create(UA_Server * server, UA_
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-void AnalogInputManager::add_analog_input(UA_Server * server,
-                                          const char * display_name,
-                                          AnalogInput::OnReadRequestFunc const on_read_request_func)
+void
+AnalogInputManager::add_analog_input(
+  UA_Server * server,
+  const char * display_name,
+  AnalogInput::OnReadRequestFunc const on_read_request_func)
 {
   auto const analog_input = AnalogInput::create(server, _node_id, display_name, on_read_request_func);
   if (!analog_input) {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "AnalogInputManager::add_digital_input: AnalogInput::create(...) failed: returned nullptr");
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: AnalogInput::create(...) failed: returned nullptr", __PRETTY_FUNCTION__);
     return;
   }
   _analog_input_list.push_back(analog_input);

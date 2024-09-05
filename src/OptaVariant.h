@@ -32,12 +32,20 @@ public:
   OptaVariant() = delete;
   OptaVariant(OptaVariant const &) = delete;
 
+
   enum class Type { Lite, RS485, WiFi };
 
-  static bool get_opta_variant(Type & type);
 
-  static std::string toString(Type const type);
-  static std::string toSKUString(Type const type);
+  static bool
+  get_opta_variant(
+    Type & type);
+
+  static std::string
+    toString(
+      Type const type);
+  static std::string
+    toSKUString(
+      Type const type);
 };
 
 /**************************************************************************************

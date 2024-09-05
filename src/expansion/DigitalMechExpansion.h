@@ -32,7 +32,11 @@ public:
   typedef std::shared_ptr<DigitalMechExpansion> SharedPtr;
 
 
-  static SharedPtr create(UA_Server *server, UA_NodeId const parent_node_id, uint8_t const exp_num)
+  static SharedPtr
+  create(
+    UA_Server *server,
+    UA_NodeId const parent_node_id,
+    uint8_t const exp_num)
   {
     char display_name[64] = {0};
     snprintf(display_name, sizeof(display_name), "Arduino Opta Expansion %d: Digital (Mechanical)", exp_num);
@@ -40,20 +44,26 @@ public:
     char node_name[32] = {0};
     snprintf(node_name, sizeof(node_name), "DigExpSoli_%d", exp_num);
 
-    char model_name[] = {"AFX00005"};
-
-    auto const instance_ptr = std::make_shared<DigitalMechExpansion>(server, parent_node_id, display_name, node_name, model_name);
+    auto const instance_ptr = std::make_shared<DigitalMechExpansion>(server, parent_node_id, display_name, node_name);
     return instance_ptr;
   }
 
 
-  DigitalMechExpansion(UA_Server * server,
-                       UA_NodeId const parent_node_id,
-                       char * display_name,
-                       char * node_name,
-                       char * model_name)
-    : DigitalExpansion{server, parent_node_id, display_name, node_name, model_name}
+  DigitalMechExpansion(
+    UA_Server * server,
+    UA_NodeId const parent_node_id,
+    char * display_name,
+    char * node_name)
+    : DigitalExpansion(server, parent_node_id, display_name, node_name, (char *)toSKUString().c_str())
   {}
+  virtual ~DigitalMechExpansion() = default;
+
+
+  virtual std::string
+  toSKUString() const override final
+  {
+    return std::string("AFX00005");
+  }
 };
 
 /**************************************************************************************

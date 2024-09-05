@@ -24,17 +24,21 @@ namespace opcua
  * CTOR/DTOR
  **************************************************************************************/
 
-LedManager::LedManager(UA_NodeId const & node_id)
+LedManager::LedManager(
+  UA_NodeId const & node_id)
 : _node_id{node_id}
 {
-  /* Nothing happens here. */
+
 }
 
 /**************************************************************************************
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-LedManager::SharedPtr LedManager::create(UA_Server * server, UA_NodeId const parent_node_id)
+LedManager::SharedPtr
+LedManager::create(
+  UA_Server * server,
+  UA_NodeId const parent_node_id)
 {
   UA_StatusCode rc = UA_STATUSCODE_GOOD;
 
@@ -53,7 +57,7 @@ LedManager::SharedPtr LedManager::create(UA_Server * server, UA_NodeId const par
   if (UA_StatusCode_isBad(rc))
   {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
-                 "LedManager::create: UA_Server_addObjectNode(...) failed with %s", UA_StatusCode_name(rc));
+                 "%s: UA_Server_addObjectNode(...) failed with %s", __PRETTY_FUNCTION__, UA_StatusCode_name(rc));
     return nullptr;
   }
 
@@ -65,13 +69,15 @@ LedManager::SharedPtr LedManager::create(UA_Server * server, UA_NodeId const par
  * PUBLIC MEMBER FUNCTIONS
  **************************************************************************************/
 
-void LedManager::add_led_output(UA_Server * server,
-                                    const char * display_name,
-                                    Led::OnSetLedStateFunc const on_set_led_state)
+void
+LedManager::add_led_output(
+  UA_Server * server,
+  const char * display_name,
+  Led::OnSetLedStateFunc const on_set_led_state)
 {
   auto const led = Led::create(server, _node_id, display_name, on_set_led_state);
   if (!led) {
-    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "LedManager::add_led_output: Led::create(...) failed: returned nullptr");
+    UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: Led::create(...) failed: returned nullptr", __PRETTY_FUNCTION__);
     return;
   }
   _led_list.push_back(led);
