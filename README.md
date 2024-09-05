@@ -6,6 +6,8 @@
 
 This library provides an implementation of [OPC/UA](https://en.wikipedia.org/wiki/OPC_Unified_Architecture) by porting the Fraunhofer [`open62541`](https://github.com/open62541/open62541) for the Arduino [Opta](https://www.arduino.cc/pro/hardware-arduino-opta/) `microPLC` family.
 
+Furthermore, the library supports automatic detection, configuration and exposure of up to two Arduino Opta Expansion Boards (i.e. Digital Expansion w/ mechanical relays [`D1608E`](https://store.arduino.cc/products/opta-ext-d1608e), Digital Expansion w/ solid-state relays [`D1608S`](https://store.arduino.cc/products/opta-ext-d1608e), Analog Expansion [`A0602`](https://store.arduino.cc/products/opta-ext-a0602)) via OPC UA.
+
 ### How-to-OPC/UA
 * Compile and upload [`examples/opcua_server`](examples/opcua_server/opcua_server.ino)
 ```bash
