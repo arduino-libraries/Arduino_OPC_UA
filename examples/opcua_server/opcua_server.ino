@@ -397,7 +397,7 @@ void setup()
         UA_NodeId modbus_md02_node_id;
         rc = UA_Server_addObjectNode(opc_ua_server,
                                      UA_NODEID_NULL,
-                                     opta_opcua->node_id(),
+                                     UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
                                      UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
                                      UA_QUALIFIEDNAME(1, "ModbusRs485Md02"),
                                      UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),

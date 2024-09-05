@@ -78,8 +78,6 @@ public:
     const char * display_name,
     Led::OnSetLedStateFunc const on_set_led_state);
 
-  [[nodiscard]] UA_NodeId node_id() const { return _node_id; }
-
 
 private:
   UA_Server * _server;
