@@ -19,11 +19,15 @@
 `class ` [`opcua::Expansion`](#classopcua_1_1_expansion) | 
 `class ` [`opcua::AnalogInput`](#classopcua_1_1_analog_input) | 
 `class ` [`opcua::AnalogInputManager`](#classopcua_1_1_analog_input_manager) | 
+`class ` [`opcua::AnalogOutput`](#classopcua_1_1_analog_output) | 
+`class ` [`opcua::AnalogOutputManager`](#classopcua_1_1_analog_output_manager) | 
 `class ` [`opcua::UserButton`](#classopcua_1_1_user_button) | 
 `class ` [`opcua::DigitalInput`](#classopcua_1_1_digital_input) | 
 `class ` [`opcua::DigitalInputManager`](#classopcua_1_1_digital_input_manager) | 
 `class ` [`opcua::Led`](#classopcua_1_1_led) | 
 `class ` [`opcua::LedManager`](#classopcua_1_1_led_manager) | 
+`class ` [`opcua::PwmOutput`](#classopcua_1_1_pwm_output) | 
+`class ` [`opcua::PwmOutputManager`](#classopcua_1_1_pwm_output_manager) | 
 `class ` [`opcua::Relay`](#classopcua_1_1_relay) | 
 `class ` [`opcua::RelayManager`](#classopcua_1_1_relay_manager) | 
 `class ` [`opcua::Opta`](#classopcua_1_1_opta) | 
@@ -47,16 +51,70 @@ class opcua::AnalogExpansion
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-| [`AnalogExpansion`](#classopcua_1_1_analog_expansion_1a43039d49f853487893aef8108cef366d) |  |
+| [`AnalogExpansion`](#classopcua_1_1_analog_expansion_1a8922c1b320139757c7200ec568d25324) |  |
+| [`~AnalogExpansion`](#classopcua_1_1_analog_expansion_1ad9a18c730a6451d543e48a91bf7eeff1) |  |
+| [`toSKUString`](#classopcua_1_1_analog_expansion_1a37b9a4657d1e8c0cf2e1d0322adfa27c) |  |
+| [`add_analog_input`](#classopcua_1_1_analog_expansion_1a511ae8067b88c476c5a7e47acccede15) |  |
+| [`add_analog_output`](#classopcua_1_1_analog_expansion_1aa5ba819a44dfd2f8b651741499ffa5a0) |  |
+| [`add_pwm_output`](#classopcua_1_1_analog_expansion_1a3a0997c332767761b4d96cac2e9f0963) |  |
+| [`add_led_output`](#classopcua_1_1_analog_expansion_1a748779b79841cfa4329e318450be9be9) |  |
 | [`SharedPtr`](#classopcua_1_1_analog_expansion_1a3a99cadc0594891e0ce7ee9acc06d1f3) |  |
 | [`create`](#classopcua_1_1_analog_expansion_1a13a953b2d732d52f0c6772957b45abe8) |  |
 
 ## Members
 
-### `AnalogExpansion` <a id="classopcua_1_1_analog_expansion_1a43039d49f853487893aef8108cef366d" class="anchor"></a>
+### `AnalogExpansion` <a id="classopcua_1_1_analog_expansion_1a8922c1b320139757c7200ec568d25324" class="anchor"></a>
 
 ```cpp
-inline AnalogExpansion(UA_Server * server, UA_NodeId const parent_node_id, char * display_name, char * node_name, char * model_name)
+AnalogExpansion(UA_Server * server, UA_NodeId const parent_node_id, char * display_name, char * node_name)
+```
+
+<hr />
+
+### `~AnalogExpansion` <a id="classopcua_1_1_analog_expansion_1ad9a18c730a6451d543e48a91bf7eeff1" class="anchor"></a>
+
+```cpp
+virtual ~AnalogExpansion() = default
+```
+
+<hr />
+
+### `toSKUString` <a id="classopcua_1_1_analog_expansion_1a37b9a4657d1e8c0cf2e1d0322adfa27c" class="anchor"></a>
+
+```cpp
+inline virtual std::string toSKUString() const
+```
+
+<hr />
+
+### `add_analog_input` <a id="classopcua_1_1_analog_expansion_1a511ae8067b88c476c5a7e47acccede15" class="anchor"></a>
+
+```cpp
+void add_analog_input(UA_Server * server, const char * display_name, AnalogInput::OnReadRequestFunc const on_read_request_func)
+```
+
+<hr />
+
+### `add_analog_output` <a id="classopcua_1_1_analog_expansion_1aa5ba819a44dfd2f8b651741499ffa5a0" class="anchor"></a>
+
+```cpp
+void add_analog_output(UA_Server * server, const char * display_name, AnalogOutput::OnReadRequestFunc const on_read_request, AnalogOutput::OnWriteRequestFunc const on_write_request_func)
+```
+
+<hr />
+
+### `add_pwm_output` <a id="classopcua_1_1_analog_expansion_1a3a0997c332767761b4d96cac2e9f0963" class="anchor"></a>
+
+```cpp
+void add_pwm_output(UA_Server * server, const char * display_name, PwmOutput::SetPwmFunc const set_pwm_func, PwmOutput::GetPwmPeriodFunc const get_pwm_period_func, PwmOutput::GetPwmPulseWidthFunc const get_pwm_pulse_width_func)
+```
+
+<hr />
+
+### `add_led_output` <a id="classopcua_1_1_analog_expansion_1a748779b79841cfa4329e318450be9be9" class="anchor"></a>
+
+```cpp
+void add_led_output(UA_Server * server, const char * display_name, Led::OnSetLedStateFunc const on_set_led_state)
 ```
 
 <hr />
@@ -72,7 +130,7 @@ typedef SharedPtr
 ### `create` <a id="classopcua_1_1_analog_expansion_1a13a953b2d732d52f0c6772957b45abe8" class="anchor"></a>
 
 ```cpp
-inline static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id, uint8_t const exp_num)
+static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id, uint8_t const exp_num)
 ```
 
 <hr />
@@ -89,9 +147,10 @@ class opcua::DigitalExpansion
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
 | [`DigitalExpansion`](#classopcua_1_1_digital_expansion_1a83aace406ca80bde86e563dcf4ea12fe) |  |
-| [`analog_input_mgr`](#classopcua_1_1_digital_expansion_1aa70f758ccbffbe5644f5dc30141dc09d) |  |
-| [`digital_input_mgr`](#classopcua_1_1_digital_expansion_1a932f1b307326b0c3a28e6ad1a7357e1e) |  |
-| [`relay_mgr`](#classopcua_1_1_digital_expansion_1a87b2e863bb001b3b9c45300cef4f6db2) |  |
+| [`~DigitalExpansion`](#classopcua_1_1_digital_expansion_1ab446f1129440aa88fe7d3fd133fc8bb1) |  |
+| [`add_analog_input`](#classopcua_1_1_digital_expansion_1a49daa5502a89ab1656a3027529a651cf) |  |
+| [`add_digital_input`](#classopcua_1_1_digital_expansion_1a7c5c6f636eb49335d5554e2be81d6b76) |  |
+| [`add_relay_output`](#classopcua_1_1_digital_expansion_1a1ec45c5da3b0d3427a63a9cd30f775d0) |  |
 | [`SharedPtr`](#classopcua_1_1_digital_expansion_1a808388135d0335260aed3725a4ca8eb9) |  |
 
 ## Members
@@ -99,31 +158,39 @@ class opcua::DigitalExpansion
 ### `DigitalExpansion` <a id="classopcua_1_1_digital_expansion_1a83aace406ca80bde86e563dcf4ea12fe" class="anchor"></a>
 
 ```cpp
-inline DigitalExpansion(UA_Server * server, UA_NodeId const parent_node_id, char * display_name, char * node_name, char * model_name)
+DigitalExpansion(UA_Server * server, UA_NodeId const parent_node_id, char * display_name, char * node_name, char * model_name)
 ```
 
 <hr />
 
-### `analog_input_mgr` <a id="classopcua_1_1_digital_expansion_1aa70f758ccbffbe5644f5dc30141dc09d" class="anchor"></a>
+### `~DigitalExpansion` <a id="classopcua_1_1_digital_expansion_1ab446f1129440aa88fe7d3fd133fc8bb1" class="anchor"></a>
 
 ```cpp
-AnalogInputManager::SharedPtr analog_input_mgr()
+virtual ~DigitalExpansion() = default
 ```
 
 <hr />
 
-### `digital_input_mgr` <a id="classopcua_1_1_digital_expansion_1a932f1b307326b0c3a28e6ad1a7357e1e" class="anchor"></a>
+### `add_analog_input` <a id="classopcua_1_1_digital_expansion_1a49daa5502a89ab1656a3027529a651cf" class="anchor"></a>
 
 ```cpp
-DigitalInputManager::SharedPtr digital_input_mgr()
+void add_analog_input(UA_Server * server, const char * display_name, AnalogInput::OnReadRequestFunc const on_read_request_func)
 ```
 
 <hr />
 
-### `relay_mgr` <a id="classopcua_1_1_digital_expansion_1a87b2e863bb001b3b9c45300cef4f6db2" class="anchor"></a>
+### `add_digital_input` <a id="classopcua_1_1_digital_expansion_1a7c5c6f636eb49335d5554e2be81d6b76" class="anchor"></a>
 
 ```cpp
-RelayManager::SharedPtr relay_mgr()
+void add_digital_input(UA_Server * server, const char * display_name, DigitalInput::OnReadRequestFunc const on_read_request_func)
+```
+
+<hr />
+
+### `add_relay_output` <a id="classopcua_1_1_digital_expansion_1a1ec45c5da3b0d3427a63a9cd30f775d0" class="anchor"></a>
+
+```cpp
+void add_relay_output(UA_Server * server, const char * display_name, Relay::OnSetRelayStateFunc const on_set_relay_state)
 ```
 
 <hr />
@@ -147,16 +214,34 @@ class opcua::DigitalMechExpansion
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-| [`DigitalMechExpansion`](#classopcua_1_1_digital_mech_expansion_1ab35f6fd4ee4089d6f4312f11ef863c70) |  |
+| [`DigitalMechExpansion`](#classopcua_1_1_digital_mech_expansion_1ad7349ea0108d988330c6b2623ef99696) |  |
+| [`~DigitalMechExpansion`](#classopcua_1_1_digital_mech_expansion_1a10367a637954294193c4391c7507a8bc) |  |
+| [`toSKUString`](#classopcua_1_1_digital_mech_expansion_1a5d81cd280f0ab93fd5380d070c3d48b6) |  |
 | [`SharedPtr`](#classopcua_1_1_digital_mech_expansion_1abc60f0e66b8f12e051497c58b113a16e) |  |
 | [`create`](#classopcua_1_1_digital_mech_expansion_1af777877670455dbd9032ca0aa47fcee3) |  |
 
 ## Members
 
-### `DigitalMechExpansion` <a id="classopcua_1_1_digital_mech_expansion_1ab35f6fd4ee4089d6f4312f11ef863c70" class="anchor"></a>
+### `DigitalMechExpansion` <a id="classopcua_1_1_digital_mech_expansion_1ad7349ea0108d988330c6b2623ef99696" class="anchor"></a>
 
 ```cpp
-inline DigitalMechExpansion(UA_Server * server, UA_NodeId const parent_node_id, char * display_name, char * node_name, char * model_name)
+inline DigitalMechExpansion(UA_Server * server, UA_NodeId const parent_node_id, char * display_name, char * node_name)
+```
+
+<hr />
+
+### `~DigitalMechExpansion` <a id="classopcua_1_1_digital_mech_expansion_1a10367a637954294193c4391c7507a8bc" class="anchor"></a>
+
+```cpp
+virtual ~DigitalMechExpansion() = default
+```
+
+<hr />
+
+### `toSKUString` <a id="classopcua_1_1_digital_mech_expansion_1a5d81cd280f0ab93fd5380d070c3d48b6" class="anchor"></a>
+
+```cpp
+inline virtual std::string toSKUString() const
 ```
 
 <hr />
@@ -188,16 +273,34 @@ class opcua::DigitalStSolidExpansion
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-| [`DigitalStSolidExpansion`](#classopcua_1_1_digital_st_solid_expansion_1ad73696f5eabb7fb48c7ada0f9745e764) |  |
+| [`DigitalStSolidExpansion`](#classopcua_1_1_digital_st_solid_expansion_1a896bf61b18c63b055343d0b5f408dbb0) |  |
+| [`~DigitalStSolidExpansion`](#classopcua_1_1_digital_st_solid_expansion_1afb8021cf2b6041d723c2a3c1888ed5f7) |  |
+| [`toSKUString`](#classopcua_1_1_digital_st_solid_expansion_1a67cb3b12dfc74b9747257daf1c481d99) |  |
 | [`SharedPtr`](#classopcua_1_1_digital_st_solid_expansion_1a8bb44b6e51c634b1910dafb066f4e448) |  |
 | [`create`](#classopcua_1_1_digital_st_solid_expansion_1a6b94afd184c4d435cea8ad32297fc045) |  |
 
 ## Members
 
-### `DigitalStSolidExpansion` <a id="classopcua_1_1_digital_st_solid_expansion_1ad73696f5eabb7fb48c7ada0f9745e764" class="anchor"></a>
+### `DigitalStSolidExpansion` <a id="classopcua_1_1_digital_st_solid_expansion_1a896bf61b18c63b055343d0b5f408dbb0" class="anchor"></a>
 
 ```cpp
-inline DigitalStSolidExpansion(UA_Server * server, UA_NodeId const parent_node_id, char * display_name, char * node_name, char * model_name)
+inline DigitalStSolidExpansion(UA_Server * server, UA_NodeId const parent_node_id, char * display_name, char * node_name)
+```
+
+<hr />
+
+### `~DigitalStSolidExpansion` <a id="classopcua_1_1_digital_st_solid_expansion_1afb8021cf2b6041d723c2a3c1888ed5f7" class="anchor"></a>
+
+```cpp
+virtual ~DigitalStSolidExpansion() = default
+```
+
+<hr />
+
+### `toSKUString` <a id="classopcua_1_1_digital_st_solid_expansion_1a67cb3b12dfc74b9747257daf1c481d99" class="anchor"></a>
+
+```cpp
+inline virtual std::string toSKUString() const
 ```
 
 <hr />
@@ -225,6 +328,8 @@ inline static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_i
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
 | [`Expansion`](#classopcua_1_1_expansion_1a52b0201d688fe43ddf8e662ce4a2ec32) |  |
+| [`~Expansion`](#classopcua_1_1_expansion_1a10a1451bd459c4375e7dcc0c1ffabed7) |  |
+| [`toSKUString`](#classopcua_1_1_expansion_1ac2087b6c0d2153a8fd760fe5c7e689df) |  |
 | [`SharedPtr`](#classopcua_1_1_expansion_1a0e496feb6cd2259a2a9f4cded8f9076a) |  |
 
 ## Members
@@ -233,6 +338,22 @@ inline static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_i
 
 ```cpp
 Expansion(UA_Server * server, UA_NodeId const parent_node_id, char * display_name, char * node_name, char * model_name)
+```
+
+<hr />
+
+### `~Expansion` <a id="classopcua_1_1_expansion_1a10a1451bd459c4375e7dcc0c1ffabed7" class="anchor"></a>
+
+```cpp
+virtual ~Expansion() = default
+```
+
+<hr />
+
+### `toSKUString` <a id="classopcua_1_1_expansion_1ac2087b6c0d2153a8fd760fe5c7e689df" class="anchor"></a>
+
+```cpp
+std::string toSKUString() const
 ```
 
 <hr />
@@ -337,6 +458,123 @@ typedef SharedPtr
 <hr />
 
 ### `create` <a id="classopcua_1_1_analog_input_manager_1a68d99b738809b67b102ce91fbfbfaf4c" class="anchor"></a>
+
+```cpp
+static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id)
+```
+
+<hr />
+
+# class `opcua::AnalogOutput` <a id="classopcua_1_1_analog_output" class="anchor"></a>
+
+## Summary
+
+ Members                        | Descriptions                                
+--------------------------------|---------------------------------------------
+| [`AnalogOutput`](#classopcua_1_1_analog_output_1a16ac9355b42c1d58d132babc5a207d2e) |  |
+| [`onReadRequest`](#classopcua_1_1_analog_output_1a277345f3fe918b57f3c9e10e80a6b29b) |  |
+| [`onWriteRequest`](#classopcua_1_1_analog_output_1a072e18e88dd85d16e949434951c9942c) |  |
+| [`SharedPtr`](#classopcua_1_1_analog_output_1aa104e63edd1f282690fb7853ac24f3dd) |  |
+| [`OnReadRequestFunc`](#classopcua_1_1_analog_output_1a4763f65ceb33a44a12e1a24fb48a2e37) |  |
+| [`OnWriteRequestFunc`](#classopcua_1_1_analog_output_1a607044dc4f4a50e50f68a343c6bb4d1f) |  |
+| [`create`](#classopcua_1_1_analog_output_1a16351e621798694bb3e09bd84eaf5571) |  |
+
+## Members
+
+### `AnalogOutput` <a id="classopcua_1_1_analog_output_1a16ac9355b42c1d58d132babc5a207d2e" class="anchor"></a>
+
+```cpp
+AnalogOutput(UA_NodeId const & node_id, OnReadRequestFunc const on_read_request, OnWriteRequestFunc const on_write_request)
+```
+
+<hr />
+
+### `onReadRequest` <a id="classopcua_1_1_analog_output_1a277345f3fe918b57f3c9e10e80a6b29b" class="anchor"></a>
+
+```cpp
+void onReadRequest(UA_Server * server, UA_NodeId const * node_id)
+```
+
+<hr />
+
+### `onWriteRequest` <a id="classopcua_1_1_analog_output_1a072e18e88dd85d16e949434951c9942c" class="anchor"></a>
+
+```cpp
+void onWriteRequest(UA_Server * server, UA_NodeId const * node_id, float const voltage)
+```
+
+<hr />
+
+### `SharedPtr` <a id="classopcua_1_1_analog_output_1aa104e63edd1f282690fb7853ac24f3dd" class="anchor"></a>
+
+```cpp
+typedef SharedPtr
+```
+
+<hr />
+
+### `OnReadRequestFunc` <a id="classopcua_1_1_analog_output_1a4763f65ceb33a44a12e1a24fb48a2e37" class="anchor"></a>
+
+```cpp
+typedef OnReadRequestFunc
+```
+
+<hr />
+
+### `OnWriteRequestFunc` <a id="classopcua_1_1_analog_output_1a607044dc4f4a50e50f68a343c6bb4d1f" class="anchor"></a>
+
+```cpp
+typedef OnWriteRequestFunc
+```
+
+<hr />
+
+### `create` <a id="classopcua_1_1_analog_output_1a16351e621798694bb3e09bd84eaf5571" class="anchor"></a>
+
+```cpp
+static SharedPtr create(UA_Server * server, UA_NodeId const & parent_node_id, const char * display_name, OnReadRequestFunc const on_read_request, OnWriteRequestFunc const on_write_request)
+```
+
+<hr />
+
+# class `opcua::AnalogOutputManager` <a id="classopcua_1_1_analog_output_manager" class="anchor"></a>
+
+## Summary
+
+ Members                        | Descriptions                                
+--------------------------------|---------------------------------------------
+| [`AnalogOutputManager`](#classopcua_1_1_analog_output_manager_1af41a1bda2ad81560a6e9d4c005df0cff) |  |
+| [`add_analog_output`](#classopcua_1_1_analog_output_manager_1afd370d4f4c0a3f7fb6df761f0254d7bb) |  |
+| [`SharedPtr`](#classopcua_1_1_analog_output_manager_1a019101cbb84c3458e510153db559be63) |  |
+| [`create`](#classopcua_1_1_analog_output_manager_1ae70361c7213c9ddb274b607eb0dda289) |  |
+
+## Members
+
+### `AnalogOutputManager` <a id="classopcua_1_1_analog_output_manager_1af41a1bda2ad81560a6e9d4c005df0cff" class="anchor"></a>
+
+```cpp
+AnalogOutputManager(UA_NodeId const & node_id)
+```
+
+<hr />
+
+### `add_analog_output` <a id="classopcua_1_1_analog_output_manager_1afd370d4f4c0a3f7fb6df761f0254d7bb" class="anchor"></a>
+
+```cpp
+void add_analog_output(UA_Server * server, const char * display_name, AnalogOutput::OnReadRequestFunc const on_read_request, AnalogOutput::OnWriteRequestFunc const on_write_request_func)
+```
+
+<hr />
+
+### `SharedPtr` <a id="classopcua_1_1_analog_output_manager_1a019101cbb84c3458e510153db559be63" class="anchor"></a>
+
+```cpp
+typedef SharedPtr
+```
+
+<hr />
+
+### `create` <a id="classopcua_1_1_analog_output_manager_1ae70361c7213c9ddb274b607eb0dda289" class="anchor"></a>
 
 ```cpp
 static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id)
@@ -587,6 +825,150 @@ static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id)
 
 <hr />
 
+# class `opcua::PwmOutput` <a id="classopcua_1_1_pwm_output" class="anchor"></a>
+
+## Summary
+
+ Members                        | Descriptions                                
+--------------------------------|---------------------------------------------
+| [`PwmOutput`](#classopcua_1_1_pwm_output_1afb7531394d5f6949a1139efc8eb4a2d4) |  |
+| [`onReadRequestPwmPeriod`](#classopcua_1_1_pwm_output_1a996ade007bc33c1755cb7a58556d1b72) |  |
+| [`onWriteRequestPwmPeriod`](#classopcua_1_1_pwm_output_1ab3361d34f09f0d478253c3eaeaa5d0b8) |  |
+| [`onReadRequestPwmPulseWidth`](#classopcua_1_1_pwm_output_1ad94b10965197e6e34421e01826851e5b) |  |
+| [`onWriteRequestPwmPulseWidth`](#classopcua_1_1_pwm_output_1a590f6ca875c9858102436e5f3316748d) |  |
+| [`SharedPtr`](#classopcua_1_1_pwm_output_1ad871619fdeeccd340fad668e1d59c668) |  |
+| [`SetPwmFunc`](#classopcua_1_1_pwm_output_1a979bc7c17dbac4dfb518a65dd92c1c56) |  |
+| [`GetPwmPeriodFunc`](#classopcua_1_1_pwm_output_1ae9f4bd8023add25dda7eb038745e494c) |  |
+| [`GetPwmPulseWidthFunc`](#classopcua_1_1_pwm_output_1ad9ca89b1b476fac49dd9d32306b819af) |  |
+| [`create`](#classopcua_1_1_pwm_output_1a595c247e837f0e9a34e11b2b7b5a26ff) |  |
+
+## Members
+
+### `PwmOutput` <a id="classopcua_1_1_pwm_output_1afb7531394d5f6949a1139efc8eb4a2d4" class="anchor"></a>
+
+```cpp
+PwmOutput(UA_NodeId const & pwm_period_node_id, UA_NodeId const & pwm_pulse_width_node_id, SetPwmFunc const set_pwm_func, GetPwmPeriodFunc const get_pwm_period_func, GetPwmPulseWidthFunc const get_pwm_pulse_width_func)
+```
+
+<hr />
+
+### `onReadRequestPwmPeriod` <a id="classopcua_1_1_pwm_output_1a996ade007bc33c1755cb7a58556d1b72" class="anchor"></a>
+
+```cpp
+void onReadRequestPwmPeriod(UA_Server * server, UA_NodeId const * node_id)
+```
+
+<hr />
+
+### `onWriteRequestPwmPeriod` <a id="classopcua_1_1_pwm_output_1ab3361d34f09f0d478253c3eaeaa5d0b8" class="anchor"></a>
+
+```cpp
+void onWriteRequestPwmPeriod(UA_Server * server, UA_NodeId const * pwm_period_node_id, uint32_t const pwm_period_us)
+```
+
+<hr />
+
+### `onReadRequestPwmPulseWidth` <a id="classopcua_1_1_pwm_output_1ad94b10965197e6e34421e01826851e5b" class="anchor"></a>
+
+```cpp
+void onReadRequestPwmPulseWidth(UA_Server * server, UA_NodeId const * node_id)
+```
+
+<hr />
+
+### `onWriteRequestPwmPulseWidth` <a id="classopcua_1_1_pwm_output_1a590f6ca875c9858102436e5f3316748d" class="anchor"></a>
+
+```cpp
+void onWriteRequestPwmPulseWidth(UA_Server * server, UA_NodeId const * node_id, uint32_t const pwm_pulse_width_us)
+```
+
+<hr />
+
+### `SharedPtr` <a id="classopcua_1_1_pwm_output_1ad871619fdeeccd340fad668e1d59c668" class="anchor"></a>
+
+```cpp
+typedef SharedPtr
+```
+
+<hr />
+
+### `SetPwmFunc` <a id="classopcua_1_1_pwm_output_1a979bc7c17dbac4dfb518a65dd92c1c56" class="anchor"></a>
+
+```cpp
+typedef SetPwmFunc
+```
+
+<hr />
+
+### `GetPwmPeriodFunc` <a id="classopcua_1_1_pwm_output_1ae9f4bd8023add25dda7eb038745e494c" class="anchor"></a>
+
+```cpp
+typedef GetPwmPeriodFunc
+```
+
+<hr />
+
+### `GetPwmPulseWidthFunc` <a id="classopcua_1_1_pwm_output_1ad9ca89b1b476fac49dd9d32306b819af" class="anchor"></a>
+
+```cpp
+typedef GetPwmPulseWidthFunc
+```
+
+<hr />
+
+### `create` <a id="classopcua_1_1_pwm_output_1a595c247e837f0e9a34e11b2b7b5a26ff" class="anchor"></a>
+
+```cpp
+static SharedPtr create(UA_Server * server, UA_NodeId const & parent_node_id, const char * display_name, SetPwmFunc const set_pwm_func, GetPwmPeriodFunc const get_pwm_period_func, GetPwmPulseWidthFunc const get_pwm_pulse_width_func)
+```
+
+<hr />
+
+# class `opcua::PwmOutputManager` <a id="classopcua_1_1_pwm_output_manager" class="anchor"></a>
+
+## Summary
+
+ Members                        | Descriptions                                
+--------------------------------|---------------------------------------------
+| [`PwmOutputManager`](#classopcua_1_1_pwm_output_manager_1ae682f02d81ae9cdd8234e670e5140380) |  |
+| [`add_pwm_output`](#classopcua_1_1_pwm_output_manager_1aaad206b4639e87595bf60f9154a9e0a4) |  |
+| [`SharedPtr`](#classopcua_1_1_pwm_output_manager_1ae595b9016fec91f1e5caa1a74df4bcd5) |  |
+| [`create`](#classopcua_1_1_pwm_output_manager_1a032bb88f9e5a54a6d68adc37a685374c) |  |
+
+## Members
+
+### `PwmOutputManager` <a id="classopcua_1_1_pwm_output_manager_1ae682f02d81ae9cdd8234e670e5140380" class="anchor"></a>
+
+```cpp
+PwmOutputManager(UA_NodeId const & node_id)
+```
+
+<hr />
+
+### `add_pwm_output` <a id="classopcua_1_1_pwm_output_manager_1aaad206b4639e87595bf60f9154a9e0a4" class="anchor"></a>
+
+```cpp
+void add_pwm_output(UA_Server * server, const char * display_name, PwmOutput::SetPwmFunc const set_pwm_func, PwmOutput::GetPwmPeriodFunc const get_pwm_period_func, PwmOutput::GetPwmPulseWidthFunc const get_pwm_pulse_width_func)
+```
+
+<hr />
+
+### `SharedPtr` <a id="classopcua_1_1_pwm_output_manager_1ae595b9016fec91f1e5caa1a74df4bcd5" class="anchor"></a>
+
+```cpp
+typedef SharedPtr
+```
+
+<hr />
+
+### `create` <a id="classopcua_1_1_pwm_output_manager_1a032bb88f9e5a54a6d68adc37a685374c" class="anchor"></a>
+
+```cpp
+static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id)
+```
+
+<hr />
+
 # class `opcua::Relay` <a id="classopcua_1_1_relay" class="anchor"></a>
 
 ## Summary
@@ -692,61 +1074,52 @@ static SharedPtr create(UA_Server * server, UA_NodeId const parent_node_id)
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-| [`Opta`](#classopcua_1_1_opta_1ad6db2b203e9f15634ebd6b8e8e4898a2) |  |
-| [`analog_input_mgr`](#classopcua_1_1_opta_1aa7667b3d727e6f3f0666dbc1d342b158) |  |
-| [`digital_input_mgr`](#classopcua_1_1_opta_1aa34113d33f79bbb62f32cbdbf16d1230) |  |
-| [`relay_mgr`](#classopcua_1_1_opta_1a7c685d9c3d44effae6e6e703cbb3b993) |  |
-| [`led_mgr`](#classopcua_1_1_opta_1a50290f0e0fef4434ad82d6b3689c3423) |  |
-| [`node_id`](#classopcua_1_1_opta_1a7c336a54bff79733569d0e268d210520) |  |
+| [`Opta`](#classopcua_1_1_opta_1a283e8bca4e4044cce2e85d86bb95cd55) |  |
+| [`add_analog_input`](#classopcua_1_1_opta_1a6caea0f035f0831d6a57dc3e5f972dcf) |  |
+| [`add_digital_input`](#classopcua_1_1_opta_1a844b182bb773dd05310b8f92cdcb8428) |  |
+| [`add_relay_output`](#classopcua_1_1_opta_1ae015db2b74d47771632648d97508bc9c) |  |
+| [`add_led_output`](#classopcua_1_1_opta_1a0ca04bd872b6c67fc8e0a01ec7b60773) |  |
 | [`SharedPtr`](#classopcua_1_1_opta_1a75b2e05ac5b273859709490686dfa165) |  |
 | [`create`](#classopcua_1_1_opta_1a01f8da6cd187c6237c903dc6d004828a) |  |
 
 ## Members
 
-### `Opta` <a id="classopcua_1_1_opta_1ad6db2b203e9f15634ebd6b8e8e4898a2" class="anchor"></a>
+### `Opta` <a id="classopcua_1_1_opta_1a283e8bca4e4044cce2e85d86bb95cd55" class="anchor"></a>
 
 ```cpp
-Opta(UA_Server * server, UA_NodeId const & node_id)
+Opta(UA_Server * server, UA_NodeId const & node_id, OptaVariant::Type const opta_type)
 ```
 
 <hr />
 
-### `analog_input_mgr` <a id="classopcua_1_1_opta_1aa7667b3d727e6f3f0666dbc1d342b158" class="anchor"></a>
+### `add_analog_input` <a id="classopcua_1_1_opta_1a6caea0f035f0831d6a57dc3e5f972dcf" class="anchor"></a>
 
 ```cpp
-AnalogInputManager::SharedPtr analog_input_mgr()
+void add_analog_input(UA_Server * server, const char * display_name, AnalogInput::OnReadRequestFunc const on_read_request_func)
 ```
 
 <hr />
 
-### `digital_input_mgr` <a id="classopcua_1_1_opta_1aa34113d33f79bbb62f32cbdbf16d1230" class="anchor"></a>
+### `add_digital_input` <a id="classopcua_1_1_opta_1a844b182bb773dd05310b8f92cdcb8428" class="anchor"></a>
 
 ```cpp
-DigitalInputManager::SharedPtr digital_input_mgr()
+void add_digital_input(UA_Server * server, const char * display_name, DigitalInput::OnReadRequestFunc const on_read_request_func)
 ```
 
 <hr />
 
-### `relay_mgr` <a id="classopcua_1_1_opta_1a7c685d9c3d44effae6e6e703cbb3b993" class="anchor"></a>
+### `add_relay_output` <a id="classopcua_1_1_opta_1ae015db2b74d47771632648d97508bc9c" class="anchor"></a>
 
 ```cpp
-RelayManager::SharedPtr relay_mgr()
+void add_relay_output(UA_Server * server, const char * display_name, Relay::OnSetRelayStateFunc const on_set_relay_state)
 ```
 
 <hr />
 
-### `led_mgr` <a id="classopcua_1_1_opta_1a50290f0e0fef4434ad82d6b3689c3423" class="anchor"></a>
+### `add_led_output` <a id="classopcua_1_1_opta_1a0ca04bd872b6c67fc8e0a01ec7b60773" class="anchor"></a>
 
 ```cpp
-LedManager::SharedPtr led_mgr()
-```
-
-<hr />
-
-### `node_id` <a id="classopcua_1_1_opta_1a7c336a54bff79733569d0e268d210520" class="anchor"></a>
-
-```cpp
-inline UA_NodeId node_id() const
+void add_led_output(UA_Server * server, const char * display_name, Led::OnSetLedStateFunc const on_set_led_state)
 ```
 
 <hr />
