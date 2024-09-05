@@ -50,9 +50,15 @@ public:
     UA_Server * server,
     UA_NodeId const parent_node_id,
     char * display_name,
-    char * node_name,
-    char * model_name);
+    char * node_name);
+  virtual ~AnalogExpansion() = default;
 
+
+  virtual std::string
+  toSKUString() const override final
+  {
+    return std::string("AFX00007");
+  }
 
   void
   add_analog_input(

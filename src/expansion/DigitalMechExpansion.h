@@ -44,9 +44,7 @@ public:
     char node_name[32] = {0};
     snprintf(node_name, sizeof(node_name), "DigExpSoli_%d", exp_num);
 
-    char model_name[] = {"AFX00005"};
-
-    auto const instance_ptr = std::make_shared<DigitalMechExpansion>(server, parent_node_id, display_name, node_name, model_name);
+    auto const instance_ptr = std::make_shared<DigitalMechExpansion>(server, parent_node_id, display_name, node_name);
     return instance_ptr;
   }
 
@@ -55,10 +53,17 @@ public:
     UA_Server * server,
     UA_NodeId const parent_node_id,
     char * display_name,
-    char * node_name,
-    char * model_name)
-    : DigitalExpansion{server, parent_node_id, display_name, node_name, model_name}
+    char * node_name)
+    : DigitalExpansion(server, parent_node_id, display_name, node_name, (char *)toSKUString().c_str())
   {}
+  virtual ~DigitalMechExpansion() = default;
+
+
+  virtual std::string
+  toSKUString() const override final
+  {
+    return std::string("AFX00005");
+  }
 };
 
 /**************************************************************************************

@@ -44,7 +44,7 @@ public:
     char * display_name,
     char * node_name,
     char * model_name);
-
+  virtual ~DigitalExpansion() = default;
 
   void
   add_analog_input(

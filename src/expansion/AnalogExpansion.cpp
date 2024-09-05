@@ -28,9 +28,8 @@ AnalogExpansion::AnalogExpansion(
   UA_Server * server,
   UA_NodeId const parent_node_id,
   char * display_name,
-  char * node_name,
-  char * model_name)
-  : Expansion(server, parent_node_id, display_name, node_name, model_name)
+  char * node_name)
+  : Expansion(server, parent_node_id, display_name, node_name, (char *)toSKUString().c_str())
   , _analog_input_mgr{opcua::AnalogInputManager::create(_server, _node_id)}
   , _analog_output_mgr{opcua::AnalogOutputManager::create(_server, _node_id)}
   , _pwm_output_mgr{opcua::PwmOutputManager::create(_server, _node_id)}
@@ -62,9 +61,7 @@ AnalogExpansion::create(
   char node_name[32] = {0};
   snprintf(node_name, sizeof(node_name), "AnaExp_%d", exp_num);
 
-  char model_name[] = {"AFX00007"};
-
-  auto const instance_ptr = std::make_shared<AnalogExpansion>(server, parent_node_id, display_name, node_name, model_name);
+  auto const instance_ptr = std::make_shared<AnalogExpansion>(server, parent_node_id, display_name, node_name);
   return instance_ptr;
 }
 

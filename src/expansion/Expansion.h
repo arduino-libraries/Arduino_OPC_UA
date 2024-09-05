@@ -40,6 +40,10 @@ public:
     char * display_name,
     char * node_name,
     char * model_name);
+  virtual ~Expansion() = default;
+
+  virtual std::string
+  toSKUString() const = 0;
 
 
 protected:
