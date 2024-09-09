@@ -286,7 +286,7 @@ PwmOutput::onReadRequestPwmPulseWidth(
 void
 PwmOutput::onWriteRequestPwmPulseWidth(
   UA_Server * server,
-  UA_NodeId const * node_id,
+  UA_NodeId const * pwm_pulse_width_node_id,
   uint32_t const pwm_pulse_width_us)
 {
   _pwm_pulse_width_us = pwm_pulse_width_us;

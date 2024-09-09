@@ -28,12 +28,27 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
+/**
+ * @class ExpansionType
+ * @brief Provides a method for converting Arduino_Opta_Blueprint's ExpansionType_t to a human readable string.
+ */
 class ExpansionType
 {
 public:
+  /**
+   * The constructor of ExpansionType is deleted because this object shall not be instantiated.
+   */
   ExpansionType() = delete;
+  /**
+   * The copy constructor of ExpansionType is deleted because this object shall not be copied.
+   */
   ExpansionType(ExpansionType const &) = delete;
 
+  /**
+   * Converts Arduino_Opta_Blueprint's ExpansionType_t into a human readable string.
+   * @param type Numeric identifier identifying the type of connected expansion board.
+   * @return Human readable string describing the concrete expansion module.
+   */
   static std::string toStr(ExpansionType_t const type)
   {
     if(type == EXPANSION_NOT_VALID)

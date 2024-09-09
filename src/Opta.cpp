@@ -146,18 +146,18 @@ void
 Opta::add_analog_input(
   UA_Server * server,
   const char * display_name,
-  AnalogInput::OnReadRequestFunc const on_read_request_func)
+  AnalogInput::OnReadRequestFunc const on_read_request)
 {
-  _analog_input_mgr->add_analog_input(server, display_name, on_read_request_func);
+  _analog_input_mgr->add_analog_input(server, display_name, on_read_request);
 }
 
 void
 Opta::add_digital_input(
   UA_Server * server,
   const char * display_name,
-  DigitalInput::OnReadRequestFunc const on_read_request_func)
+  DigitalInput::OnReadRequestFunc const on_read_request)
 {
-  _digital_input_mgr->add_digital_input(server, display_name, on_read_request_func);
+  _digital_input_mgr->add_digital_input(server, display_name, on_read_request);
 }
 
 void

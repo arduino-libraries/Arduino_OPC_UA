@@ -32,10 +32,19 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
+/**
+ * @class NTPUtils
+ * @brief Provides a method for obtaining the current time via UDP.
+ */
 class NTPUtils
 {
 public:
 
+  /**
+   * Obtain the current UTC time via NTP.
+   * @param udp Reference to UDP network socket.
+   * @return current UTC time in seconds since Epoch (Unix Time)
+   */
   static unsigned long getTime(UDP &udp);
 
 private:

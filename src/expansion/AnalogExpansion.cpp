@@ -69,9 +69,9 @@ void
 AnalogExpansion::add_analog_input(
   UA_Server * server,
   const char * display_name,
-  AnalogInput::OnReadRequestFunc const on_read_request_func)
+  AnalogInput::OnReadRequestFunc const on_read_request)
 {
-  _analog_input_mgr->add_analog_input(server, display_name, on_read_request_func);
+  _analog_input_mgr->add_analog_input(server, display_name, on_read_request);
 }
 
 void
@@ -79,9 +79,9 @@ AnalogExpansion::add_analog_output(
   UA_Server * server,
   const char * display_name,
   AnalogOutput::OnReadRequestFunc const on_read_request,
-  AnalogOutput::OnWriteRequestFunc const on_write_request_func)
+  AnalogOutput::OnWriteRequestFunc const on_write_request)
 {
-  _analog_output_mgr->add_analog_output(server, display_name, on_read_request, on_write_request_func);
+  _analog_output_mgr->add_analog_output(server, display_name, on_read_request, on_write_request);
 }
 
 void

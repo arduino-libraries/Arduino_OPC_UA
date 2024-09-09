@@ -73,9 +73,9 @@ void
 AnalogInputManager::add_analog_input(
   UA_Server * server,
   const char * display_name,
-  AnalogInput::OnReadRequestFunc const on_read_request_func)
+  AnalogInput::OnReadRequestFunc const on_read_request)
 {
-  auto const analog_input = AnalogInput::create(server, _node_id, display_name, on_read_request_func);
+  auto const analog_input = AnalogInput::create(server, _node_id, display_name, on_read_request);
   if (!analog_input) {
     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: AnalogInput::create(...) failed: returned nullptr", __PRETTY_FUNCTION__);
     return;

@@ -32,12 +32,27 @@ namespace opcua
  * CLASS DECLARATION
  **************************************************************************************/
 
+/**
+ * @class OptaExpansionManager
+ * @brief High-level class to create OPC UA representations for Arduino Opta digital and analog expansion boards.
+ *
+ * This class allows the user to create OPC UA representations of digital (mechanical and solid-state relays) as
+ * well as analog expansion boards connected to the Arduino Opta.
+ */
 class OptaExpansionManager
 {
 public:
+  /**
+   * SharedPtr is std::shared_ptr of an OptaExpansionManager class.
+   */
   typedef std::shared_ptr<OptaExpansionManager> SharedPtr;
 
 
+  /**
+   * Creates a new instance of the opcua::OptaExpansionManager class.
+   * @param server Pointer to the OPC UA server implementation of the open62541 library.
+   * @return std::shared_ptr holding the newly allocated instance of opcua::OptaExpansionManager.
+   */
   static SharedPtr
   create(
     UA_Server * server) {
@@ -45,15 +60,43 @@ public:
   }
 
 
+  /**
+   * Constructor of the opcua::OptaExpansionManager class.
+   * @param server Pointer to the OPC UA server implementation of the open62541 library.
+   */
   OptaExpansionManager(
     UA_Server * server)
   : _server{server}
   { }
 
 
-  DigitalMechExpansion::SharedPtr create_digital_mechanical_expansion(uint8_t const exp_num);
-  DigitalStSolidExpansion::SharedPtr create_digital_solid_state_expansion(uint8_t const exp_num);
-  AnalogExpansion::SharedPtr create_analog_expansion(uint8_t const exp_num);
+  /**
+   * Creates a new instance of the opcua::DigitalMechExpansion (digital expansion with mechanical relays) class.
+   * @param exp_num A numerical identifier provided by the Arduino_Opta_Blueprint library and identifying the number of the expansion module in the daisy-chain of expansion modules, i.e. exp_num = 2 refers to the second connect expansion module.
+   * @return std::shared_ptr holding the newly allocated instance of opcua::DigitalMechExpansion.
+   */
+  DigitalMechExpansion::SharedPtr
+  create_digital_mechanical_expansion(
+    uint8_t const exp_num);
+
+  /**
+   * Creates a new instance of the opcua::DigitalStSolidExpansion (digital expansion with solid-state relays) class.
+   * @param exp_num A numerical identifier provided by the Arduino_Opta_Blueprint library and identifying the number of the expansion module in the daisy-chain of expansion modules, i.e. exp_num = 2 refers to the second connect expansion module.
+   * @return std::shared_ptr holding the newly allocated instance of opcua::DigitalStSolidExpansion.
+   */
+  DigitalStSolidExpansion::SharedPtr
+  create_digital_solid_state_expansion(
+    uint8_t const exp_num);
+
+  /**
+   * Creates a new instance of the opcua::AnalogExpansion class.
+   * @param exp_num A numerical identifier provided by the Arduino_Opta_Blueprint library and identifying the number of the expansion module in the daisy-chain of expansion modules, i.e. exp_num = 2 refers to the second connect expansion module.
+   * @return std::shared_ptr holding the newly allocated instance of opcua::AnalogExpansion.
+   */
+  AnalogExpansion::SharedPtr
+  create_analog_expansion(
+    uint8_t const exp_num);
+
 
 private:
   UA_Server * _server;
