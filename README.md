@@ -4,11 +4,11 @@
 [![Arduino Lint](https://github.com/bcmi-labs/Arduino_OPC_UA/actions/workflows/arduino-lint.yml/badge.svg)](https://github.com/bcmi-labs/Arduino_OPC_UA/actions/workflows/arduino-lint.yml)
 [![Sync Labels status](https://github.com/bcmi-labs/Arduino_OPC_UA/actions/workflows/sync-labels.yml/badge.svg)](https://github.com/bcmi-labs/Arduino_OPC_UA/actions/workflows/sync-labels.yml)
 
-This library provides an implementation of [OPC/UA](https://en.wikipedia.org/wiki/OPC_Unified_Architecture) by porting the Fraunhofer [`open62541`](https://github.com/open62541/open62541) for the Arduino [Opta](https://www.arduino.cc/pro/hardware-arduino-opta/) `microPLC` family.
+This library provides an implementation of [OPC UA](https://en.wikipedia.org/wiki/OPC_Unified_Architecture) by porting the Fraunhofer [`open62541`](https://github.com/open62541/open62541) for the Arduino [Opta](https://www.arduino.cc/pro/hardware-arduino-opta/) `microPLC` family.
 
 Furthermore, the library supports automatic detection, configuration and exposure of up to two Arduino Opta Expansion Boards (i.e. Digital Expansion w/ mechanical relays [`D1608E`](https://store.arduino.cc/products/opta-ext-d1608e), Digital Expansion w/ solid-state relays [`D1608S`](https://store.arduino.cc/products/opta-ext-d1608e), Analog Expansion [`A0602`](https://store.arduino.cc/products/opta-ext-a0602)) via OPC UA.
 
-### How-to-OPC/UA
+### How-to-OPC UA
 * Compile and upload [`examples/opcua_server`](examples/opcua_server/opcua_server.ino)
 ```bash
 arduino-cli compile --fqbn arduino:mbed_opta:opta -v examples/opcua_server -u -p /dev/ttyACM0
@@ -30,7 +30,7 @@ $ cat /dev/ttyACM0
 [2024-06-21 02:30:19.000 (UTC+0000)] info/network	TCP 604353888	| Creating listen socket for "127.0.0.1" (with local hostname "192.168.8.137") on port 4840
 [2024-06-21 02:30:19.000 (UTC+0000)] info/server	New DiscoveryUrl added: opc.tcp://192.168.8.137:4840
 ```
-* Connect to OPC/UA server using IP/port as printed by the Arduino Opta
+* Connect to OPC UA server using IP/port as printed by the Arduino Opta
 ![image](https://github.com/bcmi-labs/Arduino_OPC_UA/assets/3931733/ac153e79-6648-4808-9c4f-17aaf4305d89)
 
 ### How-to-`opcua-client-gui`
