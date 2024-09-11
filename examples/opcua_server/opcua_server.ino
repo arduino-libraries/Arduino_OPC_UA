@@ -117,7 +117,7 @@ void setup()
   /* Try and obtain the current time via NTP and configure the Arduino
    * Opta's onboard RTC accordingly. The RTC is then used inside the
    * open62541 Arduino wrapper to obtain the correct timestamps for
-   * the OPC/UA server.
+   * the OPC UA server.
    */
   EthernetUDP udp_client;
   auto const epoch = opcua::NTPUtils::getTime(udp_client);
@@ -148,11 +148,11 @@ void setup()
       /* Create a server listening on port 4840 (default) */
       opc_ua_server = UA_Server_new();
 
-      /* Printing OPC/UA server IP and port. */
+      /* Printing OPC UA server IP and port. */
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
                   "Arduino Opta IP: %s", Ethernet.localIP().toString().c_str());
 
-      /* Determine the Arduino OPC/UA hardware variant. */
+      /* Determine the Arduino OPC UA hardware variant. */
       opcua::OptaVariant::Type opta_type;
       if (!opcua::OptaVariant::get_opta_variant(opta_type)) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::OptaVariant::get_opta_variant(...) failed");
@@ -167,7 +167,7 @@ void setup()
       /* Configure analog solution to 12-Bit. */
       analogReadResolution(12);
 
-      /* Define the Arduino Opta as a OPC/UA object. */
+      /* Define the Arduino Opta as a OPC UA object. */
       opta_opcua = opcua::Opta::create(opc_ua_server, opta_type);
       if (!opta_opcua) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "opcua::Opta::create(...) failed");
@@ -231,7 +231,7 @@ void setup()
         opta_expansion_num = OPCUA_MAX_OPTA_EXPANSION_NUM;
       }
 
-      /* Expose Arduino Opta expansion module IO via OPC/UA. */
+      /* Expose Arduino Opta expansion module IO via OPC UA. */
       for(uint8_t i = 0; i < opta_expansion_num; i++)
       {
         ExpansionType_t const exp_type = OptaController.getExpansionType(i);
@@ -244,7 +244,7 @@ void setup()
           else
             exp_dig = opta_expansion_manager_opcua->create_digital_solid_state_expansion(i);
 
-          /* Expose digital/analog pins via OPC/UA. */
+          /* Expose digital/analog pins via OPC UA. */
           for (uint8_t d = 0; d < OPTA_DIGITAL_IN_NUM; d++)
           {
             char analog_in_name[32] = {0};
@@ -268,7 +268,7 @@ void setup()
               });
           }
 
-          /* Expose mechanical relays via OPC/UA. */
+          /* Expose mechanical relays via OPC UA. */
           for (uint8_t r = 0; r < OPTA_DIGITAL_OUT_NUM; r++)
           {
             char mech_relay_name[32] = {0};
