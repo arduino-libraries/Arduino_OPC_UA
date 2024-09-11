@@ -1,5 +1,5 @@
 #######################################
-# Syntax Coloring Map for Arduino_open62541
+# Syntax Coloring Map for Arduino_OPC_UA
 #######################################
 
 #######################################

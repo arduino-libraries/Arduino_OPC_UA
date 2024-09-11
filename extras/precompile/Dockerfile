@@ -5,4 +5,4 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-CMD ["/bin/bash", "-c", "cd /Arduino_open62541; ./extras/precompile/precompile.sh; exit"]
+CMD ["/bin/bash", "-c", "cd /Arduino_OPC_UA; ./extras/precompile/precompile.sh; exit"]

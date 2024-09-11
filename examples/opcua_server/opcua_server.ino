@@ -2,7 +2,7 @@
  * INCLUDE
  **************************************************************************************/
 
-#include <Arduino_open62541.h>
+#include <Arduino_OPC_UA.h>
 #include <PortentaEthernet.h>
 #include <OptaBlue.h> /* Arduino_Opta_Blueprint */
 #include <mbed_rtc_time.h>
