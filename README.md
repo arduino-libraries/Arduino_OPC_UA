@@ -9,9 +9,9 @@ This library provides an implementation of [OPC UA](https://en.wikipedia.org/wik
 Furthermore, the library supports automatic detection, configuration and exposure of up to two Arduino Opta Expansion Boards (i.e. Digital Expansion w/ mechanical relays [`D1608E`](https://store.arduino.cc/products/opta-ext-d1608e), Digital Expansion w/ solid-state relays [`D1608S`](https://store.arduino.cc/products/opta-ext-d1608e), Analog Expansion [`A0602`](https://store.arduino.cc/products/opta-ext-a0602)) via OPC UA.
 
 ### How-to-OPC UA
-* Compile and upload [`examples/opcua_server`](examples/opcua_server/opcua_server.ino)
+* Compile and upload [`examples/opta_opcua_server`](examples/opta_opcua_server/opta_opcua_server.ino)
 ```bash
-arduino-cli compile --fqbn arduino:mbed_opta:opta -v examples/opcua_server -u -p /dev/ttyACM0
+arduino-cli compile --fqbn arduino:mbed_opta:opta -v examples/opta_opcua_server -u -p /dev/ttyACM0
 ```
 * Connect Arduino Opta Ethernet port with a [DHCP](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol)-enabled router, switch, etc.
 * Open a serial monitor
@@ -41,7 +41,8 @@ python3 -m pip install --upgrade pyopenssl
 python3 -m pip install --upgrade .
 ```
 
-### How-to-enable detailed heap/stack memory debugging information
+### Developer section
+#### How-to-enable detailed heap/stack memory debugging information
 * Edit [`variants/OPTA/conf/mbed_app.json`](https://github.com/arduino/ArduinoCore-mbed/blob/main/variants/OPTA/conf/mbed_app.json)
 ```diff
 "target.macros_add": [

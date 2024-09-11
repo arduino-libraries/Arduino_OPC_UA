@@ -1,3 +1,14 @@
+/*
+ * By compiling and uploading this sketch to your Arduino Opta you obtain turn your
+ * Arduino Opta into a networked OPC UA capable device.
+ *
+ * How-to-build/upload:
+ *   arduino-cli compile --fqbn arduino:mbed_opta:opta examples/opta_opcua_server -v -u -p /dev/ttyACM0
+ *
+ * How-to-build/upload RS485 Modbus Demo integrated with this sketch:
+ *   arduino-cli compile --fqbn arduino:mbed_opta:opta examples/opta_opcua_server -v --build-property compiler.cpp.extra_flags="-DUSE_MODBUS_SENSOR_MD02=1" -u -p /dev/ttyACM0
+ */
+
 /**************************************************************************************
  * INCLUDE
  **************************************************************************************/
