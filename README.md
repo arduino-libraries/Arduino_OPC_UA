@@ -41,7 +41,8 @@ python3 -m pip install --upgrade pyopenssl
 python3 -m pip install --upgrade .
 ```
 
-### How-to-enable detailed heap/stack memory debugging information
+### Developer section
+#### How-to-enable detailed heap/stack memory debugging information
 * Edit [`variants/OPTA/conf/mbed_app.json`](https://github.com/arduino/ArduinoCore-mbed/blob/main/variants/OPTA/conf/mbed_app.json)
 ```diff
 "target.macros_add": [
