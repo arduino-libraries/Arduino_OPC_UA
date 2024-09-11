@@ -2,11 +2,11 @@
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-`namespace ` [`opcua`](#namespaceopcua) | opcua is used as enclosing namespace for all parts of the Arduino_open62541 library in order to avoid naming conflicts with already existing frameworks pertaining the Arduino [Opta](#classopcua_1_1_opta).
+`namespace ` [`opcua`](#namespaceopcua) | opcua is used as enclosing namespace for all parts of the Arduino_OPC_UA library in order to avoid naming conflicts with already existing frameworks pertaining the Arduino [Opta](#classopcua_1_1_opta).
 
 # namespace `opcua` <a id="namespaceopcua" class="anchor"></a>
 
-opcua is used as enclosing namespace for all parts of the Arduino_open62541 library in order to avoid naming conflicts with already existing frameworks pertaining the Arduino [Opta](#classopcua_1_1_opta).
+opcua is used as enclosing namespace for all parts of the Arduino_OPC_UA library in order to avoid naming conflicts with already existing frameworks pertaining the Arduino [Opta](#classopcua_1_1_opta).
 
 ## Summary
 

@@ -30,7 +30,7 @@
  **************************************************************************************/
 
 /**
- * opcua is used as enclosing namespace for all parts of the Arduino_open62541 library
+ * opcua is used as enclosing namespace for all parts of the Arduino_OPC_UA library
  * in order to avoid naming conflicts with already existing frameworks pertaining the
  * Arduino Opta.
  */
