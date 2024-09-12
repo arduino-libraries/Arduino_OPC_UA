@@ -6,16 +6,72 @@
 # Class (KEYWORD1)
 #######################################
 
-#Node	KEYWORD1
+SharedPtr	KEYWORD1
+
+Opta	KEYWORD1
+OptaExpansionManager	KEYWORD1
+OptaVariant	KEYWORD1
+
+ExpansionType	KEYWORD1
+
+Expansion	KEYWORD1
+AnalogExpansion	KEYWORD1
+DigitalExpansion	KEYWORD1
+DigitalMechExpansion	KEYWORD1
+DigitalStSolidExpansion	KEYWORD1
+
+AnalogInput	KEYWORD1
+AnalogInputManager	KEYWORD1
+AnalogOutput	KEYWORD1
+AnalogOutputManager	KEYWORD1
+
+UserButton	KEYWORD1
+
+DigitalInput	KEYWORD1
+DigitalInputManager	KEYWORD1
+
+Led	KEYWORD1
+LedManager	KEYWORD1
+
+PwmOutput	KEYWORD1
+PwmOutputManager	KEYWORD1
+
+Relay	KEYWORD1
+RelayManager	KEYWORD1
+
+NTPUtils	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-#setNodeId	KEYWORD2
+create	KEYWORD2
+
+create_digital_mechanical_expansion	KEYWORD2
+create_digital_solid_state_expansion	KEYWORD2
+create_analog_expansion	KEYWORD2
+
+add_analog_input	KEYWORD2
+add_analog_output	KEYWORD2
+add_digital_input	KEYWORD2
+add_relay_output	KEYWORD2
+add_led_output	KEYWORD2
+add_pwm_output	KEYWORD2
+add_led_output	KEYWORD2
+
+get_opta_variant	KEYWORD2
+toString	KEYWORD2
+toStr	KEYWORD2
+toSKUString	KEYWORD2
+
+getTime	KEYWORD2
+cvt_time	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
-#DEFAULT_O1HEAP_SIZE	LITERAL1
+Type	LITERAL1
+Lite	LITERAL1
+RS485	LITERAL1
+WiFi	LITERAL1
