@@ -101,7 +101,7 @@ public:
    * @param on_read_request Function pointer which is called during a read-access on the variable node representing the analog input.
    */
   void
-  add_analog_input(
+  addAnalogInput(
     UA_Server * server,
     const char * display_name,
     AnalogInput::OnReadRequestFunc const on_read_request);
@@ -114,7 +114,7 @@ public:
    * @param on_write_request Function pointer which is called during a write-access on the variable node representing the analog output.
    */
   void
-  add_analog_output(
+  addAnalogOutput(
     UA_Server * server,
     const char * display_name,
     AnalogOutput::OnReadRequestFunc const on_read_request,
@@ -129,7 +129,7 @@ public:
    * @param get_pwm_pulse_width_func Function pointer which is called during a read-access on the variable node representing the PWM output's pulse width.
    */
   void
-  add_pwm_output(
+  addPwmOutput(
     UA_Server * server,
     const char * display_name,
     PwmOutput::SetPwmFunc const set_pwm_func,
@@ -143,7 +143,7 @@ public:
    * @param on_set_led_state Function pointer which is called during a write-access on the variable node representing the LED.
    */
   void
-  add_led_output(
+  addLedOutput(
     UA_Server * server,
     const char * display_name,
     Led::OnSetLedStateFunc const on_set_led_state);

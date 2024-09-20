@@ -47,25 +47,25 @@ NTPUtils	KEYWORD1
 
 create	KEYWORD2
 
-create_digital_mechanical_expansion	KEYWORD2
-create_digital_solid_state_expansion	KEYWORD2
-create_analog_expansion	KEYWORD2
+createDigitalMechanicalExpansion	KEYWORD2
+createDigitalSolidStateExpansion	KEYWORD2
+createAnalogExpansion	KEYWORD2
 
-add_analog_input	KEYWORD2
-add_analog_output	KEYWORD2
-add_digital_input	KEYWORD2
-add_relay_output	KEYWORD2
-add_led_output	KEYWORD2
-add_pwm_output	KEYWORD2
-add_led_output	KEYWORD2
+addAnalogInput	KEYWORD2
+addAnalogOutput	KEYWORD2
+addDigitalInput	KEYWORD2
+addRelayOutput	KEYWORD2
+addLedOutput	KEYWORD2
+addPwmOutput	KEYWORD2
+addLedOutput	KEYWORD2
 
-get_opta_variant	KEYWORD2
+getOptaVariant	KEYWORD2
 toString	KEYWORD2
 toStr	KEYWORD2
 toSKUString	KEYWORD2
 
 getTime	KEYWORD2
-cvt_time	KEYWORD2
+timeToStr	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

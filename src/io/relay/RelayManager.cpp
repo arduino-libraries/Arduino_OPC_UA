@@ -70,7 +70,7 @@ RelayManager::create(
  **************************************************************************************/
 
 void
-RelayManager::add_relay_output(
+RelayManager::addRelayOutput(
   UA_Server * server,
   const char * display_name,
   Relay::OnSetRelayStateFunc const on_set_relay_state)

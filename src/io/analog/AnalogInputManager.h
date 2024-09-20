@@ -76,7 +76,7 @@ public:
    * @param on_read_request Function pointer which is called during a read-access on the variable node representing the analog input.
    */
   void
-  add_analog_input(
+  addAnalogInput(
     UA_Server * server,
     const char * display_name,
     AnalogInput::OnReadRequestFunc const on_read_request);

@@ -76,7 +76,7 @@ public:
    * @return std::shared_ptr holding the newly allocated instance of opcua::DigitalMechExpansion.
    */
   DigitalMechExpansion::SharedPtr
-  create_digital_mechanical_expansion(
+  createDigitalMechanicalExpansion(
     uint8_t const exp_num);
 
   /**
@@ -85,7 +85,7 @@ public:
    * @return std::shared_ptr holding the newly allocated instance of opcua::DigitalStSolidExpansion.
    */
   DigitalStSolidExpansion::SharedPtr
-  create_digital_solid_state_expansion(
+  createDigitalSolidStateExpansion(
     uint8_t const exp_num);
 
   /**
@@ -94,7 +94,7 @@ public:
    * @return std::shared_ptr holding the newly allocated instance of opcua::AnalogExpansion.
    */
   AnalogExpansion::SharedPtr
-  create_analog_expansion(
+  createAnalogExpansion(
     uint8_t const exp_num);
 
 

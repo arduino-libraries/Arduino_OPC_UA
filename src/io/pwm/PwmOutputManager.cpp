@@ -70,7 +70,7 @@ PwmOutputManager::create(
  **************************************************************************************/
 
 void
-PwmOutputManager::add_pwm_output(
+PwmOutputManager::addPwmOutput(
   UA_Server * server,
   const char * display_name,
   PwmOutput::SetPwmFunc const set_pwm_func,

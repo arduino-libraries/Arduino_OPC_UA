@@ -11,7 +11,7 @@
  * INCLUDE
  **************************************************************************************/
 
-#include "cvt_time.h"
+#include "timeToStr.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -27,7 +27,7 @@ namespace opcua
  * FUNCTION DEFINITION
  **************************************************************************************/
 
-time_t cvt_time(char const * time)
+time_t timeToStr(char const * time)
 {
   static time_t build_time = 0;
 

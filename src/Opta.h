@@ -88,7 +88,7 @@ public:
    * @param on_read_request Function pointer which is called during a read-access on the variable node representing the analog input.
    */
   void
-  add_analog_input(
+  addAnalogInput(
     UA_Server * server,
     const char * display_name,
     AnalogInput::OnReadRequestFunc const on_read_request);
@@ -100,7 +100,7 @@ public:
    * @param on_read_request Function pointer which is called during a read-access on the variable node representing the digital input.
    */
   void
-  add_digital_input(
+  addDigitalInput(
     UA_Server * server,
     const char * display_name,
     DigitalInput::OnReadRequestFunc const on_read_request);
@@ -112,7 +112,7 @@ public:
    * @param on_set_relay_state Function pointer which is called during a write-access on the variable node representing the relay output.
    */
   void
-  add_relay_output(
+  addRelayOutput(
     UA_Server * server,
     const char * display_name,
     Relay::OnSetRelayStateFunc const on_set_relay_state);
@@ -124,7 +124,7 @@ public:
    * @param on_set_led_state Function pointer which is called during a write-access on the variable node representing the LED output.
    */
   void
-  add_led_output(
+  addLedOutput(
     UA_Server * server,
     const char * display_name,
     Led::OnSetLedStateFunc const on_set_led_state);

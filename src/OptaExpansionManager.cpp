@@ -25,7 +25,7 @@ namespace opcua
  **************************************************************************************/
 
 DigitalMechExpansion::SharedPtr
-OptaExpansionManager::create_digital_mechanical_expansion(
+OptaExpansionManager::createDigitalMechanicalExpansion(
   uint8_t const exp_num)
 {
   auto const exp_mech_opcua = opcua::DigitalMechExpansion::create(
@@ -38,7 +38,7 @@ OptaExpansionManager::create_digital_mechanical_expansion(
 }
 
 DigitalStSolidExpansion::SharedPtr
-OptaExpansionManager::create_digital_solid_state_expansion(
+OptaExpansionManager::createDigitalSolidStateExpansion(
   uint8_t const exp_num)
 {
   auto const exp_solid_state_opcua = opcua::DigitalStSolidExpansion::create(
@@ -51,7 +51,7 @@ OptaExpansionManager::create_digital_solid_state_expansion(
 }
 
 AnalogExpansion::SharedPtr
-OptaExpansionManager::create_analog_expansion(
+OptaExpansionManager::createAnalogExpansion(
   uint8_t const exp_num)
 {
   auto const exp_analog_opcua = opcua::AnalogExpansion::create(
