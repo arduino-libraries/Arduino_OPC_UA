@@ -143,40 +143,40 @@ Opta::create(
 }
 
 void
-Opta::add_analog_input(
+Opta::addAnalogInput(
   UA_Server * server,
   const char * display_name,
   AnalogInput::OnReadRequestFunc const on_read_request)
 {
-  _analog_input_mgr->add_analog_input(server, display_name, on_read_request);
+  _analog_input_mgr->addAnalogInput(server, display_name, on_read_request);
 }
 
 void
-Opta::add_digital_input(
+Opta::addDigitalInput(
   UA_Server * server,
   const char * display_name,
   DigitalInput::OnReadRequestFunc const on_read_request)
 {
-  _digital_input_mgr->add_digital_input(server, display_name, on_read_request);
+  _digital_input_mgr->addDigitalInput(server, display_name, on_read_request);
 }
 
 void
-Opta::add_relay_output(
+Opta::addRelayOutput(
   UA_Server * server,
   const char * display_name,
   Relay::OnSetRelayStateFunc const on_set_relay_state)
 {
-  _relay_mgr->add_relay_output(server, display_name, on_set_relay_state);
+  _relay_mgr->addRelayOutput(server, display_name, on_set_relay_state);
 }
 
 void
-Opta::add_led_output(
+Opta::addLedOutput(
   UA_Server * server,
   const char * display_name,
   Led::OnSetLedStateFunc const on_set_led_state)
 {
   if (_led_mgr) /* Only available for Arduino Opta WiFi. */
-    _led_mgr->add_led_output(server, display_name, on_set_led_state);
+    _led_mgr->addLedOutput(server, display_name, on_set_led_state);
 }
 
 /**************************************************************************************

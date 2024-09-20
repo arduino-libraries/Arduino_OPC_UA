@@ -70,7 +70,7 @@ AnalogInputManager::create(
  **************************************************************************************/
 
 void
-AnalogInputManager::add_analog_input(
+AnalogInputManager::addAnalogInput(
   UA_Server * server,
   const char * display_name,
   AnalogInput::OnReadRequestFunc const on_read_request)

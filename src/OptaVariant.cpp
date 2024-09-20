@@ -33,7 +33,7 @@ namespace opcua
  **************************************************************************************/
 
 bool
-OptaVariant::get_opta_variant(
+OptaVariant::getOptaVariant(
   Type & type)
 {
   OptaBoardInfo * info = boardInfo();

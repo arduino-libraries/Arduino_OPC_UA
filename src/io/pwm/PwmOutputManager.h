@@ -78,7 +78,7 @@ public:
    * @param get_pwm_pulse_width_func Function pointer which is called during a read-access on the variable node representing the PWM output's pulse width.
    */
   void
-  add_pwm_output(
+  addPwmOutput(
     UA_Server * server,
     const char * display_name,
     PwmOutput::SetPwmFunc const set_pwm_func,

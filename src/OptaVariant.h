@@ -66,7 +66,7 @@ public:
    * @return True if the Opta variant could be obtained successfully.
    */
   static bool
-  get_opta_variant(
+  getOptaVariant(
     Type & type);
 
   /**

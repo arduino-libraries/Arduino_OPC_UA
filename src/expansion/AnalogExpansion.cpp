@@ -66,42 +66,42 @@ AnalogExpansion::create(
 }
 
 void
-AnalogExpansion::add_analog_input(
+AnalogExpansion::addAnalogInput(
   UA_Server * server,
   const char * display_name,
   AnalogInput::OnReadRequestFunc const on_read_request)
 {
-  _analog_input_mgr->add_analog_input(server, display_name, on_read_request);
+  _analog_input_mgr->addAnalogInput(server, display_name, on_read_request);
 }
 
 void
-AnalogExpansion::add_analog_output(
+AnalogExpansion::addAnalogOutput(
   UA_Server * server,
   const char * display_name,
   AnalogOutput::OnReadRequestFunc const on_read_request,
   AnalogOutput::OnWriteRequestFunc const on_write_request)
 {
-  _analog_output_mgr->add_analog_output(server, display_name, on_read_request, on_write_request);
+  _analog_output_mgr->addAnalogOutput(server, display_name, on_read_request, on_write_request);
 }
 
 void
-AnalogExpansion::add_pwm_output(
+AnalogExpansion::addPwmOutput(
   UA_Server * server,
   const char * display_name,
   PwmOutput::SetPwmFunc const set_pwm_func,
   PwmOutput::GetPwmPeriodFunc const get_pwm_period_func,
   PwmOutput::GetPwmPulseWidthFunc const get_pwm_pulse_width_func)
 {
-  _pwm_output_mgr->add_pwm_output(server, display_name, set_pwm_func, get_pwm_period_func, get_pwm_pulse_width_func);
+  _pwm_output_mgr->addPwmOutput(server, display_name, set_pwm_func, get_pwm_period_func, get_pwm_pulse_width_func);
 }
 
 void
-AnalogExpansion::add_led_output(
+AnalogExpansion::addLedOutput(
   UA_Server * server,
   const char * display_name,
   Led::OnSetLedStateFunc const on_set_led_state)
 {
-  _led_mgr->add_led_output(server, display_name, on_set_led_state);
+  _led_mgr->addLedOutput(server, display_name, on_set_led_state);
 }
 
 /**************************************************************************************

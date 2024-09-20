@@ -70,7 +70,7 @@ LedManager::create(
  **************************************************************************************/
 
 void
-LedManager::add_led_output(
+LedManager::addLedOutput(
   UA_Server * server,
   const char * display_name,
   Led::OnSetLedStateFunc const on_set_led_state)

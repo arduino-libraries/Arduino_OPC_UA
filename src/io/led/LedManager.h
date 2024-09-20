@@ -75,7 +75,7 @@ public:
    * @param on_set_led_state Function pointer which is called during a write-access on the variable node representing the LED.
    */
   void
-  add_led_output(
+  addLedOutput(
     UA_Server * server,
     const char * display_name,
     Led::OnSetLedStateFunc const on_set_led_state);

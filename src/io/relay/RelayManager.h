@@ -76,7 +76,7 @@ public:
    * @param on_set_relay_state Function pointer which is called during a write-access on the variable node representing a relay.
    */
   void
-  add_relay_output(
+  addRelayOutput(
     UA_Server * server,
     const char * display_name,
     Relay::OnSetRelayStateFunc const on_set_relay_state);

@@ -50,30 +50,30 @@ DigitalExpansion::DigitalExpansion(
  **************************************************************************************/
 
 void
-DigitalExpansion::add_analog_input(
+DigitalExpansion::addAnalogInput(
   UA_Server * server,
   const char * display_name,
   AnalogInput::OnReadRequestFunc const on_read_request)
 {
-  _analog_input_mgr->add_analog_input(server, display_name, on_read_request);
+  _analog_input_mgr->addAnalogInput(server, display_name, on_read_request);
 }
 
 void
-DigitalExpansion::add_digital_input(
+DigitalExpansion::addDigitalInput(
   UA_Server * server,
   const char * display_name,
   DigitalInput::OnReadRequestFunc const on_read_request)
 {
-  _digital_input_mgr->add_digital_input(server, display_name, on_read_request);
+  _digital_input_mgr->addDigitalInput(server, display_name, on_read_request);
 }
 
 void
-DigitalExpansion::add_relay_output(
+DigitalExpansion::addRelayOutput(
   UA_Server * server,
   const char * display_name,
   Relay::OnSetRelayStateFunc const on_set_relay_state)
 {
-  _relay_mgr->add_relay_output(server, display_name, on_set_relay_state);
+  _relay_mgr->addRelayOutput(server, display_name, on_set_relay_state);
 }
 
 /**************************************************************************************

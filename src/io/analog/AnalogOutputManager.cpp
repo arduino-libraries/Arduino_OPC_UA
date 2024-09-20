@@ -70,7 +70,7 @@ AnalogOutputManager::create(
  **************************************************************************************/
 
 void
-AnalogOutputManager::add_analog_output(
+AnalogOutputManager::addAnalogOutput(
   UA_Server * server,
   const char * display_name,
   AnalogOutput::OnReadRequestFunc const on_read_request,

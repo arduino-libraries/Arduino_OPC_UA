@@ -70,7 +70,7 @@ DigitalInputManager::create(
  **************************************************************************************/
 
 void
-DigitalInputManager::add_digital_input(
+DigitalInputManager::addDigitalInput(
   UA_Server * server,
   const char * display_name,
   DigitalInput::OnReadRequestFunc const on_read_request)

@@ -76,7 +76,7 @@ public:
    * @param on_read_request Function pointer which is called during a read-access on the variable node representing the digital input.
    */
   void
-  add_digital_input(
+  addDigitalInput(
     UA_Server * server,
     const char * display_name,
     DigitalInput::OnReadRequestFunc const on_read_request);
