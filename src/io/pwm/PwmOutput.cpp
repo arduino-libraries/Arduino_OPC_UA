@@ -252,7 +252,7 @@ PwmOutput::onReadRequestPwmPeriod(
   UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_UINT32]);
   UA_Server_writeValue(server, *node_id, in_x_val_opcua_variant);
   /* Some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm period = %d us", __PRETTY_FUNCTION__, _pwm_period_us);
+  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm period = %d us", __PRETTY_FUNCTION__, _pwm_period_us);
 }
 
 void
@@ -262,7 +262,7 @@ PwmOutput::onWriteRequestPwmPeriod(
   uint32_t const pwm_period_us)
 {
   _pwm_period_us = pwm_period_us;
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm period = %d us, pulse width = %d us", __PRETTY_FUNCTION__, _pwm_period_us, _pwm_pulse_width_us);
+  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm period = %d us, pulse width = %d us", __PRETTY_FUNCTION__, _pwm_period_us, _pwm_pulse_width_us);
   _set_pwm_func(_pwm_period_us, _pwm_pulse_width_us);
 }
 
@@ -280,7 +280,7 @@ PwmOutput::onReadRequestPwmPulseWidth(
   UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_UINT32]);
   UA_Server_writeValue(server, *node_id, in_x_val_opcua_variant);
   /* Some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm pulse width = %d us", __PRETTY_FUNCTION__, _pwm_pulse_width_us);
+  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm pulse width = %d us", __PRETTY_FUNCTION__, _pwm_pulse_width_us);
 }
 
 void
@@ -290,7 +290,7 @@ PwmOutput::onWriteRequestPwmPulseWidth(
   uint32_t const pwm_pulse_width_us)
 {
   _pwm_pulse_width_us = pwm_pulse_width_us;
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm period = %d us, pulse width = %d us", __PRETTY_FUNCTION__, _pwm_period_us, _pwm_pulse_width_us);
+  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: pwm period = %d us, pulse width = %d us", __PRETTY_FUNCTION__, _pwm_period_us, _pwm_pulse_width_us);
   _set_pwm_func(_pwm_period_us, _pwm_pulse_width_us);
 }
 

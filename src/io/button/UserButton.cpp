@@ -150,7 +150,7 @@ UserButton::onReadRequest(
   UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_BOOLEAN]);
   UA_Server_writeValue(server, *node_id, in_x_val_opcua_variant);
   /* Some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: value = %d", __PRETTY_FUNCTION__, in_x_val);
+  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: value = %d", __PRETTY_FUNCTION__, in_x_val);
 }
 
 /**************************************************************************************

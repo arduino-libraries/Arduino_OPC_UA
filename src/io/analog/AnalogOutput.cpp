@@ -150,7 +150,7 @@ AnalogOutput::onReadRequest(
   UA_Variant_setScalar(&in_x_val_opcua_variant, &in_x_val_opcua_value, &UA_TYPES[UA_TYPES_FLOAT]);
   UA_Server_writeValue(server, *node_id, in_x_val_opcua_variant);
   /* Some debug output. */
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: value = %f", __PRETTY_FUNCTION__, in_x_val);
+  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: value = %f", __PRETTY_FUNCTION__, in_x_val);
 }
 
 void
@@ -159,7 +159,7 @@ AnalogOutput::onWriteRequest(
   UA_NodeId const * node_id,
   float const voltage)
 {
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: voltage = %0.2f", __PRETTY_FUNCTION__, voltage);
+  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: voltage = %0.2f", __PRETTY_FUNCTION__, voltage);
   _on_write_request(voltage);
 }
 
