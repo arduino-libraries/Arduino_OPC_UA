@@ -125,7 +125,7 @@ Led::onWriteRequest(
   UA_NodeId const * node_id,
   bool const value)
 {
-  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: value = %d", __PRETTY_FUNCTION__, value);
+  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "%s: value = %d", __PRETTY_FUNCTION__, value);
   _on_set_led_state(value);
 }
 

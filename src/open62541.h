@@ -2,8 +2,8 @@
  * visit http://open62541.org/ for information about this software
  * Git-Revision: v1.4.0-dirty
  */
-/*
 
+/*
  * Copyright (C) 2014-2021 the contributors as stated in the AUTHORS file
  *
  * This file is part of open62541. open62541 is free software: you can
@@ -57,7 +57,7 @@
  * ---------------
  * Changing the feature options has no effect on a pre-compiled library. */
 
-#define UA_LOGLEVEL 100
+#define UA_LOGLEVEL 300
 #ifndef UA_ENABLE_AMALGAMATION
 #define UA_ENABLE_AMALGAMATION
 #endif
