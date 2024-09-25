@@ -29,6 +29,7 @@ cmake -DCMAKE_C_COMPILER=arm-none-eabi-gcc \
       -DUA_ENABLE_AMALGAMATION=ON \
       -DUA_ENABLE_MALLOC_SINGLETON=ON \
       -DCMAKE_BUILD_TYPE=Release \
+      -DUA_LOGLEVEL=300 \
       ..
 make -j8
 
