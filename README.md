@@ -1,8 +1,8 @@
 :floppy_disk: `Arduino_OPC_UA`
 ==============================
-[![Compile Examples](https://github.com/bcmi-labs/Arduino_OPC_UA/workflows/Compile%20Examples/badge.svg)](https://github.com/bcmi-labs/Arduino_OPC_UA/actions?workflow=Compile+Examples)
-[![Arduino Lint](https://github.com/bcmi-labs/Arduino_OPC_UA/actions/workflows/arduino-lint.yml/badge.svg)](https://github.com/bcmi-labs/Arduino_OPC_UA/actions/workflows/arduino-lint.yml)
-[![Sync Labels status](https://github.com/bcmi-labs/Arduino_OPC_UA/actions/workflows/sync-labels.yml/badge.svg)](https://github.com/bcmi-labs/Arduino_OPC_UA/actions/workflows/sync-labels.yml)
+[![Compile Examples](https://github.com/arduino-libraries/Arduino_OPC_UA/workflows/Compile%20Examples/badge.svg)](https://github.com/arduino-libraries/Arduino_OPC_UA/actions?workflow=Compile+Examples)
+[![Arduino Lint](https://github.com/arduino-libraries/Arduino_OPC_UA/actions/workflows/arduino-lint.yml/badge.svg)](https://github.com/arduino-libraries/Arduino_OPC_UA/actions/workflows/arduino-lint.yml)
+[![Sync Labels status](https://github.com/arduino-libraries/Arduino_OPC_UA/actions/workflows/sync-labels.yml/badge.svg)](https://github.com/arduino-libraries/Arduino_OPC_UA/actions/workflows/sync-labels.yml)
 
 This library provides an implementation of [OPC UA](https://en.wikipedia.org/wiki/OPC_Unified_Architecture) by porting the Fraunhofer [`open62541`](https://github.com/open62541/open62541) for the Arduino [Opta](https://www.arduino.cc/pro/hardware-arduino-opta/) `microPLC` family.
 
@@ -31,7 +31,7 @@ $ cat /dev/ttyACM0
 [2024-06-21 02:30:19.000 (UTC+0000)] info/server	New DiscoveryUrl added: opc.tcp://192.168.8.137:4840
 ```
 * Connect to OPC UA server using IP/port as printed by the Arduino Opta
-![image](https://github.com/bcmi-labs/Arduino_OPC_UA/assets/3931733/ac153e79-6648-4808-9c4f-17aaf4305d89)
+![image](https://github.com/arduino-libraries/Arduino_OPC_UA/assets/3931733/ac153e79-6648-4808-9c4f-17aaf4305d89)
 
 ### How-to-`opcua-client-gui`
 ```bash
