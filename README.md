@@ -4,7 +4,7 @@
 [![Arduino Lint](https://github.com/arduino-libraries/Arduino_OPC_UA/actions/workflows/arduino-lint.yml/badge.svg)](https://github.com/arduino-libraries/Arduino_OPC_UA/actions/workflows/arduino-lint.yml)
 [![Sync Labels status](https://github.com/arduino-libraries/Arduino_OPC_UA/actions/workflows/sync-labels.yml/badge.svg)](https://github.com/arduino-libraries/Arduino_OPC_UA/actions/workflows/sync-labels.yml)
 
-This library provides an implementation of [OPC UA](https://en.wikipedia.org/wiki/OPC_Unified_Architecture) by porting the Fraunhofer [`open62541`](https://github.com/open62541/open62541) for the Arduino [Opta](https://www.arduino.cc/pro/hardware-arduino-opta/) `microPLC` family.
+This library provides an implementation of [OPC UA](https://en.wikipedia.org/wiki/OPC_Unified_Architecture) by porting the Fraunhofer [`open62541`](https://github.com/open62541/open62541) for the Arduino [Opta](https://www.arduino.cc/pro/hardware-arduino-opta/) family.
 
 Furthermore, the library supports automatic detection, configuration and exposure of up to two Arduino Opta Expansion Boards (i.e. Digital Expansion w/ mechanical relays [`D1608E`](https://store.arduino.cc/products/opta-ext-d1608e), Digital Expansion w/ solid-state relays [`D1608S`](https://store.arduino.cc/products/opta-ext-d1608e), Analog Expansion [`A0602`](https://store.arduino.cc/products/opta-ext-a0602)) via OPC UA.
 
