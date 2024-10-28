@@ -514,6 +514,15 @@ void loop()
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   delay(500);
 
+  /* Periodically print OPC UA server IP and port. */
+  static auto prev_ip_print = millis();
+  auto const now = millis();
+  if ((now - prev_ip_print) > 5000)
+  {
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Arduino Opta IP: %s", Ethernet.localIP().toString().c_str());
+    prev_ip_print = now;
+  }
+
 #if USE_MODBUS_SENSOR_MD02
   if (!ModbusRTUClient.requestFrom(MODBUS_DEVICE_ID, INPUT_REGISTERS, MODBUS_DEVICE_TEMPERATURE_REGISTER, 1)) {
     Serial.print("failed to read temperature register! ");
