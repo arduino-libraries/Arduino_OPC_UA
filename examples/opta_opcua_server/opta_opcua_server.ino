@@ -105,9 +105,8 @@ static PinStatus arduino_opta_digital_read(pin_size_t const pin)
 void setup()
 {
   Serial.begin(115200);
-  //auto const start = millis();
-  //for (; !Serial && (millis() - start) < 1000; ) { }
-  while (!Serial) { }
+  auto const start = millis();
+  for (; !Serial && (millis() - start) < 1000; ) { }
 
 #if USE_MODBUS_SENSOR_MD02
   RS485.setDelays(MODBUS_PRE_DELAY_BR, MODBUS_POST_DELAY_BR);
