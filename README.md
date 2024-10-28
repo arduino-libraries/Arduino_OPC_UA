@@ -37,6 +37,8 @@ $ cat /dev/ttyACM0
 ```bash
 cd /tmp
 git clone https://github.com/FreeOpcUa/opcua-client-gui && cd opcua-client-gui
+python -m venv .venv
+source .venv/bin/activate
 python3 -m pip install --upgrade pyopenssl
 python3 -m pip install --upgrade .
 ```
