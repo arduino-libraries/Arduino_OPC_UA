@@ -105,9 +105,8 @@ static PinStatus arduino_opta_digital_read(pin_size_t const pin)
 void setup()
 {
   Serial.begin(115200);
-  //auto const start = millis();
-  //for (; !Serial && (millis() - start) < 1000; ) { }
-  while (!Serial) { }
+  auto const start = millis();
+  for (; !Serial && (millis() - start) < 1000; ) { }
 
 #if USE_MODBUS_SENSOR_MD02
   RS485.setDelays(MODBUS_PRE_DELAY_BR, MODBUS_POST_DELAY_BR);
@@ -514,6 +513,15 @@ void loop()
   /* Toggle main LED signalling progress. */
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   delay(500);
+
+  /* Periodically print OPC UA server IP and port. */
+  static auto prev_ip_print = millis();
+  auto const now = millis();
+  if ((now - prev_ip_print) > 5000)
+  {
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Arduino Opta IP: %s", Ethernet.localIP().toString().c_str());
+    prev_ip_print = now;
+  }
 
 #if USE_MODBUS_SENSOR_MD02
   if (!ModbusRTUClient.requestFrom(MODBUS_DEVICE_ID, INPUT_REGISTERS, MODBUS_DEVICE_TEMPERATURE_REGISTER, 1)) {
